@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Agentes Físicos — Guía Clínica</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+/* ─── VARIABLES ──────────────────────────────────────────────── */
+:root {
+  --bg:       #0b1929;
+  --bg2:      #0d1f36;
+  --surface:  rgba(255,255,255,0.055);
+  --surface2: rgba(255,255,255,0.085);
+  --surface3: rgba(255,255,255,0.12);
+  --glass:    rgba(13,31,54,0.65);
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+
+  --text:  #ddeaf8;
+  --text2: #6b98b8;
+  --text3: #2e4d66;
+
+  --accent:       #00c2b2;
+  --accent2:      #4f9ef7;
+  --accent-glow:  rgba(0,194,178,0.22);
+  --accent2-glow: rgba(79,158,247,0.15);
+
+  --red:    #f06b6b; --red-bg:    rgba(240,107,107,0.13); --red-border:    rgba(240,107,107,0.3);
+  --amber:  #f0a840; --amber-bg:  rgba(240,168,64,0.13);  --amber-border:  rgba(240,168,64,0.3);
+  --green:  #22d49e; --green-bg:  rgba(34,212,158,0.13);  --green-border:  rgba(34,212,158,0.3);
+  --blue:   #4f9ef7; --blue-bg:   rgba(79,158,247,0.13);  --blue-border:   rgba(79,158,247,0.3);
+  --purple: #a78bfa; --purple-bg: rgba(167,139,250,0.13); --purple-border: rgba(167,139,250,0.3);
+  --teal:   #00c2b2; --teal-bg:   rgba(0,194,178,0.13);   --teal-border:   rgba(0,194,178,0.3);
+  --coral:  #fb8c6a; --coral-bg:  rgba(251,140,106,0.13); --coral-border:  rgba(251,140,106,0.3);
+  --pink:   #f472b6; --pink-bg:   rgba(244,114,182,0.13); --pink-border:   rgba(244,114,182,0.3);
+  --gray:   #6b98b8; --gray-bg:   rgba(107,152,184,0.10); --gray-border:   rgba(107,152,184,0.22);
+
+  --sidebar-w: 224px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+  --sidebar-w: 224px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+/* ─── RESET ──────────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14.5px;
+  min-height: 100vh;
+  overscroll-behavior: none;
+}
+
+/* Fondo con orbs de color */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 8% 12%, rgba(0,194,178,0.065) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 65% at 92% 88%, rgba(79,158,247,0.065) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(167,139,250,0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── HEADER (solo mobile) ───────────────────────────────────── */
+.app-header {
+  position: sticky; top: 0; z-index: 90;
+  background: rgba(11,25,41,0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 18px;
+  display: flex; align-items: center; gap: 12px;
+  height: 52px;
+}
+.header-icon {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 14px var(--accent-glow);
+}
+.header-icon svg { width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.header-title { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); letter-spacing:-.01em; }
+.header-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.header-tabs { display: none; }
+
+/* ─── LAYOUT PRINCIPAL ────────────────────────────────────────── */
+.main {
+  position: relative; z-index: 1;
+  max-width: 720px; margin: 0 auto;
+  padding: 28px 16px 90px;
+}
+
+/* ─── ANIMACIÓN DE PÁGINAS ────────────────────────────────────── */
+.page { display: none; animation: fadeIn .22s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── CABECERAS DE SECCIÓN ────────────────────────────────────── */
+.section-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+}
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 27px; color: var(--text); margin-bottom: 8px;
+  line-height: 1.15; letter-spacing: -.02em;
+}
+.section-sub {
+  font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 26px;
+}
+
+/* ─── SIDEBAR BRAND (solo desktop) ───────────────────────────── */
+.sidebar-brand { display: none; }
+
+/* ─── NAVEGACIÓN ──────────────────────────────────────────────── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(11,25,41,0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border2);
+  display: flex; justify-content: space-around;
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  z-index: 100;
+  overflow-x: auto; scrollbar-width: none;
+}
+.bottom-nav::-webkit-scrollbar { display: none; }
+
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; padding: 5px 7px; border-radius: var(--radius-md);
+  transition: background .15s, color .15s;
+  min-width: 50px; flex: 1; position: relative;
+}
+.nav-item:hover { background: var(--surface2); }
+.nav-item.active { background: rgba(0,194,178,0.1); }
+.nav-item.active .nav-icon { color: var(--accent); }
+.nav-item.active .nav-label { color: var(--accent); font-weight: 600; }
+.nav-item.active::after {
+  content: ''; position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 18px; height: 2px;
+  background: var(--accent);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+.nav-icon { color: var(--text3); line-height: 0; transition: color .15s; }
+.nav-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-label { font-size: 9px; font-weight: 500; color: var(--text3); transition: color .15s; letter-spacing: .01em; }
+
+/* ─── DESKTOP: SIDEBAR ────────────────────────────────────────── */
+@media (min-width: 769px) {
+  .app-header { display: none; }
+
+  .sidebar-brand {
+    display: flex; align-items: center; gap: 11px;
+    padding: 0 14px 22px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 18px var(--accent-glow);
+  }
+  .sidebar-logo svg { width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .sidebar-app-name { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--text); line-height: 1.25; }
+  .sidebar-app-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+  .bottom-nav {
+    position: fixed;
+    left: 0; top: 0; bottom: 0; right: auto;
+    width: var(--sidebar-w);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 24px 10px 24px;
+    border-top: none;
+    border-right: 1px solid var(--border2);
+    background: rgba(13,31,54,0.97);
+    overflow-y: auto; overflow-x: visible;
+    gap: 2px;
+  }
+  .nav-item {
+    flex-direction: row; justify-content: flex-start;
+    gap: 11px; padding: 10px 13px;
+    border-radius: var(--radius-md);
+    min-width: unset; flex: none; width: 100%;
+  }
+  .nav-item.active { border: 1px solid rgba(0,194,178,0.2); }
+  .nav-item.active::after { display: none; }
+  .nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 55%;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 6px var(--accent-glow);
+  }
+  .nav-icon svg { width: 17px; height: 17px; }
+  .nav-label { font-size: 12.5px; font-weight: 500; letter-spacing: 0; }
+
+  .main {
+    margin-left: var(--sidebar-w);
+    max-width: none;
+    width: calc(100% - var(--sidebar-w));
+    padding: 38px 52px 60px;
+  }
+}
+@media (min-width: 1200px) {
+  .main { padding: 42px 80px 60px; }
+}
+
+/* ─── FLUJOGRAMA ──────────────────────────────────────────────── */
+.question-card {
+  background: var(--surface);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 22px 20px 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.q-step { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+.q-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+.q-hint { font-size: 12px; color: var(--text2); margin-bottom: 18px; }
+.opt-grid { display: flex; flex-direction: column; gap: 8px; }
+.opt-btn {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius-md);
+  border: 1px solid; cursor: pointer; text-align: left;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 500;
+  transition: transform .12s, opacity .12s, box-shadow .12s;
+  width: 100%;
+}
+.opt-btn:hover { transform: translateX(3px); }
+.opt-btn:active { transform: scale(.98); opacity: .85; }
+.opt-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+.opt-red    { background: var(--red-bg);    border-color: var(--red-border);    color: var(--red); }
+.opt-red .opt-dot    { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.opt-amber  { background: var(--amber-bg);  border-color: var(--amber-border);  color: var(--amber); }
+.opt-amber .opt-dot  { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.opt-green  { background: var(--green-bg);  border-color: var(--green-border);  color: var(--green); }
+.opt-green .opt-dot  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.opt-blue   { background: var(--blue-bg);   border-color: var(--blue-border);   color: var(--blue); }
+.opt-blue .opt-dot   { background: var(--blue); box-shadow: 0 0 6px var(--blue); }
+.opt-purple { background: var(--purple-bg); border-color: var(--purple-border); color: var(--purple); }
+.opt-purple .opt-dot { background: var(--purple); box-shadow: 0 0 6px var(--purple); }
+.opt-gray   { background: var(--gray-bg);   border-color: var(--gray-border);   color: var(--text2); }
+.opt-gray .opt-dot   { background: var(--gray); }
+
+/* breadcrumb */
+.breadcrumb { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 14px; }
+.bc-item { font-size: 11px; color: var(--text3); }
+.bc-sep { font-size: 10px; color: var(--text3); margin: 0 2px; }
+.bc-current { font-size: 11px; color: var(--text2); font-weight: 600; }
+
+/* resultado — fase pill */
+.phase-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  margin-bottom: 18px; border: 1px solid; letter-spacing: .01em;
+}
+.phase-dot { width: 6px; height: 6px; border-radius: 50%; }
+.pill-red    { background: var(--red-bg);    border-color: var(--red-border);    color: var(--red); }
+.pill-red .phase-dot    { background: var(--red); box-shadow: 0 0 5px var(--red); }
+.pill-amber  { background: var(--amber-bg);  border-color: var(--amber-border);  color: var(--amber); }
+.pill-amber .phase-dot  { background: var(--amber); box-shadow: 0 0 5px var(--amber); }
+.pill-green  { background: var(--green-bg);  border-color: var(--green-border);  color: var(--green); }
+.pill-green .phase-dot  { background: var(--green); box-shadow: 0 0 5px var(--green); }
+.pill-blue   { background: var(--blue-bg);   border-color: var(--blue-border);   color: var(--blue); }
+.pill-blue .phase-dot   { background: var(--blue); box-shadow: 0 0 5px var(--blue); }
+
+.result-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 12px; }
+
+.agents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+@media (max-width: 400px) { .agents-grid { grid-template-columns: 1fr; } }
+
+.agent-card {
+  border-radius: var(--radius-md); padding: 14px; border: 1px solid;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.agent-card:hover { transform: translateY(-2px); }
+.agent-card:active { transform: scale(.97); }
+.ac-name { font-size: 12.5px; font-weight: 600; margin-bottom: 6px; line-height: 1.35; }
+.ac-params { font-size: 10.5px; line-height: 1.65; opacity: .85; }
+.ac-effect { display: inline-block; font-size: 10.5px; font-weight: 600; margin-top: 8px; padding: 3px 9px; border-radius: 6px; }
+
+.c-red    { background: var(--red-bg);    border-color: var(--red-border);    color: var(--red); }
+.c-red .ac-effect    { background: rgba(240,107,107,0.2); color: #ffaaaa; }
+.c-amber  { background: var(--amber-bg);  border-color: var(--amber-border);  color: var(--amber); }
+.c-amber .ac-effect  { background: rgba(240,168,64,0.2);  color: #ffe0a0; }
+.c-blue   { background: var(--blue-bg);   border-color: var(--blue-border);   color: var(--blue); }
+.c-blue .ac-effect   { background: rgba(79,158,247,0.2);  color: #a0d0ff; }
+.c-green  { background: var(--green-bg);  border-color: var(--green-border);  color: var(--green); }
+.c-green .ac-effect  { background: rgba(34,212,158,0.2);  color: #90f0b0; }
+.c-purple { background: var(--purple-bg); border-color: var(--purple-border); color: var(--purple); }
+.c-purple .ac-effect { background: rgba(167,139,250,0.2); color: #d0bbff; }
+.c-teal   { background: var(--teal-bg);   border-color: var(--teal-border);   color: var(--teal); }
+.c-teal .ac-effect   { background: rgba(0,194,178,0.2);   color: #80f0ec; }
+.c-coral  { background: var(--coral-bg);  border-color: var(--coral-border);  color: var(--coral); }
+.c-coral .ac-effect  { background: rgba(251,140,106,0.2); color: #ffb898; }
+.c-pink   { background: var(--pink-bg);   border-color: var(--pink-border);   color: var(--pink); }
+.c-pink .ac-effect   { background: rgba(244,114,182,0.2); color: #ffa0c4; }
+.c-gray   { background: var(--gray-bg);   border-color: var(--gray-border);   color: var(--text2); }
+.c-gray .ac-effect   { background: rgba(107,152,184,0.15); color: var(--text); }
+
+.note-box {
+  background: var(--surface2);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--accent2);
+  padding: 12px 14px; font-size: 12px; color: var(--text2); line-height: 1.65;
+  margin-bottom: 16px;
+}
+.note-box strong { color: var(--text); font-weight: 600; }
+
+.restart-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 12px; border-radius: var(--radius-md);
+  background: var(--surface); border: 1px solid var(--border2);
+  color: var(--text2); font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px; font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.restart-btn:hover { background: var(--surface2); border-color: var(--accent); color: var(--text); }
+
+/* ─── REFERENCIA ──────────────────────────────────────────────── */
+.ref-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.ref-tab {
+  padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  background: transparent; transition: all .15s; white-space: nowrap;
+}
+.ref-tab:hover { border-color: var(--accent); color: var(--text); }
+.ref-tab.active {
+  background: rgba(0,194,178,0.12); border-color: var(--teal-border);
+  color: var(--accent); font-weight: 600;
+  box-shadow: 0 0 10px rgba(0,194,178,0.12);
+}
+
+.ref-panel { display: none; }
+.ref-panel.active { display: block; animation: fadeIn .2s ease; }
+
+.ref-agent-header {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border2);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 16px;
+}
+.agent-icon { width: 44px; height: 44px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 22px; }
+.ref-agent-name { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 3px; }
+.ref-agent-sub { font-size: 11.5px; color: var(--text2); }
+.ref-agent-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+.tag { font-size: 10.5px; font-weight: 500; padding: 3px 10px; border-radius: 10px; border: 1px solid; }
+
+.param-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+.param-table thead tr { border-bottom: 1px solid var(--border2); }
+.param-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text3); padding: 8px 10px; text-align: left; }
+.param-table td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 11.5px; color: var(--text2); vertical-align: top; line-height: 1.55; }
+.param-table tr:last-child td { border-bottom: none; }
+.param-table tr:hover td { background: var(--surface2); }
+.param-table .mode-badge { font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 6px; white-space: nowrap; display: inline-block; }
+.param-val { font-weight: 600; color: var(--text); }
+.param-effect { font-weight: 600; color: var(--accent); }
+
+.contra-box {
+  background: rgba(240,107,107,0.08); border: 1px solid var(--red-border);
+  border-radius: var(--radius-md); padding: 12px 14px; font-size: 12px;
+  color: var(--red); line-height: 1.6; margin-top: 4px;
+}
+.contra-title { font-weight: 700; margin-bottom: 5px; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+
+/* ─── MECANISMOS ──────────────────────────────────────────────── */
+.mech-card {
+  background: var(--surface);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg); padding: 18px; margin-bottom: 12px;
+  transition: border-color .2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.mech-card:hover { border-color: rgba(0,153,168,0.25); }
+.mech-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.mech-num {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+.mech-name { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); }
+.mech-body { font-size: 12.5px; color: var(--text2); line-height: 1.75; }
+.mech-highlight {
+  display: inline; background: rgba(79,158,247,0.14); color: var(--blue);
+  padding: 1px 6px; border-radius: 4px; font-weight: 600;
+}
+
+/* ─── TIEMPOS ─────────────────────────────────────────────────── */
+.tissue-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.tissue-tab {
+  padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  background: transparent; transition: all .15s; white-space: nowrap;
+}
+.tissue-tab:hover { border-color: var(--border2); color: var(--text); }
+.tissue-tab.active {
+  background: var(--surface2); border-color: var(--border2);
+  color: var(--text); font-weight: 600;
+}
+.tissue-panel { display: none; }
+.tissue-panel.active { display: block; animation: fadeIn .2s ease; }
+
+.tissue-header {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border2);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 16px;
+}
+.tissue-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 23px; flex-shrink: 0; }
+.tissue-name { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.tissue-desc { font-size: 12px; color: var(--text2); line-height: 1.65; }
+.tissue-timing { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.timing-pill { font-size: 10.5px; font-weight: 600; padding: 3px 11px; border-radius: 10px; border: 1px solid; }
+
+.timeline-bar {
+  display: flex; border-radius: 10px; overflow: hidden;
+  height: 7px; margin-bottom: 18px; gap: 2px;
+}
+.tbar-seg { height: 100%; border-radius: 4px; flex-shrink: 0; }
+
+.phase-block {
+  background: var(--surface); border: 1px solid var(--border2);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 10px;
+  border-left: 3px solid; transition: border-color .2s;
+}
+.phase-block-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.phase-block-title { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--text); }
+.phase-block-time { font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 10px; border: 1px solid; white-space: nowrap; flex-shrink: 0; }
+.phase-block-body { font-size: 12px; color: var(--text2); line-height: 1.75; }
+.phase-block-body ul { padding-left: 16px; margin-top: 6px; }
+.phase-block-body li { margin-bottom: 4px; }
+.phase-block-agents { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.phase-agents-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); margin-bottom: 7px; }
+.phase-agent-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.pat { font-size: 10.5px; padding: 3px 10px; border-radius: 8px; border: 1px solid; font-weight: 500; }
+
+.tissue-note {
+  background: var(--surface2);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 12px 14px; font-size: 12px; color: var(--text2); line-height: 1.65;
+  margin-top: 6px; border-left: 3px solid var(--accent2);
+}
+.tissue-note strong { color: var(--text); }
+
+/* ─── KINESIOTERAPIA ──────────────────────────────────────────── */
+.kp-cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.kp-cat-tab {
+  padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  background: transparent; transition: all .15s; white-space: nowrap;
+}
+.kp-cat-tab:hover { border-color: var(--green-border); color: var(--green); }
+.kp-cat-tab.active {
+  background: var(--green-bg); border-color: var(--green-border);
+  color: var(--green); font-weight: 600;
+  box-shadow: 0 0 10px rgba(34,212,158,0.12);
+}
+.kp-cat-panel { display: none; }
+.kp-cat-panel.active { display: block; animation: fadeIn .2s ease; }
+
+.kt-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg); margin-bottom: 12px; overflow: hidden;
+  transition: border-color .2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.kt-card:hover { border-color: rgba(0,0,0,0.15); }
+.kt-card-header { display: flex; align-items: center; gap: 12px; padding: 15px 18px; cursor: pointer; user-select: none; }
+.kt-card-header:hover { background: var(--surface2); }
+.kt-badge { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.kt-card-title { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin-bottom: 2px; }
+.kt-card-sub { font-size: 11.5px; color: var(--text2); }
+.kt-chevron { margin-left: auto; font-size: 11px; color: var(--text3); transition: transform .2s; flex-shrink: 0; }
+.kt-card-body { display: none; border-top: 1px solid var(--border); padding: 16px 18px 18px; }
+.kt-card-body.open { display: block; animation: fadeIn .15s ease; }
+
+.kt-desc { font-size: 12.5px; color: var(--text2); line-height: 1.75; margin-bottom: 14px; }
+.kt-phases { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.kt-phase { border-radius: var(--radius-md); padding: 12px 14px; border: 1px solid; }
+.kt-phase-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.kt-phase-name { font-size: 12px; font-weight: 600; color: inherit; }
+.kt-phase-pill { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
+.kt-phase-detail { font-size: 11px; line-height: 1.65; opacity: .85; }
+.kt-phase-params { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+.kt-param { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.07); color: var(--text2); border: 1px solid var(--border2); }
+
+.kt-ref { display: flex; align-items: flex-start; gap: 7px; margin-top: 10px; background: rgba(79,158,247,0.07); border: 1px solid rgba(79,158,247,0.2); border-radius: var(--radius-sm); padding: 8px 10px; }
+.kt-ref-icon { font-size: 12px; color: var(--accent2); flex-shrink: 0; margin-top: 1px; }
+.kt-ref-text { font-size: 10px; color: var(--text2); line-height: 1.55; }
+.kt-ref-text strong { color: var(--accent2); font-weight: 600; }
+
+.kp-phase-red    { background: var(--red-bg);    border-color: var(--red-border);    color: var(--red); }
+.kp-phase-amber  { background: var(--amber-bg);  border-color: var(--amber-border);  color: var(--amber); }
+.kp-phase-green  { background: var(--green-bg);  border-color: var(--green-border);  color: var(--green); }
+.kp-pill-red     { background: rgba(240,107,107,0.2); color: #ffaaaa; }
+.kp-pill-amber   { background: rgba(240,168,64,0.2);  color: #ffe0a0; }
+.kp-pill-green   { background: rgba(34,212,158,0.2);  color: #90f0b0; }
+
+/* Kinesioterapia en resultado */
+.kinesio-section { margin-top: 16px; }
+.kinesio-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.kinesio-icon {
+  width: 26px; height: 26px; border-radius: var(--radius-sm);
+  background: var(--green-bg); border: 1px solid var(--green-border);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.kinesio-icon svg { width:13px; height:13px; stroke:var(--green); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.kinesio-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--green); }
+
+.kinesio-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.ktab {
+  padding: 5px 11px; border-radius: 16px; font-size: 11px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text3);
+  background: transparent; transition: all .12s; white-space: nowrap;
+}
+.ktab.active { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+.kinesio-panel { display: none; }
+.kinesio-panel.open { display: block; animation: fadeIn .15s ease; }
+
+.kprog-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: flex-start; }
+.kprog-week {
+  flex-shrink: 0; font-size: 9.5px; font-weight: 700; padding: 3px 7px;
+  border-radius: var(--radius-sm); background: var(--surface3); color: var(--text3);
+  border: 1px solid var(--border); white-space: nowrap; margin-top: 1px;
+}
+.kprog-body { flex: 1; }
+.kprog-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.kprog-detail { font-size: 11px; color: var(--text2); line-height: 1.65; }
+.kprog-params { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.kp-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; background: var(--surface3); color: var(--text2); border: 1px solid var(--border2); }
+.kprog-divider { height: 1px; background: var(--border); margin: 6px 0; }
+
+.k-contra { background: rgba(240,107,107,0.07); border: 1px solid var(--red-border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 11px; color: var(--red); line-height: 1.55; margin-top: 8px; }
+.k-contra strong { color: #ffaaaa; }
+
+.kref-box { display: flex; align-items: flex-start; gap: 7px; margin-top: 7px; background: rgba(79,158,247,0.07); border: 1px solid rgba(79,158,247,0.2); border-radius: var(--radius-sm); padding: 7px 10px; }
+.kref-icon { font-size: 12px; flex-shrink: 0; margin-top: 1px; color: var(--accent2); }
+.kref-text { font-size: 10px; color: var(--text2); line-height: 1.55; }
+.kref-text strong { color: var(--accent2); font-weight: 600; }
+
+/* ─── FARMACOLOGÍA ────────────────────────────────────────────── */
+.pharma-cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.pharma-cat-tab {
+  padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  background: transparent; transition: all .15s; white-space: nowrap;
+}
+.pharma-cat-tab:hover { color: var(--text); border-color: var(--border2); }
+.pharma-cat-tab.active {
+  background: var(--surface2); border-color: var(--border2);
+  color: var(--text); font-weight: 600;
+}
+.pharma-cat-panel { display: none; }
+.pharma-cat-panel.active { display: block; animation: fadeIn .2s ease; }
+
+.drug-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden;
+  transition: border-color .2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.drug-card:hover { border-color: rgba(0,0,0,0.15); }
+.drug-card-header { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; }
+.drug-card-header:hover { background: var(--surface2); }
+.drug-badge { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.drug-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--text); margin-bottom: 2px; }
+.drug-generic { font-size: 10.5px; color: var(--text3); line-height: 1.4; margin-bottom: 5px; }
+.drug-phase-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+.drug-phase-pill { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 8px; border: 1px solid; }
+.drug-chevron { margin-left: auto; font-size: 11px; color: var(--text3); transition: transform .2s; flex-shrink: 0; margin-top: 4px; }
+.drug-card-body { display: none; border-top: 1px solid var(--border); padding: 14px 16px 16px; }
+.drug-card-body.open { display: block; animation: fadeIn .15s ease; }
+.drug-duration { display: inline-block; font-size: 11px; font-weight: 600; padding: 4px 11px; border-radius: 8px; margin-bottom: 12px; line-height: 1.4; }
+.drug-mech {
+  font-size: 12px; color: var(--text2); line-height: 1.75; margin-bottom: 12px;
+  padding: 10px 13px; background: var(--surface2); border-radius: var(--radius-sm);
+  border-left: 3px solid var(--border2);
+}
+.drug-mech strong { color: var(--text); }
+.drug-dose-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+.drug-dose-table thead tr { border-bottom: 1px solid var(--border2); }
+.drug-dose-table th { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text3); padding: 6px 8px; text-align: left; }
+.drug-dose-table td { padding: 8px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text2); vertical-align: top; line-height: 1.55; }
+.drug-dose-table tr:last-child td { border-bottom: none; }
+.drug-dose-table .dose-val { font-weight: 600; color: var(--text); }
+.drug-interaction { background: rgba(79,158,247,0.07); border: 1px solid rgba(79,158,247,0.22); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 10px; }
+.drug-interaction-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--accent2); margin-bottom: 5px; }
+.drug-interaction-body { font-size: 11px; color: var(--text2); line-height: 1.65; }
+.drug-interaction-body strong { color: var(--text); }
+.drug-contra { background: rgba(240,107,107,0.07); border: 1px solid var(--red-border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 10px; }
+.drug-contra-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--red); margin-bottom: 4px; }
+.drug-contra-body { font-size: 11px; color: var(--red); line-height: 1.65; opacity: .9; }
+.drug-note {
+  background: var(--surface2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 10px 12px; font-size: 11px; color: var(--text2); line-height: 1.65;
+}
+.drug-note strong { color: var(--text); }
+
+/* ─── PRUEBAS FUNCIONALES ─────────────────────────────────────── */
+.prueba-seg-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  background: transparent; transition: all .15s; white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.prueba-seg-btn:hover { border-color: var(--accent); color: var(--text); }
+.prueba-seg-btn.active {
+  background: rgba(0,194,178,0.12); border-color: var(--teal-border);
+  color: var(--accent); font-weight: 600;
+  box-shadow: 0 0 10px rgba(0,194,178,0.12);
+}
+
+/* ─── MODAL ───────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 22px 22px 0 0;
+  width: 100%; max-width: 720px; max-height: 82vh; overflow-y: auto;
+  padding: 20px 20px max(20px, env(safe-area-inset-bottom));
+  transform: translateY(100%); transition: transform .28s cubic-bezier(.4,0,.2,1);
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 18px; }
+.modal-title { font-family: 'DM Serif Display', serif; font-size: 19px; margin-bottom: 4px; color: var(--text); }
+.modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 14px; }
+.modal-params {
+  font-size: 12px; color: var(--text2); background: var(--surface2);
+  border-radius: var(--radius-md); padding: 12px 14px; line-height: 1.7; margin-bottom: 12px;
+}
+.modal-effect { font-size: 13px; font-weight: 500; margin-bottom: 12px; color: var(--text); }
+.modal-close {
+  width: 100%; padding: 12px; border-radius: var(--radius-md);
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text2); font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px; cursor: pointer; transition: background .15s, border-color .15s;
+  margin-top: 4px;
+}
+.modal-close:hover { background: var(--surface3); border-color: var(--accent); color: var(--text); }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-icon">
+    <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+  </div>
+  <div>
+    <div class="header-title">Agentes Físicos</div>
+    <div class="header-sub">Guía clínica de fisioterapia</div>
+  </div>
+</header>
+
+<!-- PAGES -->
+<div class="main">
+
+  <!-- PAGE: FLUJOGRAMA -->
+  <div class="page active" id="page-flow">
+    <div class="section-eyebrow">Herramienta clínica</div>
+    <div class="section-title">Flujograma de decisión</div>
+    <div class="section-sub">Sigue las preguntas según la presentación del paciente para obtener el protocolo recomendado.</div>
+    <div id="flow-content"></div>
+  </div>
+
+  <!-- PAGE: REFERENCIA -->
+  <div class="page" id="page-ref">
+    <div class="section-eyebrow">Parámetros de tratamiento</div>
+    <div class="section-title">Referencia rápida</div>
+    <div class="section-sub">Consulta los parámetros, modos y efectos de cada agente físico.</div>
+    <div class="ref-tabs" id="ref-tabs"></div>
+    <div id="ref-content"></div>
+  </div>
+
+  <!-- PAGE: MECANISMOS -->
+  <div class="page" id="page-mech">
+    <div class="section-eyebrow">Base científica</div>
+    <div class="section-title">Mecanismos de acción</div>
+    <div class="section-sub">Cómo cada agente físico logra su efecto terapéutico a nivel celular y tisular.</div>
+    <div id="mech-content"></div>
+  </div>
+
+  <!-- PAGE: TIEMPOS -->
+  <div class="page" id="page-time">
+    <div class="section-eyebrow">Fisiología de la recuperación</div>
+    <div class="section-title">Tiempos de recuperación</div>
+    <div class="section-sub">Plazos fisiológicos de cicatrización por tejido, procesos biológicos en cada fase y agentes físicos recomendados.</div>
+    <div class="tissue-tabs" id="tissue-tabs"></div>
+    <div id="tissue-content"></div>
+  </div>
+
+  <!-- PAGE: KINESIOTERAPIA -->
+  <div class="page" id="page-kine">
+    <div class="section-eyebrow">Guía de técnicas</div>
+    <div class="section-title">Kinesioterapia</div>
+    <div class="section-sub">Técnicas kinésicas organizadas por categoría, con descripción, indicación por fase clínica y parámetros de dosificación.</div>
+    <div class="kp-cat-tabs" id="kp-cat-tabs"></div>
+    <div id="kp-content"></div>
+  </div>
+
+  <!-- PAGE: FARMACOLOGÍA -->
+  <div class="page" id="page-pharma">
+    <div class="section-eyebrow">Referencia clínica</div>
+    <div class="section-title">Farmacología complementaria</div>
+    <div class="section-sub">Fármacos utilizados como complemento en fisioterapia. Mecanismo de acción, dosificación, interacción con agentes físicos y consideraciones clínicas por categoría.</div>
+    <div class="pharma-cat-tabs" id="pharma-cat-tabs"></div>
+    <div id="pharma-content"></div>
+  </div>
+
+  <!-- PAGE: PRUEBAS FUNCIONALES -->
+  <div class="page" id="page-pruebas">
+    <div class="section-eyebrow">Evaluación clínica</div>
+    <div class="section-title">Pruebas funcionales</div>
+    <div class="section-sub">Selecciona el segmento corporal y consulta las pruebas ortopédicas: para qué sirven y cómo realizarlas paso a paso.</div>
+    <div style="position:relative;margin-bottom:18px;">
+      <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input id="pruebas-search" type="text" placeholder="Buscar prueba…"
+        style="width:100%;padding:10px 14px 10px 36px;border-radius:var(--radius-md);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;outline:none;transition:border-color .15s;"
+        onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border2)'">
+    </div>
+    <div id="pruebas-seg-grid" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px;"></div>
+    <div id="pruebas-result"></div>
+  </div>
+
+</div>
+
+<!-- NAVEGACIÓN (bottom mobile / sidebar desktop) -->
+<nav class="bottom-nav">
+  <!-- Brand — visible solo en sidebar desktop -->
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    </div>
+    <div>
+      <div class="sidebar-app-name">Agentes Físicos</div>
+      <div class="sidebar-app-sub">Guía clínica</div>
+    </div>
+  </div>
+
+  <div class="nav-item active" onclick="showPage('flow',this)">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg></span>
+    <span class="nav-label">Flujograma</span>
+  </div>
+  <div class="nav-item" onclick="showPage('ref',this)">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span>
+    <span class="nav-label">Referencia</span>
+  </div>
+  <div class="nav-item" onclick="showPage('mech',this)">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+    <span class="nav-label">Mecanismos</span>
+  </div>
+  <div class="nav-item" onclick="showPage('time',this)">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+    <span class="nav-label">Tiempos</span>
+  </div>
+  <div class="nav-item" onclick="showPage('kine',this)">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></span>
+    <span class="nav-label">Kinesio</span>
+  </div>
+  <div class="nav-item" onclick="showPage('pharma',this)">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></span>
+    <span class="nav-label">Fármacos</span>
+  </div>
+  <div class="nav-item" onclick="showPage('pruebas',this)">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+    <span class="nav-label">Pruebas</span>
+  </div>
+</nav>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-body">
+    <div class="modal-handle"></div>
+    <div id="modal-inner"></div>
+    <button class="modal-close" onclick="closeModal()">Cerrar</button>
+  </div>
+</div>
+
+<script src="js/flujo.js"></script>
+<script src="js/referencia.js"></script>
+<script src="js/mecanismos.js"></script>
+<script src="js/tiempos.js"></script>
+<script src="js/kinesioterapia.js"></script>
+<script src="js/farmacologia.js"></script>
+<script src="js/pruebas.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
