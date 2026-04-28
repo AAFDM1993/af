@@ -777,16 +777,15 @@ body::before {
   <div class="page" id="page-pruebas">
     <div class="section-eyebrow">Evaluación clínica</div>
     <div class="section-title">Pruebas funcionales</div>
-    <div class="section-sub">Selecciona el segmento corporal y consulta las pruebas ortopédicas: para qué sirven y cómo realizarlas paso a paso.</div>
+    <div class="section-sub">Escribe el segmento corporal (ej: <em>rodilla</em>, <em>hombro</em>) o el nombre de una prueba para consultar cómo realizarla paso a paso.</div>
     <div style="position:relative;margin-bottom:18px;">
       <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </span>
-      <input id="pruebas-search" type="text" placeholder="Buscar prueba…"
+      <input id="pruebas-search" type="text" placeholder="Buscar por segmento o prueba… ej: rodilla, Lachman"
         style="width:100%;padding:10px 14px 10px 36px;border-radius:var(--radius-md);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;outline:none;transition:border-color .15s;"
         onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border2)'">
     </div>
-    <div id="pruebas-seg-grid" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px;"></div>
     <div id="pruebas-result"></div>
   </div>
 

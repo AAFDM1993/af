@@ -520,10 +520,7 @@ function buildPharma() {
 /* ===== PRUEBAS FUNCIONALES ===== */
 function buildPruebas() {
   const searchInput = document.getElementById('pruebas-search');
-  const segGrid     = document.getElementById('pruebas-seg-grid');
   const resultArea  = document.getElementById('pruebas-result');
-
-  let activeSegId = null;
 
   function colorClass(c) {
     const map = {
@@ -533,101 +530,99 @@ function buildPruebas() {
     return map[c] || 'c-gray';
   }
 
-  function renderPruebas(segId, filter) {
+  function renderCard(p, seg) {
+    const colKey = p.color;
+    const card = document.createElement('div');
+    card.style.cssText = `background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden;transition:border-color .2s;`;
+
+    const hdr = document.createElement('div');
+    hdr.style.cssText = `display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;`;
+    hdr.innerHTML = `
+      <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);">${seg.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:3px;">${seg.label}</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--text);margin-bottom:2px;">${p.nombre}</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.4;">${p.objetivo}</div>
+      </div>
+      <span class="prueba-chevron" style="font-size:11px;color:var(--text3);transition:transform .2s;flex-shrink:0;">▼</span>`;
+
+    const body = document.createElement('div');
+    body.style.cssText = `display:none;border-top:1px solid var(--border);padding:16px 18px 18px;`;
+
+    const objBox = document.createElement('div');
+    objBox.style.cssText = `background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:14px;`;
+    objBox.innerHTML = `<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--${colKey});margin-bottom:4px;">🎯 Para qué sirve</div>
+      <div style="font-size:12.5px;color:var(--text);line-height:1.65;">${p.objetivo}</div>`;
+    body.appendChild(objBox);
+
+    const stepsLabel = document.createElement('div');
+    stepsLabel.style.cssText = `font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;`;
+    stepsLabel.textContent = '🖐 Cómo se realiza';
+    body.appendChild(stepsLabel);
+
+    const ol = document.createElement('ol');
+    ol.style.cssText = `padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;`;
+    p.pasos.forEach((paso, i) => {
+      const li = document.createElement('li');
+      li.style.cssText = `display:flex;gap:10px;align-items:flex-start;`;
+      li.innerHTML = `
+        <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);color:var(--${colKey});font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">${i+1}</span>
+        <span style="font-size:12.5px;color:var(--text2);line-height:1.65;padding-top:2px;">${paso}</span>`;
+      ol.appendChild(li);
+    });
+    body.appendChild(ol);
+
+    hdr.onclick = () => {
+      const isOpen = body.style.display === 'block';
+      body.style.display = isOpen ? 'none' : 'block';
+      hdr.querySelector('.prueba-chevron').style.transform = isOpen ? '' : 'rotate(180deg)';
+    };
+
+    card.appendChild(hdr);
+    card.appendChild(body);
+    return card;
+  }
+
+  function renderPruebas(query) {
     resultArea.innerHTML = '';
-    const seg = PRUEBAS_SEGMENTOS.find(s => s.id === segId);
-    if (!seg) return;
+    const q = query.trim().toLowerCase();
 
-    const pruebas = (PRUEBAS_DATA[segId] || []).filter(p =>
-      !filter || p.nombre.toLowerCase().includes(filter.toLowerCase())
-    );
-
-    if (pruebas.length === 0) {
-      resultArea.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:18px 0;">No se encontraron pruebas para "${filter}".</div>`;
+    if (!q) {
+      resultArea.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:18px 0;text-align:center;">Escribe un segmento (ej: <em>rodilla</em>) o el nombre de una prueba.</div>`;
       return;
     }
 
-    pruebas.forEach(p => {
-      const cc = colorClass(p.color);
-      const colKey = p.color;
-      const card = document.createElement('div');
-      card.className = 'prueba-card';
-      card.style.cssText = `background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden;transition:border-color .2s;`;
+    let total = 0;
+    PRUEBAS_SEGMENTOS.forEach(seg => {
+      // coincide si el query está en el nombre del segmento O en el nombre de la prueba
+      const segMatch = seg.label.toLowerCase().includes(q);
+      const pruebas = (PRUEBAS_DATA[seg.id] || []).filter(p =>
+        segMatch || p.nombre.toLowerCase().includes(q)
+      );
+      if (pruebas.length === 0) return;
 
-      const hdr = document.createElement('div');
-      hdr.className = 'prueba-card-header';
-      hdr.style.cssText = `display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;`;
-      hdr.innerHTML = `
-        <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);">${seg.icon}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--text);margin-bottom:2px;">${p.nombre}</div>
-          <div style="font-size:11px;color:var(--text3);line-height:1.4;">${p.objetivo}</div>
-        </div>
-        <span class="prueba-chevron" style="font-size:11px;color:var(--text3);transition:transform .2s;flex-shrink:0;">▼</span>`;
+      // encabezado de segmento
+      const secHeader = document.createElement('div');
+      secHeader.style.cssText = `display:flex;align-items:center;gap:8px;margin:18px 0 10px;`;
+      secHeader.innerHTML = `
+        <span style="font-size:18px;">${seg.icon}</span>
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);">${seg.label}</span>
+        <span style="font-size:10px;color:var(--text3);margin-left:auto;">${pruebas.length} prueba${pruebas.length>1?'s':''}</span>`;
+      resultArea.appendChild(secHeader);
 
-      const body = document.createElement('div');
-      body.className = 'prueba-card-body';
-      body.style.cssText = `display:none;border-top:1px solid var(--border);padding:16px 18px 18px;`;
-
-      const objBox = document.createElement('div');
-      objBox.style.cssText = `background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:14px;`;
-      objBox.innerHTML = `<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--${colKey});margin-bottom:4px;">🎯 Para qué sirve</div>
-        <div style="font-size:12.5px;color:var(--text);line-height:1.65;">${p.objetivo}</div>`;
-      body.appendChild(objBox);
-
-      const stepsLabel = document.createElement('div');
-      stepsLabel.style.cssText = `font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;`;
-      stepsLabel.textContent = '🖐 Cómo se realiza';
-      body.appendChild(stepsLabel);
-
-      const ol = document.createElement('ol');
-      ol.style.cssText = `padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;`;
-      p.pasos.forEach((paso, i) => {
-        const li = document.createElement('li');
-        li.style.cssText = `display:flex;gap:10px;align-items:flex-start;`;
-        li.innerHTML = `
-          <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);color:var(--${colKey});font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">${i+1}</span>
-          <span style="font-size:12.5px;color:var(--text2);line-height:1.65;padding-top:2px;">${paso}</span>`;
-        ol.appendChild(li);
-      });
-      body.appendChild(ol);
-
-      hdr.onclick = () => {
-        const isOpen = body.style.display === 'block';
-        body.style.display = isOpen ? 'none' : 'block';
-        hdr.querySelector('.prueba-chevron').style.transform = isOpen ? '' : 'rotate(180deg)';
-      };
-
-      card.appendChild(hdr);
-      card.appendChild(body);
-      resultArea.appendChild(card);
+      pruebas.forEach(p => resultArea.appendChild(renderCard(p, seg)));
+      total += pruebas.length;
     });
+
+    if (total === 0) {
+      resultArea.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:18px 0;text-align:center;">No se encontraron resultados para "<strong style="color:var(--text2);">${query.trim()}</strong>".</div>`;
+    }
   }
 
-  function selectSegment(segId) {
-    activeSegId = segId;
-    segGrid.querySelectorAll('.prueba-seg-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.seg === segId);
-    });
-    renderPruebas(segId, searchInput.value.trim());
-  }
+  searchInput.addEventListener('input', () => renderPruebas(searchInput.value));
 
-  // Build segment buttons
-  PRUEBAS_SEGMENTOS.forEach((seg, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'prueba-seg-btn' + (i === 0 ? ' active' : '');
-    btn.dataset.seg = seg.id;
-    btn.innerHTML = `<span style="font-size:16px;">${seg.icon}</span><span style="font-size:11.5px;font-weight:500;">${seg.label}</span>`;
-    btn.onclick = () => selectSegment(seg.id);
-    segGrid.appendChild(btn);
-  });
-
-  searchInput.addEventListener('input', () => {
-    if (activeSegId) renderPruebas(activeSegId, searchInput.value.trim());
-  });
-
-  // Init with first segment
-  selectSegment(PRUEBAS_SEGMENTOS[0].id);
+  // Estado inicial
+  renderPruebas('');
 }
 
 function toggleSidebar() {
