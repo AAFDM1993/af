@@ -99,11 +99,30 @@ body::before {
 .header-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
 .header-tabs { display: none; }
 
+/* botón hamburguesa */
+.menu-toggle {
+  margin-left: auto;
+  background: none; border: none; cursor: pointer;
+  color: var(--text2); padding: 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+.menu-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+/* overlay para cerrar sidebar en mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 98;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
 /* ─── LAYOUT PRINCIPAL ────────────────────────────────────────── */
 .main {
   position: relative; z-index: 1;
   max-width: 720px; margin: 0 auto;
-  padding: 28px 16px 90px;
+  padding: 28px 16px 32px;
 }
 
 /* ─── ANIMACIÓN DE PÁGINAS ────────────────────────────────────── */
@@ -125,99 +144,97 @@ body::before {
   font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 26px;
 }
 
-/* ─── SIDEBAR BRAND (solo desktop) ───────────────────────────── */
-.sidebar-brand { display: none; }
+/* ─── SIDEBAR BRAND ───────────────────────────────────────────── */
+.sidebar-brand {
+  display: flex; align-items: center; gap: 11px;
+  padding: 0 14px 22px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 18px var(--accent-glow);
+}
+.sidebar-logo svg { width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.sidebar-app-name { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--text); line-height: 1.25; }
+.sidebar-app-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
 
-/* ─── NAVEGACIÓN ──────────────────────────────────────────────── */
+/* ─── SIDEBAR (todas las pantallas) ──────────────────────────── */
 .bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(11,25,41,0.94);
+  position: fixed;
+  left: 0; top: 0; bottom: 0; right: auto;
+  width: var(--sidebar-w);
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 24px 10px 24px;
+  border-top: none;
+  border-right: 1px solid var(--border2);
+  background: rgba(11,25,41,0.97);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border2);
-  display: flex; justify-content: space-around;
-  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
-  z-index: 100;
-  overflow-x: auto; scrollbar-width: none;
+  overflow-y: auto; overflow-x: visible;
+  gap: 2px;
+  z-index: 99;
+  display: flex;
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
 }
+
+/* mobile: sidebar oculto por defecto, se desliza */
+@media (max-width: 768px) {
+  .bottom-nav {
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+  }
+  .bottom-nav.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay.open {
+    display: block;
+  }
+  .main {
+    margin-left: 0;
+    padding: 20px 16px 32px;
+  }
+}
+
 .bottom-nav::-webkit-scrollbar { display: none; }
 
 .nav-item {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  cursor: pointer; padding: 5px 7px; border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: row; justify-content: flex-start;
+  gap: 11px; padding: 10px 13px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-width: unset; flex: none; width: 100%;
+  position: relative;
   transition: background .15s, color .15s;
-  min-width: 50px; flex: 1; position: relative;
 }
 .nav-item:hover { background: var(--surface2); }
-.nav-item.active { background: rgba(0,194,178,0.1); }
+.nav-item.active { background: rgba(0,194,178,0.1); border: 1px solid rgba(0,194,178,0.2); }
 .nav-item.active .nav-icon { color: var(--accent); }
 .nav-item.active .nav-label { color: var(--accent); font-weight: 600; }
-.nav-item.active::after {
-  content: ''; position: absolute;
-  top: 0; left: 50%; transform: translateX(-50%);
-  width: 18px; height: 2px;
+.nav-item.active::after { display: none; }
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 55%;
   background: var(--accent);
-  border-radius: 0 0 3px 3px;
-  box-shadow: 0 0 8px var(--accent-glow);
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 6px var(--accent-glow);
 }
 .nav-icon { color: var(--text3); line-height: 0; transition: color .15s; }
-.nav-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.nav-label { font-size: 9px; font-weight: 500; color: var(--text3); transition: color .15s; letter-spacing: .01em; }
+.nav-icon svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-label { font-size: 12.5px; font-weight: 500; color: var(--text3); transition: color .15s; letter-spacing: 0; }
 
-/* ─── DESKTOP: SIDEBAR ────────────────────────────────────────── */
+/* ─── DESKTOP: sidebar siempre visible ───────────────────────── */
 @media (min-width: 769px) {
   .app-header { display: none; }
-
-  .sidebar-brand {
-    display: flex; align-items: center; gap: 11px;
-    padding: 0 14px 22px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
-  .sidebar-logo {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 0 18px var(--accent-glow);
-  }
-  .sidebar-logo svg { width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .sidebar-app-name { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--text); line-height: 1.25; }
-  .sidebar-app-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
-
-  .bottom-nav {
-    position: fixed;
-    left: 0; top: 0; bottom: 0; right: auto;
-    width: var(--sidebar-w);
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    padding: 24px 10px 24px;
-    border-top: none;
-    border-right: 1px solid var(--border2);
-    background: rgba(13,31,54,0.97);
-    overflow-y: auto; overflow-x: visible;
-    gap: 2px;
-  }
-  .nav-item {
-    flex-direction: row; justify-content: flex-start;
-    gap: 11px; padding: 10px 13px;
-    border-radius: var(--radius-md);
-    min-width: unset; flex: none; width: 100%;
-  }
-  .nav-item.active { border: 1px solid rgba(0,194,178,0.2); }
-  .nav-item.active::after { display: none; }
-  .nav-item.active::before {
-    content: '';
-    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-    width: 3px; height: 55%;
-    background: var(--accent);
-    border-radius: 0 3px 3px 0;
-    box-shadow: 0 0 6px var(--accent-glow);
-  }
-  .nav-icon svg { width: 17px; height: 17px; }
-  .nav-label { font-size: 12.5px; font-weight: 500; letter-spacing: 0; }
+  .sidebar-brand { display: flex; }
 
   .main {
     margin-left: var(--sidebar-w);
@@ -694,7 +711,12 @@ body::before {
     <div class="header-title">Agentes Físicos</div>
     <div class="header-sub">Guía clínica de fisioterapia</div>
   </div>
+  <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menú">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
 </header>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <!-- PAGES -->
 <div class="main">

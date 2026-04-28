@@ -630,12 +630,24 @@ function buildPruebas() {
   selectSegment(PRUEBAS_SEGMENTOS[0].id);
 }
 
+function toggleSidebar() {
+  const nav = document.querySelector('.bottom-nav');
+  const overlay = document.getElementById('sidebar-overlay');
+  nav.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
+
 function showPage(id, el) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   el.classList.add('active');
   window.scrollTo(0,0);
+  // cerrar sidebar en mobile al navegar
+  if (window.innerWidth < 769) {
+    document.querySelector('.bottom-nav').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  }
 }
 
 /* ===== INIT ===== */
