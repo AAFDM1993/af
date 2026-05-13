@@ -218,7 +218,9 @@ function buildRef() {
       tbody.appendChild(tr);
     });
     tbl.appendChild(tbody);
-    p.appendChild(tbl);
+    const tblWrap = document.createElement('div'); tblWrap.className = 'table-wrap';
+    tblWrap.appendChild(tbl);
+    p.appendChild(tblWrap);
 
     // Tabla de frecuencias adicionales (PRF / portadora / ancho de pulso / pulsado)
     if (a.freq_extra && a.freq_extra.length > 0) {
@@ -253,7 +255,9 @@ function buildRef() {
         fxBody.appendChild(tr);
       });
       fxTbl.appendChild(fxBody);
-      fxDiv.appendChild(fxTbl);
+      const fxWrap = document.createElement('div'); fxWrap.className = 'table-wrap';
+      fxWrap.appendChild(fxTbl);
+      fxDiv.appendChild(fxWrap);
       p.appendChild(fxDiv);
     }
 
@@ -497,10 +501,10 @@ function buildPharma() {
       body.innerHTML = `
         <div class="drug-duration" style="background:var(--${drug.color}-bg);border:1px solid var(--${drug.color}-border);color:var(--${drug.color})">⏱ ${drug.duration}</div>
         <div class="drug-mech">🔬 <strong>Mecanismo:</strong> ${drug.mechanism}</div>
-        <table class="drug-dose-table">
+        <div class="table-wrap"><table class="drug-dose-table">
           <thead><tr><th>Vía</th><th>Dosis</th><th>Frecuencia</th><th>Máximo</th></tr></thead>
           <tbody>${drug.doses.map(d=>`<tr><td class="dose-val">${d.route}</td><td class="dose-val">${d.dose}</td><td>${d.freq}</td><td>${d.max}</td></tr>`).join('')}</tbody>
-        </table>
+        </table></div>
         <div class="drug-interaction">
           <div class="drug-interaction-title">⚕ Interacción con fisioterapia</div>
           <div class="drug-interaction-body">${drug.ftInteraction}</div>
@@ -520,10 +524,7 @@ function buildPharma() {
 /* ===== PRUEBAS FUNCIONALES ===== */
 function buildPruebas() {
   const searchInput = document.getElementById('pruebas-search');
-  const segGrid     = document.getElementById('pruebas-seg-grid');
   const resultArea  = document.getElementById('pruebas-result');
-
-  let activeSegId = null;
 
   function colorClass(c) {
     const map = {
@@ -533,101 +534,106 @@ function buildPruebas() {
     return map[c] || 'c-gray';
   }
 
-  function renderPruebas(segId, filter) {
+  function renderCard(p, seg) {
+    const colKey = p.color;
+    const card = document.createElement('div');
+    card.style.cssText = `background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden;transition:border-color .2s;`;
+
+    const hdr = document.createElement('div');
+    hdr.style.cssText = `display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;`;
+    hdr.innerHTML = `
+      <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);">${seg.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:3px;">${seg.label}</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--text);margin-bottom:2px;">${p.nombre}</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.4;">${p.objetivo}</div>
+      </div>
+      <span class="prueba-chevron" style="font-size:11px;color:var(--text3);transition:transform .2s;flex-shrink:0;">▼</span>`;
+
+    const body = document.createElement('div');
+    body.style.cssText = `display:none;border-top:1px solid var(--border);padding:16px 18px 18px;`;
+
+    const objBox = document.createElement('div');
+    objBox.style.cssText = `background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:14px;`;
+    objBox.innerHTML = `<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--${colKey});margin-bottom:4px;">🎯 Para qué sirve</div>
+      <div style="font-size:12.5px;color:var(--text);line-height:1.65;">${p.objetivo}</div>`;
+    body.appendChild(objBox);
+
+    const stepsLabel = document.createElement('div');
+    stepsLabel.style.cssText = `font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;`;
+    stepsLabel.textContent = '🖐 Cómo se realiza';
+    body.appendChild(stepsLabel);
+
+    const ol = document.createElement('ol');
+    ol.style.cssText = `padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;`;
+    p.pasos.forEach((paso, i) => {
+      const li = document.createElement('li');
+      li.style.cssText = `display:flex;gap:10px;align-items:flex-start;`;
+      li.innerHTML = `
+        <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);color:var(--${colKey});font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">${i+1}</span>
+        <span style="font-size:12.5px;color:var(--text2);line-height:1.65;padding-top:2px;">${paso}</span>`;
+      ol.appendChild(li);
+    });
+    body.appendChild(ol);
+
+    hdr.onclick = () => {
+      const isOpen = body.style.display === 'block';
+      body.style.display = isOpen ? 'none' : 'block';
+      hdr.querySelector('.prueba-chevron').style.transform = isOpen ? '' : 'rotate(180deg)';
+    };
+
+    card.appendChild(hdr);
+    card.appendChild(body);
+    return card;
+  }
+
+  function renderPruebas(query) {
     resultArea.innerHTML = '';
-    const seg = PRUEBAS_SEGMENTOS.find(s => s.id === segId);
-    if (!seg) return;
+    const q = query.trim().toLowerCase();
 
-    const pruebas = (PRUEBAS_DATA[segId] || []).filter(p =>
-      !filter || p.nombre.toLowerCase().includes(filter.toLowerCase())
-    );
-
-    if (pruebas.length === 0) {
-      resultArea.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:18px 0;">No se encontraron pruebas para "${filter}".</div>`;
+    if (!q) {
+      resultArea.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:18px 0;text-align:center;">Escribe un segmento (ej: <em>rodilla</em>) o el nombre de una prueba.</div>`;
       return;
     }
 
-    pruebas.forEach(p => {
-      const cc = colorClass(p.color);
-      const colKey = p.color;
-      const card = document.createElement('div');
-      card.className = 'prueba-card';
-      card.style.cssText = `background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden;transition:border-color .2s;`;
+    let total = 0;
+    PRUEBAS_SEGMENTOS.forEach(seg => {
+      // coincide si el query está en el nombre del segmento O en el nombre de la prueba
+      const segMatch = seg.label.toLowerCase().includes(q);
+      const pruebas = (PRUEBAS_DATA[seg.id] || []).filter(p =>
+        segMatch || p.nombre.toLowerCase().includes(q)
+      );
+      if (pruebas.length === 0) return;
 
-      const hdr = document.createElement('div');
-      hdr.className = 'prueba-card-header';
-      hdr.style.cssText = `display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;`;
-      hdr.innerHTML = `
-        <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);">${seg.icon}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--text);margin-bottom:2px;">${p.nombre}</div>
-          <div style="font-size:11px;color:var(--text3);line-height:1.4;">${p.objetivo}</div>
-        </div>
-        <span class="prueba-chevron" style="font-size:11px;color:var(--text3);transition:transform .2s;flex-shrink:0;">▼</span>`;
+      // encabezado de segmento
+      const secHeader = document.createElement('div');
+      secHeader.style.cssText = `display:flex;align-items:center;gap:8px;margin:18px 0 10px;`;
+      secHeader.innerHTML = `
+        <span style="font-size:18px;">${seg.icon}</span>
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);">${seg.label}</span>
+        <span style="font-size:10px;color:var(--text3);margin-left:auto;">${pruebas.length} prueba${pruebas.length>1?'s':''}</span>`;
+      resultArea.appendChild(secHeader);
 
-      const body = document.createElement('div');
-      body.className = 'prueba-card-body';
-      body.style.cssText = `display:none;border-top:1px solid var(--border);padding:16px 18px 18px;`;
-
-      const objBox = document.createElement('div');
-      objBox.style.cssText = `background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:14px;`;
-      objBox.innerHTML = `<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--${colKey});margin-bottom:4px;">🎯 Para qué sirve</div>
-        <div style="font-size:12.5px;color:var(--text);line-height:1.65;">${p.objetivo}</div>`;
-      body.appendChild(objBox);
-
-      const stepsLabel = document.createElement('div');
-      stepsLabel.style.cssText = `font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;`;
-      stepsLabel.textContent = '🖐 Cómo se realiza';
-      body.appendChild(stepsLabel);
-
-      const ol = document.createElement('ol');
-      ol.style.cssText = `padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;`;
-      p.pasos.forEach((paso, i) => {
-        const li = document.createElement('li');
-        li.style.cssText = `display:flex;gap:10px;align-items:flex-start;`;
-        li.innerHTML = `
-          <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--${colKey}-bg);border:1px solid var(--${colKey}-border);color:var(--${colKey});font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">${i+1}</span>
-          <span style="font-size:12.5px;color:var(--text2);line-height:1.65;padding-top:2px;">${paso}</span>`;
-        ol.appendChild(li);
-      });
-      body.appendChild(ol);
-
-      hdr.onclick = () => {
-        const isOpen = body.style.display === 'block';
-        body.style.display = isOpen ? 'none' : 'block';
-        hdr.querySelector('.prueba-chevron').style.transform = isOpen ? '' : 'rotate(180deg)';
-      };
-
-      card.appendChild(hdr);
-      card.appendChild(body);
-      resultArea.appendChild(card);
+      pruebas.forEach(p => resultArea.appendChild(renderCard(p, seg)));
+      total += pruebas.length;
     });
+
+    if (total === 0) {
+      resultArea.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:18px 0;text-align:center;">No se encontraron resultados para "<strong style="color:var(--text2);">${query.trim()}</strong>".</div>`;
+    }
   }
 
-  function selectSegment(segId) {
-    activeSegId = segId;
-    segGrid.querySelectorAll('.prueba-seg-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.seg === segId);
-    });
-    renderPruebas(segId, searchInput.value.trim());
-  }
+  searchInput.addEventListener('input', () => renderPruebas(searchInput.value));
 
-  // Build segment buttons
-  PRUEBAS_SEGMENTOS.forEach((seg, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'prueba-seg-btn' + (i === 0 ? ' active' : '');
-    btn.dataset.seg = seg.id;
-    btn.innerHTML = `<span style="font-size:16px;">${seg.icon}</span><span style="font-size:11.5px;font-weight:500;">${seg.label}</span>`;
-    btn.onclick = () => selectSegment(seg.id);
-    segGrid.appendChild(btn);
-  });
+  // Estado inicial
+  renderPruebas('');
+}
 
-  searchInput.addEventListener('input', () => {
-    if (activeSegId) renderPruebas(activeSegId, searchInput.value.trim());
-  });
-
-  // Init with first segment
-  selectSegment(PRUEBAS_SEGMENTOS[0].id);
+function toggleSidebar() {
+  const nav = document.querySelector('.bottom-nav');
+  const overlay = document.getElementById('sidebar-overlay');
+  nav.classList.toggle('open');
+  overlay.classList.toggle('open');
 }
 
 function showPage(id, el) {
@@ -636,12 +642,188 @@ function showPage(id, el) {
   document.getElementById('page-'+id).classList.add('active');
   el.classList.add('active');
   window.scrollTo(0,0);
+  // cerrar sidebar en mobile al navegar
+  if (window.innerWidth < 769) {
+    document.querySelector('.bottom-nav').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  }
+}
+
+/* ===== VÍAS DEL DOLOR ===== */
+function buildDolor() {
+  const c = document.getElementById('dolor-content');
+
+  // Barra de progreso anatómica
+  const bar = document.createElement('div'); bar.className = 'dolor-pathway';
+  DOLOR_PATHWAY.forEach((node, i) => {
+    const nodeEl = document.createElement('div'); nodeEl.className = 'dolor-pathway-node';
+    const dot = document.createElement('div'); dot.className = 'dolor-pathway-dot';
+    dot.style.background = `var(--${node.color})`;
+    dot.style.boxShadow = `0 0 6px var(--${node.color})`;
+    const label = document.createElement('div'); label.className = 'dolor-pathway-label';
+    label.textContent = node.label;
+    nodeEl.appendChild(dot); nodeEl.appendChild(label);
+    bar.appendChild(nodeEl);
+    if (i < DOLOR_PATHWAY.length - 1) {
+      const line = document.createElement('div'); line.className = 'dolor-pathway-line';
+      bar.appendChild(line);
+    }
+  });
+  c.appendChild(bar);
+
+  // Bloques accordion por nivel
+  DOLOR_NIVELES.forEach(nivel => {
+    const card = document.createElement('div'); card.className = 'nivel-card';
+
+    // Header del accordion
+    const hdr = document.createElement('div'); hdr.className = 'nivel-card-header';
+    const num = document.createElement('div'); num.className = 'nivel-num';
+    num.style.background = `var(--${nivel.color}-bg)`;
+    num.style.color = `var(--${nivel.color})`;
+    num.style.border = `1px solid var(--${nivel.color}-border)`;
+    num.textContent = nivel.num;
+    const title = document.createElement('div'); title.className = 'nivel-title';
+    title.textContent = nivel.name;
+    const chev = document.createElement('span'); chev.className = 'nivel-chevron';
+    chev.textContent = '▼';
+    hdr.appendChild(num); hdr.appendChild(title); hdr.appendChild(chev);
+
+    // Body del accordion
+    const body = document.createElement('div'); body.className = 'nivel-card-body';
+
+    // Párrafo introductorio
+    const intro = document.createElement('div');
+    intro.className = 'mech-body'; intro.style.marginBottom = '16px';
+    intro.innerHTML = nivel.intro;
+    body.appendChild(intro);
+
+    // ── Bloque 1: vías ascendentes ──────────────────────────────
+    if (nivel.id === 'ascendente') {
+      const tblLabel = document.createElement('div');
+      tblLabel.style.cssText = 'font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;';
+      tblLabel.textContent = '🔬 Tipos de fibras nociceptivas';
+      body.appendChild(tblLabel);
+
+      const tblWrap = document.createElement('div'); tblWrap.className = 'table-wrap';
+      const tbl = document.createElement('table'); tbl.className = 'param-table';
+      tbl.innerHTML = `<thead><tr><th>Fibra</th><th>Diámetro</th><th>Mielina</th><th>Velocidad</th><th>Tipo de dolor</th><th>Estímulo</th></tr></thead>`;
+      const tbody = document.createElement('tbody');
+      DOLOR_FIBRAS.forEach(f => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><span class="mode-badge" style="background:var(--${f.color}-bg);border:1px solid var(--${f.color}-border);color:var(--${f.color})">${f.fibra}</span></td>
+          <td class="param-val">${f.diametro}</td>
+          <td>${f.mielina}</td>
+          <td class="param-val">${f.velocidad}</td>
+          <td>${f.tipo}</td>
+          <td style="font-size:11px;">${f.estimulo}</td>`;
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody);
+      tblWrap.appendChild(tbl);
+      body.appendChild(tblWrap);
+
+      const recLabel = document.createElement('div');
+      recLabel.style.cssText = 'font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin:14px 0 8px;';
+      recLabel.textContent = '🧠 Recorrido ascendente';
+      const recBox = document.createElement('div'); recBox.className = 'note-box';
+      recBox.innerHTML = nivel.recorrido;
+      body.appendChild(recLabel); body.appendChild(recBox);
+
+    // ── Bloque 2: analgesia medular ─────────────────────────────
+    } else if (nivel.id === 'medular') {
+      nivel.mecanismos.forEach(mec => {
+        const mecBox = document.createElement('div'); mecBox.className = 'mec-box';
+        const mecTitle = document.createElement('div'); mecTitle.className = 'mec-box-title';
+        mecTitle.textContent = mec.name;
+        if (mec.ref) {
+          const ref = document.createElement('span');
+          ref.style.cssText = 'font-size:10px;color:var(--text3);font-family:"Plus Jakarta Sans",sans-serif;font-weight:400;margin-left:8px;';
+          ref.textContent = mec.ref;
+          mecTitle.appendChild(ref);
+        }
+        const mecBody = document.createElement('div'); mecBody.className = 'mec-box-body';
+        mecBody.innerHTML = mec.body;
+        mecBox.appendChild(mecTitle); mecBox.appendChild(mecBody);
+        body.appendChild(mecBox);
+      });
+
+    // ── Bloque 3: analgesia supramedular ────────────────────────
+    } else if (nivel.id === 'supramedular') {
+      nivel.centros.forEach(centro => {
+        const cc = document.createElement('div'); cc.className = 'centro-card';
+        const ch = document.createElement('div'); ch.className = 'centro-header';
+        const cnum = document.createElement('div'); cnum.className = 'centro-num';
+        cnum.style.background = `var(--${centro.color}-bg)`;
+        cnum.style.color = `var(--${centro.color})`;
+        cnum.style.border = `1px solid var(--${centro.color}-border)`;
+        cnum.textContent = centro.letra;
+        const cname = document.createElement('div'); cname.className = 'centro-name';
+        cname.textContent = centro.name;
+        ch.appendChild(cnum); ch.appendChild(cname);
+        const cb = document.createElement('div'); cb.className = 'centro-body';
+        cb.innerHTML = centro.body;
+        cc.appendChild(ch); cc.appendChild(cb);
+
+        if (centro.agentes && centro.agentes.length) {
+          const pa = document.createElement('div');
+          pa.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid var(--border);';
+          const pl = document.createElement('div');
+          pl.style.cssText = 'font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:7px;';
+          pl.textContent = 'Agentes físicos en este nivel';
+          const ptags = document.createElement('div'); ptags.className = 'phase-agent-tags';
+          centro.agentes.forEach(a => {
+            const colKey = a.c.split('-')[1];
+            const span = document.createElement('span'); span.className = 'pat';
+            span.style.background = `var(--${colKey}-bg)`;
+            span.style.borderColor = `var(--${colKey}-border)`;
+            span.style.color = `var(--${colKey})`;
+            span.textContent = a.name;
+            ptags.appendChild(span);
+          });
+          pa.appendChild(pl); pa.appendChild(ptags);
+          cc.appendChild(pa);
+        }
+        body.appendChild(cc);
+      });
+    }
+
+    // Panel de agentes del nivel completo (bloques 2 y 3)
+    if (nivel.agentes && nivel.agentes.length) {
+      const pa = document.createElement('div'); pa.className = 'phase-block-agents';
+      pa.style.marginTop = '16px';
+      const pl = document.createElement('div'); pl.className = 'phase-agents-label';
+      pl.textContent = 'Agentes físicos en este nivel';
+      const ptags = document.createElement('div'); ptags.className = 'phase-agent-tags';
+      nivel.agentes.forEach(a => {
+        const colKey = a.c.split('-')[1];
+        const span = document.createElement('span'); span.className = 'pat';
+        span.style.background = `var(--${colKey}-bg)`;
+        span.style.borderColor = `var(--${colKey}-border)`;
+        span.style.color = `var(--${colKey})`;
+        span.textContent = a.name;
+        ptags.appendChild(span);
+      });
+      pa.appendChild(pl); pa.appendChild(ptags);
+      body.appendChild(pa);
+    }
+
+    // Toggle accordion
+    hdr.onclick = () => {
+      const isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+    };
+
+    card.appendChild(hdr); card.appendChild(body);
+    c.appendChild(card);
+  });
 }
 
 /* ===== INIT ===== */
 renderFlow('start');
 buildRef();
 buildMech();
+buildDolor();
 buildTime();
 buildKine();
 buildPharma();
