@@ -11,6 +11,7 @@ const PRUEBAS_SEGMENTOS = [
   { id: 'columna-toracica', label: 'Columna Torácica', icon: '🟫' },
   { id: 'atm', label: 'Articulación Temporomandibular', icon: '🦷' },
   { id: 'tension-neural', label: 'Tensión Neural', icon: '⚡' },
+  { id: 'pie-arco', label: 'Pie y Arco Plantar', icon: '🦶' },
 ];
 
 const PRUEBAS_DATA = {
@@ -905,6 +906,54 @@ const PRUEBAS_DATA = {
         'Añade extensión de cadera para aumentar la tensión neural.',
         'Positivo: dolor o parestesias en la cara anterior del muslo — indica irritación del nervio femoral.',
         'Nota: evita este test en pacientes con hernia discal lumbar alta documentada y síntomas graves.',
+      ],
+    },
+  ],
+
+  'pie-arco': [
+    {
+      nombre: "Jack's Test (Windlass Pasivo)",
+      color: 'amber',
+      objetivo: 'Evaluar la integridad del mecanismo de windlass y la fascia plantar.',
+      pasos: [
+        'Paciente en bipedestación o en decúbito supino.',
+        'Extiende pasivamente el primer dedo del pie (dorsiflexión de la articulación MTF).',
+        'Observa la elevación del arco longitudinal medial.',
+        "Positivo: no se eleva el arco — indica fallo del mecanismo de windlass, pie plano flexible o insuficiencia de la fascia plantar.",
+      ],
+    },
+    {
+      nombre: 'Navicular Drop Test',
+      color: 'blue',
+      objetivo: 'Cuantificar la pronación dinámica del pie (descenso del escafoides).',
+      pasos: [
+        'Paciente sentado sin carga, pie en posición subtalar neutra.',
+        'Marca la posición del tubérculo del escafoides con un lápiz dermográfico.',
+        'Mide la altura del escafoides al suelo.',
+        'Pide que se ponga de pie y vuelve a medir.',
+        'Positivo (pronación excesiva): descenso > 10 mm — indica hiperpronación.',
+      ],
+    },
+    {
+      nombre: 'Single Leg Heel Rise',
+      color: 'red',
+      objetivo: 'Evaluar la fuerza del tríceps sural y la integridad funcional del tendón de Aquiles.',
+      pasos: [
+        'Paciente de pie sobre la pierna a evaluar, mano apoyada en la pared para el equilibrio.',
+        'Pide que realice elevaciones sobre la punta del pie de forma repetida.',
+        'Normal: ≥ 25 repeticiones simétricas con supinación del pie al final del movimiento.',
+        'Positivo: < 25 repeticiones, dolor, o imposibilidad de supinar el pie — indica debilidad del tríceps sural o tendinopatía de Aquiles.',
+      ],
+    },
+    {
+      nombre: 'Too Many Toes Sign',
+      color: 'teal',
+      objetivo: 'Detectar colapso pronatorio o valgo del retropié en carga.',
+      pasos: [
+        'Examina al paciente de pie, de espaldas a ti.',
+        'Observa la cantidad de dedos visibles al lateral del tobillo.',
+        'Normal: se visualizan el 4.° y 5.° dedo (o solo el 5.°).',
+        'Positivo: se ven 3 o más dedos por fuera del tobillo — indica abducción del antepié y valgo del retropié (pie plano adquirido del adulto).',
       ],
     },
   ],
