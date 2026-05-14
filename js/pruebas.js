@@ -622,6 +622,39 @@ const PRUEBAS_DATA = {
         'Positivo: dolor retropatelar o incapacidad de mantener la contracción.',
       ],
     },
+    {
+      nombre: 'Test de Pivot Shift',
+      color: 'red',
+      objetivo: 'Evaluar la insuficiencia funcional del LCA en carga.',
+      pasos: [
+        'Paciente en decúbito supino.',
+        'Extiende la rodilla completamente, aplica valgo y rotación interna de la tibia.',
+        'Flexiona lentamente la rodilla mientras mantienes el valgo y la rotación interna.',
+        'Positivo: subluxación y reducción repentina de la tibia al llegar a 20–40° de flexión (sensación de "salto" o clic) — indica insuficiencia del LCA.',
+      ],
+    },
+    {
+      nombre: 'Test de Thessaly',
+      color: 'amber',
+      objetivo: 'Detectar lesión meniscal en condiciones de carga (mayor sensibilidad que McMurray).',
+      pasos: [
+        'Paciente de pie sobre la pierna a evaluar, rodilla en 20° de flexión.',
+        'Ayuda al paciente a mantener el equilibrio tomándolo de las manos.',
+        'Pide que realice rotaciones internas y externas del tronco sobre el fémur fijo (torque de rodilla).',
+        'Positivo: dolor o sensación de bloqueo en la interlínea articular medial o lateral.',
+      ],
+    },
+    {
+      nombre: 'Patellar Tap (Golpe Rotuliano)',
+      color: 'blue',
+      objetivo: 'Detectar derrame articular de la rodilla.',
+      pasos: [
+        'Paciente en decúbito supino, rodilla extendida y relajada.',
+        'Con una mano, comprime el fondo de saco suprapatelar hacia distal para desplazar el líquido.',
+        'Con el dedo índice de la otra mano, presiona la rótula bruscamente hacia el fémur.',
+        'Positivo: sensación de choque o rebote ("tecla de piano") — indica derrame articular.',
+      ],
+    },
   ],
 
   'tobillo-pie': [
@@ -688,6 +721,38 @@ const PRUEBAS_DATA = {
         'Evalúa la capacidad de dar 4 pasos.',
         'Palpa la base del 5.° metatarsiano y el navicular.',
         'Positivo: dolor en zonas palpadas O incapacidad de cargar peso → indicación de Rx.',
+      ],
+    },
+    {
+      nombre: 'Squeeze Test (Sindesmosis)',
+      color: 'red',
+      objetivo: 'Detectar lesión de la sindesmosis tibioperonea distal.',
+      pasos: [
+        'Paciente sentado o en decúbito supino.',
+        'Comprime la tibia y el peroné juntos a nivel medio de la pierna (zona proximal a la sindesmosis).',
+        'Positivo: dolor en la sindesmosis distal (cara anterior del tobillo entre los maléolos).',
+      ],
+    },
+    {
+      nombre: 'Cotton Test',
+      color: 'amber',
+      objetivo: 'Evaluar inestabilidad de la mortaja tibioastragalina (diástasis).',
+      pasos: [
+        'Paciente en decúbito supino, tobillo en posición neutra.',
+        'Estabiliza la tibia y el peroné con una mano proximal.',
+        'Con la otra mano, desplaza el astrágalo lateralmente dentro de la mortaja.',
+        'Positivo: traslación lateral excesiva del astrágalo — indica ruptura de la sindesmosis o lesión ligamentosa grave.',
+      ],
+    },
+    {
+      nombre: 'Bump Test (Percusión)',
+      color: 'blue',
+      objetivo: 'Sospechar fractura por estrés en tibia o pie.',
+      pasos: [
+        'Paciente sentado o en decúbito supino.',
+        'Percute el talón con el puño cerrado (golpe en el eje del miembro).',
+        'Alternativa: percute directamente el hueso sospechoso con el dedo.',
+        'Positivo: dolor localizado en el foco de posible fractura por estrés — indica necesidad de imagen (Rx o RMN).',
       ],
     },
   ],
