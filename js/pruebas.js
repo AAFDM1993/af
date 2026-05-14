@@ -9,6 +9,7 @@ const PRUEBAS_SEGMENTOS = [
   { id: 'rodilla',          label: 'Rodilla',          icon: '🟢' },
   { id: 'tobillo-pie',      label: 'Tobillo y Pie',    icon: '⚪' },
   { id: 'columna-toracica', label: 'Columna Torácica', icon: '🟫' },
+  { id: 'atm', label: 'Articulación Temporomandibular', icon: '🦷' },
 ];
 
 const PRUEBAS_DATA = {
@@ -801,6 +802,54 @@ const PRUEBAS_DATA = {
         'Flexiona el tronco y la cabeza (mentón al pecho, cifosis global).',
         'Extiende la rodilla del lado sintomático y dorsiflexiona el pie.',
         'Positivo: reproducción de síntomas dorsales o en la extremidad que se alivian al extender el cuello.',
+      ],
+    },
+  ],
+
+  'atm': [
+    {
+      nombre: 'Medición de Apertura Bucal',
+      color: 'amber',
+      objetivo: 'Cuantificar el rango de apertura mandibular (normal ≥ 40 mm).',
+      pasos: [
+        'Paciente sentado, cabeza en posición neutra.',
+        'Pide que abra la boca al máximo.',
+        'Mide la distancia interincisal con una regla milimetrada.',
+        'Normal: ≥ 40 mm. Reducido: 25–39 mm. Muy limitado: < 25 mm.',
+      ],
+    },
+    {
+      nombre: 'Test de Deflexión / Desviación Mandibular',
+      color: 'blue',
+      objetivo: 'Detectar asimetría muscular o bloqueo discal unilateral de la ATM.',
+      pasos: [
+        'Paciente sentado, observa de frente.',
+        'Pide que abra y cierre la boca lentamente.',
+        'Observa la trayectoria del mentón.',
+        'Deflexión: la mandíbula se desvía hacia un lado al final de la apertura y no regresa — sugiere bloqueo discal ipsilateral.',
+        'Desviación en S: regresa a la línea media — sugiere hipomobilidad muscular unilateral corregible.',
+      ],
+    },
+    {
+      nombre: 'Test de Carga Articular ATM (Compresión)',
+      color: 'red',
+      objetivo: 'Reproducir dolor intraarticular (cóndilo o disco) de la ATM.',
+      pasos: [
+        'Paciente sentado.',
+        'Coloca ambos pulgares debajo del mentón y los dedos índices sobre el ángulo mandibular.',
+        'Aplica presión hacia superior y posterior (compresión del cóndilo contra la fosa articular).',
+        'Positivo: dolor preauricular o en la ATM — indica patología intraarticular.',
+      ],
+    },
+    {
+      nombre: 'Test de Distracción ATM',
+      color: 'teal',
+      objetivo: 'Diferenciar dolor muscular de dolor articular intraarticular de la ATM.',
+      pasos: [
+        'Paciente sentado con la boca ligeramente abierta.',
+        'Coloca ambos pulgares sobre los molares inferiores del lado a evaluar.',
+        'Aplica tracción hacia inferior y anterior (distracción del cóndilo).',
+        'Positivo articular: alivio del dolor en distracción — sugiere patología intraarticular. Positivo muscular: no cambia o aumenta.',
       ],
     },
   ],
