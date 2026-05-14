@@ -10,6 +10,7 @@ const PRUEBAS_SEGMENTOS = [
   { id: 'tobillo-pie',      label: 'Tobillo y Pie',    icon: '⚪' },
   { id: 'columna-toracica', label: 'Columna Torácica', icon: '🟫' },
   { id: 'atm', label: 'Articulación Temporomandibular', icon: '🦷' },
+  { id: 'tension-neural', label: 'Tensión Neural', icon: '⚡' },
 ];
 
 const PRUEBAS_DATA = {
@@ -850,6 +851,60 @@ const PRUEBAS_DATA = {
         'Coloca ambos pulgares sobre los molares inferiores del lado a evaluar.',
         'Aplica tracción hacia inferior y anterior (distracción del cóndilo).',
         'Positivo articular: alivio del dolor en distracción — sugiere patología intraarticular. Positivo muscular: no cambia o aumenta.',
+      ],
+    },
+  ],
+
+  'tension-neural': [
+    {
+      nombre: 'ULTT 2a — Nervio Mediano (Depresión Escapular)',
+      color: 'blue',
+      objetivo: 'Evaluar la tensión del nervio mediano con sesgo de depresión escapular.',
+      pasos: [
+        'Paciente en decúbito supino.',
+        'Deprime activamente la escápula (alejándola del cuello).',
+        'Abduce el hombro a 110°, extiende el codo, supina el antebrazo.',
+        'Extiende la muñeca y los dedos.',
+        'Añade inclinación cervical contralateral para aumentar la tensión.',
+        'Positivo: reproduce síntomas en el territorio del nervio mediano (palma, 1.°–3.° dedo) que cambian con el movimiento del cuello.',
+      ],
+    },
+    {
+      nombre: 'ULTT 2b — Nervio Radial',
+      color: 'amber',
+      objetivo: 'Evaluar la tensión del nervio radial y sus ramas.',
+      pasos: [
+        'Paciente en decúbito supino.',
+        'Deprime la escápula.',
+        'Extiende el codo, prona el antebrazo, flexiona la muñeca y los dedos.',
+        'Abduce el hombro hasta reproducir síntomas.',
+        'Añade inclinación cervical contralateral.',
+        'Positivo: reproduce síntomas en el territorio radial (cara dorsal del antebrazo y mano) sensibles a la posición cervical.',
+      ],
+    },
+    {
+      nombre: 'ULTT 3 — Nervio Cubital',
+      color: 'purple',
+      objetivo: 'Evaluar la tensión del nervio cubital en su recorrido medial.',
+      pasos: [
+        'Paciente en decúbito supino.',
+        'Deprime la escápula.',
+        'Extiende la muñeca y los dedos, supina el antebrazo.',
+        'Flexiona el codo al máximo (posición de cubital).',
+        'Abduce el hombro hasta reproducir síntomas.',
+        'Positivo: reproduce síntomas en el territorio cubital (borde medial del antebrazo, 4.° y 5.° dedo) sensibles al movimiento cervical.',
+      ],
+    },
+    {
+      nombre: 'LLTT Femoral (Prone Knee Bend)',
+      color: 'red',
+      objetivo: 'Evaluar la tensión del nervio femoral (L2–L4).',
+      pasos: [
+        'Paciente en decúbito prono.',
+        'Flexiona pasivamente la rodilla del lado a evaluar llevando el talón al glúteo.',
+        'Añade extensión de cadera para aumentar la tensión neural.',
+        'Positivo: dolor o parestesias en la cara anterior del muslo — indica irritación del nervio femoral.',
+        'Nota: evita este test en pacientes con hernia discal lumbar alta documentada y síntomas graves.',
       ],
     },
   ],
