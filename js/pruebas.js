@@ -325,6 +325,40 @@ const PRUEBAS_DATA = {
         'Positivo (patológico): retorno lento (> 5 s) o ausente indica oclusión.',
       ],
     },
+    {
+      nombre: 'Test de Grind (CMC del Pulgar)',
+      color: 'red',
+      objetivo: 'Detectar rizartrosis (artrosis de la articulación trapecio-metacarpiana).',
+      pasos: [
+        'Paciente con el antebrazo en posición neutra.',
+        'Estabiliza el carpo con una mano.',
+        'Con la otra, aplica compresión axial sobre el 1.er metacarpiano y realiza movimientos de rotación (grinding).',
+        'Positivo: dolor, crepitación o bloqueo en la base del pulgar.',
+      ],
+    },
+    {
+      nombre: 'Test de Watson (Escafoide)',
+      color: 'blue',
+      objetivo: 'Detectar inestabilidad escafolunar.',
+      pasos: [
+        'Paciente con la mano del lado a evaluar frente a ti.',
+        'Coloca tu pulgar sobre el polo distal del escafoide (cara palmar).',
+        'Desvía la muñeca de cubital a radial mientras mantienes presión sobre el escafoide.',
+        'Positivo: clic palpable o dolor dorsal sobre el escafoide — indica inestabilidad escafolunar.',
+      ],
+    },
+    {
+      nombre: 'Test de Bunnel-Littler',
+      color: 'amber',
+      objetivo: 'Evaluar contractura de los músculos intrínsecos de la mano.',
+      pasos: [
+        'Paciente con la mano en reposo.',
+        'Extiende la articulación MCF del dedo a evaluar.',
+        'Intenta flexionar pasivamente la articulación IFP.',
+        'Luego flexiona la MCF y repite la flexión IFP.',
+        'Positivo intrínseco: IFP no flexiona con MCF extendida pero sí con MCF flexionada. Positivo cápsula: IFP no flexiona en ninguna posición.',
+      ],
+    },
   ],
 
   'columna-lumbar': [
@@ -395,6 +429,39 @@ const PRUEBAS_DATA = {
         'Positivo: ≥ 3 de 5 signos sugieren componente no orgánico.',
       ],
     },
+    {
+      nombre: 'Test de Kemp',
+      color: 'amber',
+      objetivo: 'Detectar patología de la faceta articular lumbar o foraminal.',
+      pasos: [
+        'Paciente de pie.',
+        'Pide que extienda, rote e incline lateralmente el tronco hacia el lado sintomático (posición cuadrante posterior).',
+        'Positivo: dolor local o irradiado en la región glútea o muslo ipsilateral.',
+      ],
+    },
+    {
+      nombre: 'Test de Adams (Inclinación Anterior)',
+      color: 'blue',
+      objetivo: 'Diferenciar escoliosis estructural de escoliosis funcional (postural).',
+      pasos: [
+        'Paciente de pie, examina desde atrás.',
+        'Pide que se incline hacia adelante con las rodillas extendidas y las manos juntas.',
+        'Observa la columna y la caja torácica.',
+        'Positivo estructural: giba costal o prominencia paravertebral que persiste en flexión.',
+        'Negativo funcional: la asimetría desaparece al flexionar.',
+      ],
+    },
+    {
+      nombre: 'Prone Instability Test',
+      color: 'purple',
+      objetivo: 'Detectar inestabilidad segmentaria lumbar.',
+      pasos: [
+        'Paciente en decúbito prono, parte inferior colgando sobre el borde de la camilla (pies en el suelo).',
+        'Aplica presión posteroanterior (PA) sobre las apófisis espinosas y registra si hay dolor.',
+        'Luego pide que levante los pies del suelo (activa los extensores) y repite la presión PA.',
+        'Positivo: dolor con pies apoyados que desaparece al activar los extensores lumbares.',
+      ],
+    },
   ],
 
   'cadera': [
@@ -450,6 +517,39 @@ const PRUEBAS_DATA = {
         'Paciente en decúbito supino.',
         'Flexiona la cadera a 90°, luego aduce y rota internamente.',
         'Positivo: dolor en la ingle o región anterior de la cadera.',
+      ],
+    },
+    {
+      nombre: 'Test de Stinchfield',
+      color: 'red',
+      objetivo: 'Detectar conflicto coxofemoral o patología intraarticular de la cadera.',
+      pasos: [
+        'Paciente en decúbito supino.',
+        'Flexiona la cadera a 30–45° con la rodilla extendida.',
+        'Aplica resistencia hacia abajo mientras el paciente mantiene la posición.',
+        'Positivo: dolor en la ingle — sugiere patología intraarticular (pinzamiento, labrum, artrosis).',
+      ],
+    },
+    {
+      nombre: 'Log Roll Test',
+      color: 'blue',
+      objetivo: 'Evaluar patología intraarticular de la cadera con baja carga articular.',
+      pasos: [
+        'Paciente en decúbito supino, cadera en extensión.',
+        'Rota pasivamente la cadera hacia la rotación interna y externa, rodando la extremidad como un tronco.',
+        'No apliques fuerza, solo permite el movimiento libre.',
+        'Positivo: dolor en la ingle ante la rotación — alta especificidad para patología intraarticular.',
+      ],
+    },
+    {
+      nombre: 'Scour Test',
+      color: 'amber',
+      objetivo: 'Detectar artrosis o patología degenerativa de la articulación coxofemoral.',
+      pasos: [
+        'Paciente en decúbito supino.',
+        'Flexiona la cadera y la rodilla a 90°.',
+        'Aplica compresión axial a través del fémur y realiza un movimiento circular (adducción → abducción en arco).',
+        'Positivo: dolor, crepitación o limitación del arco — indica patología articular coxofemoral.',
       ],
     },
   ],
