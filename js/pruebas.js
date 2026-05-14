@@ -66,6 +66,38 @@ const PRUEBAS_DATA = {
         'Positivo: reproduce síntomas en el territorio del nervio mediano.',
       ],
     },
+    {
+      nombre: 'Test de Jackson',
+      color: 'red',
+      objetivo: 'Detectar compresión radicular cervical con el cuello en rotación lateral.',
+      pasos: [
+        'Paciente sentado, cuello en posición neutra.',
+        'Rota e inclina la cabeza hacia el lado sintomático.',
+        'Aplica compresión axial suave sobre el vértex.',
+        'Positivo: reproduce dolor o parestesias en el brazo ipsilateral (más específico que Spurling).',
+      ],
+    },
+    {
+      nombre: 'Shoulder Abduction Relief Sign',
+      color: 'blue',
+      objetivo: 'Confirmar radiculopatía cervical C5–C6 (alivio al elevar el brazo).',
+      pasos: [
+        'Paciente sentado o de pie con dolor en el brazo.',
+        'Pide que coloque la mano del lado sintomático sobre la cabeza (abducción de hombro).',
+        'Positivo: alivio del dolor o las parestesias al elevar el brazo — reduce tensión sobre la raíz cervical.',
+      ],
+    },
+    {
+      nombre: 'Test de Flexión-Rotación Cervical',
+      color: 'amber',
+      objetivo: 'Evaluar movilidad del segmento C1–C2 en cefalea cervicogénica.',
+      pasos: [
+        'Paciente en decúbito supino.',
+        'Lleva el cuello a flexión máxima (mentón al pecho) para bloquear los segmentos subaxiales.',
+        'Rota la cabeza hacia cada lado y mide el rango disponible.',
+        'Normal: ~44° de rotación. Positivo: < 32° o asimetría > 10° sugiere disfunción C1–C2.',
+      ],
+    },
   ],
 
   'hombro': [
@@ -137,6 +169,38 @@ const PRUEBAS_DATA = {
         'Positivo: dolor o clic en rotación interna que desaparece en rotación externa.',
       ],
     },
+    {
+      nombre: 'Drop Arm Test',
+      color: 'red',
+      objetivo: 'Detectar rotura completa del manguito rotador (supraespinoso).',
+      pasos: [
+        'Paciente de pie o sentado.',
+        'Abduce pasivamente el brazo a 90°.',
+        'Pide que baje el brazo de forma lenta y controlada.',
+        'Positivo: el brazo cae bruscamente o el paciente no puede sostenerlo — indica rotura completa del supraespinoso.',
+      ],
+    },
+    {
+      nombre: 'Test de Gerber (Lift-off)',
+      color: 'blue',
+      objetivo: 'Evaluar integridad del músculo subescapular.',
+      pasos: [
+        'Paciente de pie, coloca el dorso de la mano en la región lumbar.',
+        'Pide que despegue la mano de la espalda empujando hacia atrás contra resistencia.',
+        'Positivo: incapacidad de mantener la mano separada de la espalda — indica debilidad o rotura del subescapular.',
+      ],
+    },
+    {
+      nombre: 'Cross-Body Adduction Test',
+      color: 'amber',
+      objetivo: 'Detectar patología de la articulación acromioclavicular (AC).',
+      pasos: [
+        'Paciente sentado.',
+        'Flexiona el hombro a 90° con el codo extendido.',
+        'Aduce horizontalmente el brazo hacia el hombro contralateral.',
+        'Positivo: dolor localizado en la articulación acromioclavicular.',
+      ],
+    },
   ],
 
   'codo': [
@@ -181,6 +245,38 @@ const PRUEBAS_DATA = {
         'Paciente sentado, codo en 90° de flexión.',
         'Percute suavemente el surco epitroclear (cara medial del codo).',
         'Positivo: parestesias o descarga eléctrica hacia el 4.° y 5.° dedo.',
+      ],
+    },
+    {
+      nombre: 'Test de Mill',
+      color: 'red',
+      objetivo: 'Confirmar epicondilitis lateral mediante estiramiento pasivo del ECRB.',
+      pasos: [
+        'Paciente sentado, hombro en posición neutra.',
+        'Prona el antebrazo y flexiona la muñeca pasivamente.',
+        'Extiende el codo de forma simultánea.',
+        'Positivo: dolor reproducido en el epicóndilo lateral.',
+      ],
+    },
+    {
+      nombre: 'Test de Maudsley (Dedo Medio)',
+      color: 'amber',
+      objetivo: 'Detectar epicondilitis lateral por compromiso del ECRB.',
+      pasos: [
+        'Paciente sentado, codo extendido.',
+        'Extiende el dedo medio del paciente contra resistencia aplicada en la falange distal.',
+        'Positivo: dolor en el epicóndilo lateral.',
+      ],
+    },
+    {
+      nombre: 'Elbow Flexion Test',
+      color: 'purple',
+      objetivo: 'Detectar neuropatía del nervio cubital en el canal epitroclear.',
+      pasos: [
+        'Paciente de pie o sentado.',
+        'Flexiona el codo al máximo con el antebrazo supinado y la muñeca en extensión.',
+        'Mantiene la posición durante 3–5 minutos.',
+        'Positivo: parestesias o entumecimiento en el 4.° y 5.° dedo.',
       ],
     },
   ],
