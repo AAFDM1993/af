@@ -8,6 +8,7 @@ const PRUEBAS_SEGMENTOS = [
   { id: 'cadera',           label: 'Cadera',           icon: '🟤' },
   { id: 'rodilla',          label: 'Rodilla',          icon: '🟢' },
   { id: 'tobillo-pie',      label: 'Tobillo y Pie',    icon: '⚪' },
+  { id: 'columna-toracica', label: 'Columna Torácica', icon: '🟫' },
 ];
 
 const PRUEBAS_DATA = {
@@ -753,6 +754,53 @@ const PRUEBAS_DATA = {
         'Percute el talón con el puño cerrado (golpe en el eje del miembro).',
         'Alternativa: percute directamente el hueso sospechoso con el dedo.',
         'Positivo: dolor localizado en el foco de posible fractura por estrés — indica necesidad de imagen (Rx o RMN).',
+      ],
+    },
+  ],
+
+  'columna-toracica': [
+    {
+      nombre: 'PA Spring Test (Springing Torácico)',
+      color: 'amber',
+      objetivo: 'Evaluar movilidad segmentaria de la columna torácica.',
+      pasos: [
+        'Paciente en decúbito prono.',
+        'Coloca el talón de la mano sobre la apófisis espinosa del segmento a evaluar.',
+        'Aplica presión posteroanterior (PA) rítmica y progresiva.',
+        'Positivo: hipomobilidad, rigidez o dolor localizado — indica disfunción del segmento torácico.',
+      ],
+    },
+    {
+      nombre: 'Test de Adam (Inclinación Anterior Torácica)',
+      color: 'blue',
+      objetivo: 'Detectar escoliosis torácica estructural mediante observación de la giba costal.',
+      pasos: [
+        'Paciente de pie, examina desde atrás.',
+        'Pide que se incline hacia adelante con las rodillas extendidas y las palmas juntas.',
+        'Observa la simetría de la caja torácica.',
+        'Positivo estructural: giba costal unilateral que persiste en flexión — indica rotación vertebral y escoliosis estructural.',
+      ],
+    },
+    {
+      nombre: 'Test de Schober Torácico',
+      color: 'teal',
+      objetivo: 'Cuantificar el rango de flexión de la columna torácica.',
+      pasos: [
+        'Paciente de pie. Marca T1 y T12 con un lápiz dermográfico.',
+        'Mide la distancia entre las dos marcas en posición neutra.',
+        'Pide que se incline al máximo hacia adelante y vuelve a medir.',
+        'Positivo (hipomobilidad): incremento < 2.5 cm entre las marcas en flexión.',
+      ],
+    },
+    {
+      nombre: 'Slump Test Torácico',
+      color: 'red',
+      objetivo: 'Evaluar la contribución torácica a la tensión del sistema nervioso central.',
+      pasos: [
+        'Paciente sentado al borde de la camilla.',
+        'Flexiona el tronco y la cabeza (mentón al pecho, cifosis global).',
+        'Extiende la rodilla del lado sintomático y dorsiflexiona el pie.',
+        'Positivo: reproducción de síntomas dorsales o en la extremidad que se alivian al extender el cuello.',
       ],
     },
   ],
