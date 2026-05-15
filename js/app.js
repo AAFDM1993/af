@@ -143,6 +143,217 @@ function closeModal(e) {
   }
 }
 
+/* ===== CALCULADORA US ===== */
+function buildUSDosageCalc(panel) {
+  const uid = 'usc' + Math.random().toString(36).slice(2, 7);
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'margin-top:20px;margin-bottom:14px;';
+
+  const lbl = document.createElement('div');
+  lbl.style.cssText = 'font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;';
+  lbl.textContent = '🧮 Calculadora de dosificación';
+  wrap.appendChild(lbl);
+
+  const card = document.createElement('div');
+  card.style.cssText = 'background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px;';
+
+  // Fórmula explicativa
+  card.innerHTML = `
+    <div style="background:rgba(79,158,247,0.07);border:1px solid rgba(79,158,247,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.8;">
+      <strong style="color:var(--accent2);">Fórmula:</strong>
+      T (min) = <strong style="color:var(--text);">Dosis (J/cm²) × Área (cm²)</strong> ÷ [I (W/cm²) × Ciclo × ERA (cm²) × 60]
+      <br><span style="font-size:11px;color:var(--text3);">
+        Continuo → Ciclo = 1.0 &nbsp;·&nbsp; Pulsado 1:1 (50%) → 0.5 &nbsp;·&nbsp; Pulsado 1:4 (20%) → 0.2
+        <br>Dosis en tejido diana: Aguda 8–20 J/cm² · Subaguda 30–60 J/cm² · Crónica 60–120 J/cm²
+      </span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;">Frecuencia</div>
+        <select id="${uid}-freq" style="width:100%;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;">
+          <option value="1">1 MHz — profundo (3–5 cm)</option>
+          <option value="3">3 MHz — superficial (1–2 cm)</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;">Modo / Ciclo de trabajo</div>
+        <select id="${uid}-dc" style="width:100%;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;">
+          <option value="1.0">Continuo 100%</option>
+          <option value="0.5">Pulsado 1:1 — 50%</option>
+          <option value="0.2" selected>Pulsado 1:4 — 20%</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;">Intensidad aplicada (W/cm²)</div>
+        <input type="number" id="${uid}-int" value="0.5" min="0.1" max="3.0" step="0.1"
+          style="width:100%;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;">
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;">ERA del cabezal (cm²)</div>
+        <input type="number" id="${uid}-era" value="5" min="1" max="15" step="0.5"
+          style="width:100%;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;">
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;">Área de tratamiento (cm²)</div>
+        <input type="number" id="${uid}-area" value="20" min="1" max="300" step="1"
+          style="width:100%;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;">
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;">Dosis objetivo en tejido (J/cm²)</div>
+        <input type="number" id="${uid}-dose" value="12" min="1" max="200" step="1"
+          style="width:100%;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;">
+      </div>
+    </div>
+
+    <!-- Resultado -->
+    <div id="${uid}-res" style="background:rgba(0,194,178,0.07);border:1px solid rgba(0,194,178,0.22);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;">
+        <div style="text-align:center;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px;">Tiempo sesión</div>
+          <div id="${uid}-tmin" style="font-size:22px;font-weight:700;color:var(--accent);font-family:'DM Serif Display',serif;">—</div>
+          <div style="font-size:10px;color:var(--text3);">min</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px;">I-SATA efectiva</div>
+          <div id="${uid}-sata" style="font-size:22px;font-weight:700;color:var(--amber);font-family:'DM Serif Display',serif;">—</div>
+          <div style="font-size:10px;color:var(--text3);">W/cm²</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px;">Energía total</div>
+          <div id="${uid}-etot" style="font-size:22px;font-weight:700;color:var(--accent2);font-family:'DM Serif Display',serif;">—</div>
+          <div style="font-size:10px;color:var(--text3);">J</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px;">Pases ERA</div>
+          <div id="${uid}-pases" style="font-size:22px;font-weight:700;color:var(--purple);font-family:'DM Serif Display',serif;">—</div>
+          <div style="font-size:10px;color:var(--text3);">pasadas</div>
+        </div>
+      </div>
+      <div id="${uid}-interp" style="font-size:11.5px;color:var(--text2);border-top:1px solid rgba(0,194,178,0.15);padding-top:10px;line-height:1.65;"></div>
+    </div>
+
+    <!-- Tabla de referencia -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">📋 Tabla de protocolos clínicos (ERA 5 cm² · Área 20 cm²)</div>
+    <div class="table-wrap">
+      <table class="param-table">
+        <thead><tr><th>Fase</th><th>Modo · Ciclo</th><th>Intensidad</th><th>I-SATA</th><th>Dosis diana</th><th>Tiempo calculado</th><th>Efecto</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="mode-badge c-red" style="background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)">Aguda</span></td>
+            <td>Pulsado 1:4 · 20%</td>
+            <td class="param-val">0.3–0.8 W/cm²</td>
+            <td class="param-val" id="${uid}-sata1">—</td>
+            <td class="param-val">8–20 J/cm²</td>
+            <td class="param-val" id="${uid}-t1">—</td>
+            <td class="param-effect">Bioestimulación sin calor</td>
+          </tr>
+          <tr>
+            <td><span class="mode-badge c-amber" style="background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber)">Subaguda</span></td>
+            <td>Pulsado 1:1 · 50%</td>
+            <td class="param-val">0.5–1.0 W/cm²</td>
+            <td class="param-val" id="${uid}-sata2">—</td>
+            <td class="param-val">30–60 J/cm²</td>
+            <td class="param-val" id="${uid}-t2">—</td>
+            <td class="param-effect">Mecánico + leve calor</td>
+          </tr>
+          <tr>
+            <td><span class="mode-badge c-green" style="background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)">Crónica</span></td>
+            <td>Continuo · 100%</td>
+            <td class="param-val">0.8–2.0 W/cm²</td>
+            <td class="param-val" id="${uid}-sata3">—</td>
+            <td class="param-val">60–120 J/cm²</td>
+            <td class="param-val" id="${uid}-t3">—</td>
+            <td class="param-effect">Calor profundo, elongación</td>
+          </tr>
+          <tr>
+            <td><span class="mode-badge c-teal" style="background:var(--teal-bg);border:1px solid var(--teal-border);color:var(--teal)">Tendinopatía</span></td>
+            <td>Pulsado 1:1 · 50%</td>
+            <td class="param-val">0.5–1.5 W/cm²</td>
+            <td class="param-val" id="${uid}-sata4">—</td>
+            <td class="param-val">30–60 J/cm²</td>
+            <td class="param-val" id="${uid}-t4">—</td>
+            <td class="param-effect">Estimulación tenocitos</td>
+          </tr>
+          <tr>
+            <td><span class="mode-badge c-blue" style="background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue)">Cartílago</span></td>
+            <td>Pulsado 1:4 · 20%</td>
+            <td class="param-val">0.5–1.5 W/cm²</td>
+            <td class="param-val" id="${uid}-sata5">—</td>
+            <td class="param-val">8–20 J/cm²</td>
+            <td class="param-val" id="${uid}-t5">—</td>
+            <td class="param-effect">Condrogénesis, sin calor</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:5px;">* Tiempos con valores medios de intensidad y dosis para ERA=5 cm² y área=20 cm²</div>`;
+
+  wrap.appendChild(card);
+  panel.appendChild(wrap);
+
+  function calcTime(dose, area, intensity, dc, era) {
+    if (!intensity || !dc || !era || !area || !dose) return null;
+    return (dose * area) / (intensity * dc * era * 60);
+  }
+
+  function update() {
+    const freq  = parseFloat(document.getElementById(uid+'-freq').value);
+    const dc    = parseFloat(document.getElementById(uid+'-dc').value);
+    const int_  = parseFloat(document.getElementById(uid+'-int').value);
+    const era   = parseFloat(document.getElementById(uid+'-era').value);
+    const area  = parseFloat(document.getElementById(uid+'-area').value);
+    const dose  = parseFloat(document.getElementById(uid+'-dose').value);
+
+    if ([freq, dc, int_, era, area, dose].some(v => isNaN(v) || v <= 0)) return;
+
+    const iSata  = int_ * dc;
+    const tMin   = calcTime(dose, area, int_, dc, era);
+    const tSec   = tMin * 60;
+    const eTotal = iSata * era * tSec;
+    const pases  = area / era;
+
+    document.getElementById(uid+'-tmin').textContent  = tMin.toFixed(1);
+    document.getElementById(uid+'-sata').textContent  = iSata.toFixed(2);
+    document.getElementById(uid+'-etot').textContent  = eTotal.toFixed(0);
+    document.getElementById(uid+'-pases').textContent = pases.toFixed(1);
+
+    const modeLabel = dc === 1.0 ? 'continuo (100%)' : `pulsado ${Math.round(dc*100)}%`;
+    let interp = `${freq} MHz · modo <strong style="color:var(--text)">${modeLabel}</strong> · ${int_} W/cm² → I-SATA <strong style="color:var(--amber)">${iSata.toFixed(2)} W/cm²</strong>. `;
+    interp += `Para alcanzar <strong style="color:var(--text)">${dose} J/cm²</strong> en ${area} cm² con ERA ${era} cm²: `;
+    interp += `<strong style="color:var(--accent)">${tMin.toFixed(1)} min de sesión</strong> (${Math.round(tSec)} s), ${pases.toFixed(1)} pasadas sobre el área.`;
+    if (tMin > 15)  interp += ' <span style="color:var(--amber)">⚠ Sesión larga — aumentar intensidad o reducir área por sesión.</span>';
+    if (tMin < 2)   interp += ' <span style="color:var(--blue)">⚠ Sesión muy corta — verificar que la dosis es adecuada para la fase.</span>';
+    if (dc === 1.0 && int_ > 1.5) interp += ' <span style="color:var(--red)">⚠ Continuo alta intensidad — verificar ausencia de contraindicaciones térmicas.</span>';
+    document.getElementById(uid+'-interp').innerHTML = interp;
+
+    // Tabla de referencia con ERA=5, área=20
+    const refEra = 5, refArea = 20;
+    const rows = [
+      { dc:0.2, i:0.55, dose:12  },
+      { dc:0.5, i:0.75, dose:40  },
+      { dc:1.0, i:1.4,  dose:80  },
+      { dc:0.5, i:1.0,  dose:40  },
+      { dc:0.2, i:0.8,  dose:12  },
+    ];
+    rows.forEach((r, idx) => {
+      const n = idx + 1;
+      const t = calcTime(r.dose, refArea, r.i, r.dc, refEra);
+      const sata = r.i * r.dc;
+      document.getElementById(uid+'-t'    + n).textContent = t ? t.toFixed(1) + ' min' : '—';
+      document.getElementById(uid+'-sata' + n).textContent = sata.toFixed(2) + ' W/cm²';
+    });
+  }
+
+  ['freq','dc','int','era','area','dose'].forEach(k => {
+    const el = document.getElementById(uid+'-'+k);
+    if (el) { el.addEventListener('input', update); el.addEventListener('change', update); }
+  });
+
+  update();
+}
+
 /* ===== REFERENCIA ===== */
 function buildRef() {
   const tabs = document.getElementById('ref-tabs');
@@ -260,6 +471,9 @@ function buildRef() {
       fxDiv.appendChild(fxWrap);
       p.appendChild(fxDiv);
     }
+
+    // Calculadora de dosificación (US)
+    if (a.dosage_calculator) buildUSDosageCalc(p);
 
     // Técnica (si existe)
     if (a.tecnica) {
