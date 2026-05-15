@@ -298,13 +298,15 @@ function buildUSDosageCalc(panel) {
     return (dose * area) / (intensity * dc * era * 60);
   }
 
+  function el(k) { return card.querySelector('#'+uid+'-'+k); }
+
   function update() {
-    const freq  = parseFloat(document.getElementById(uid+'-freq').value);
-    const dc    = parseFloat(document.getElementById(uid+'-dc').value);
-    const int_  = parseFloat(document.getElementById(uid+'-int').value);
-    const era   = parseFloat(document.getElementById(uid+'-era').value);
-    const area  = parseFloat(document.getElementById(uid+'-area').value);
-    const dose  = parseFloat(document.getElementById(uid+'-dose').value);
+    const freq  = parseFloat(el('freq').value);
+    const dc    = parseFloat(el('dc').value);
+    const int_  = parseFloat(el('int').value);
+    const era   = parseFloat(el('era').value);
+    const area  = parseFloat(el('area').value);
+    const dose  = parseFloat(el('dose').value);
 
     if ([freq, dc, int_, era, area, dose].some(v => isNaN(v) || v <= 0)) return;
 
@@ -314,10 +316,10 @@ function buildUSDosageCalc(panel) {
     const eTotal = iSata * era * tSec;
     const pases  = area / era;
 
-    document.getElementById(uid+'-tmin').textContent  = tMin.toFixed(1);
-    document.getElementById(uid+'-sata').textContent  = iSata.toFixed(2);
-    document.getElementById(uid+'-etot').textContent  = eTotal.toFixed(0);
-    document.getElementById(uid+'-pases').textContent = pases.toFixed(1);
+    el('tmin').textContent  = tMin.toFixed(1);
+    el('sata').textContent  = iSata.toFixed(2);
+    el('etot').textContent  = eTotal.toFixed(0);
+    el('pases').textContent = pases.toFixed(1);
 
     const modeLabel = dc === 1.0 ? 'continuo (100%)' : `pulsado ${Math.round(dc*100)}%`;
     let interp = `${freq} MHz · modo <strong style="color:var(--text)">${modeLabel}</strong> · ${int_} W/cm² → I-SATA <strong style="color:var(--amber)">${iSata.toFixed(2)} W/cm²</strong>. `;
@@ -326,29 +328,28 @@ function buildUSDosageCalc(panel) {
     if (tMin > 15)  interp += ' <span style="color:var(--amber)">⚠ Sesión larga — aumentar intensidad o reducir área por sesión.</span>';
     if (tMin < 2)   interp += ' <span style="color:var(--blue)">⚠ Sesión muy corta — verificar que la dosis es adecuada para la fase.</span>';
     if (dc === 1.0 && int_ > 1.5) interp += ' <span style="color:var(--red)">⚠ Continuo alta intensidad — verificar ausencia de contraindicaciones térmicas.</span>';
-    document.getElementById(uid+'-interp').innerHTML = interp;
+    el('interp').innerHTML = interp;
 
-    // Tabla de referencia con ERA=5, área=20
     const refEra = 5, refArea = 20;
     const rows = [
-      { dc:0.2, i:0.55, dose:12  },
-      { dc:0.5, i:0.75, dose:40  },
-      { dc:1.0, i:1.4,  dose:80  },
-      { dc:0.5, i:1.0,  dose:40  },
-      { dc:0.2, i:0.8,  dose:12  },
+      { dc:0.2, i:0.55, dose:12 },
+      { dc:0.5, i:0.75, dose:40 },
+      { dc:1.0, i:1.4,  dose:80 },
+      { dc:0.5, i:1.0,  dose:40 },
+      { dc:0.2, i:0.8,  dose:12 },
     ];
     rows.forEach((r, idx) => {
       const n = idx + 1;
       const t = calcTime(r.dose, refArea, r.i, r.dc, refEra);
       const sata = r.i * r.dc;
-      document.getElementById(uid+'-t'    + n).textContent = t ? t.toFixed(1) + ' min' : '—';
-      document.getElementById(uid+'-sata' + n).textContent = sata.toFixed(2) + ' W/cm²';
+      el('t'    + n).textContent = t ? t.toFixed(1) + ' min' : '—';
+      el('sata' + n).textContent = sata.toFixed(2) + ' W/cm²';
     });
   }
 
   ['freq','dc','int','era','area','dose'].forEach(k => {
-    const el = document.getElementById(uid+'-'+k);
-    if (el) { el.addEventListener('input', update); el.addEventListener('change', update); }
+    const input = el(k);
+    if (input) { input.addEventListener('input', update); input.addEventListener('change', update); }
   });
 
   update();
