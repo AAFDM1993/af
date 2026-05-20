@@ -25,6 +25,7 @@ const FLOW_NODES = {
       {name:'US pulsado 1:4',c:'c-amber',params:'1 MHz · ciclo 20% · 0.3–0.8 W/cm² · 5–8 min/zona',effect:'Antiinflamatorio, bioestimulación',mech:'Efecto mecánico sin calor: cavitación estable y microcorrientes de fluido que estimulan la reparación celular.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 1–3 J/cm² · continuo · 30–60 s/punto · 8–10 ses.',effect:'Fotobiomodulación, analgesia sin calor',mech:'Absorción en citocromo c oxidasa: aumenta ATP, modula mediadores inflamatorios sin efecto térmico.'},
       {name:'Magnetoterapia',c:'c-coral',params:'10–25 Hz · 10–30 Gauss · 20–30 min',effect:'Antiinflamatorio, no invasivo',mech:'Microcorrientes inducidas que reducen prostaglandinas e interleucinas proinflamatorias.'},
+      {name:'Diadinámica DF',c:'c-red',params:'100 Hz · umbral sensitivo · 2–3 min inicio de sesión',effect:'Analgesia rápida Gate Control',mech:'La onda completa rectificada a 100 Hz activa fibras Aβ inhibiendo la transmisión nociceptiva en el asta posterior medular, con inicio de acción más rápido que el TENS convencional.'},
     ],
     note:'<strong>Contraindicado en aguda:</strong> US continuo, ondas de choque, corrientes rusas, interferencial a alta intensidad. Respetar reposo relativo de la zona.',
     kinesio:{
@@ -52,6 +53,7 @@ const FLOW_NODES = {
       {name:'Magnetoterapia',c:'c-coral',params:'10–25 Hz · 5–20 Gauss · 20–30 min',effect:'Mejora microcirculación, antiexudativa',mech:'Microcorrientes inducidas que mejoran la permeabilidad capilar y reducen el exudado inflamatorio.'},
       {name:'TENS convencional',c:'c-blue',params:'80–100 Hz · 50 µs · sensitivo · 20 min',effect:'Control del dolor asociado',mech:'Bloqueo de la transmisión del dolor por Gate Control a nivel medular.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 1–2 J/cm² · 30 s/punto · 8 ses.',effect:'Modulación inflamatoria local',mech:'Reduce la síntesis de prostaglandinas E2 y modula la actividad de macrófagos en el sitio de inflamación.'},
+      {name:'Alto voltaje (cátodo)',c:'c-orange',params:'>100 V pico · cátodo (−) · ~120 pps · 20–30 min',effect:'Reducción de edema, repulsión electrostática',mech:'El electrodo negativo repele las proteínas cargadas negativamente del espacio intersticial, reduciendo la presión osmótica del edema postraumático.'},
     ],
     note:'<strong>Evitar:</strong> calor, US continuo y masaje sobre zona edematosa aguda. Combinar con crioterapia y elevación del miembro.',
     kinesio:{tabs:[
@@ -95,6 +97,8 @@ const FLOW_NODES = {
       {name:'Interferencial 80–100 Hz',c:'c-green',params:'AMF 80–100 Hz / barrido 0–100 Hz · 20 min',effect:'Analgesia + antiinflamatorio profundo',mech:'Penetración profunda sin resistencia cutánea: activa Gate Control y vasodilatación simpaticolítica simultáneamente.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 3–5 J/cm² · continuo · 60 s/punto · 10 ses.',effect:'Fotobiomodulación analgésica y regeneradora',mech:'830 nm tiene absorción máxima en citocromo c oxidasa. Aumenta ATP, inhibe COX-2 y activa factores de crecimiento.'},
       {name:'Terapia combinada',c:'c-purple',params:'US 50% + TENS acupuntural · 12–15 min',effect:'Analgesia sinérgica profunda',mech:'El US aumenta la permeabilidad de membrana potenciando la respuesta neuronal al TENS de baja frecuencia.'},
+      {name:'Diadinámica CP',c:'c-red',params:'50↔100 Hz alternando 1 s · umbral sensitivo · 4–6 min',effect:'Analgesia sostenida sin acomodación',mech:'La alternancia MF/DF evita la acomodación nerviosa combinando Gate Control (DF 100 Hz) con efecto sedante (MF 50 Hz) en la misma sesión.'},
+      {name:'Träbert (corriente 2/5)',c:'c-lime',params:'143 Hz fija · impulso 2 ms · 30–60 mA · hormigueo intenso · 15–20 min',effect:'Analgesia profunda por impulso largo',mech:'El ancho de pulso de 2 ms activa fibras Aβ y A-δ produciendo un hormigueo profundo e intenso con analgesia de 1–3 h post-sesión.'},
     ],
     note:'<strong>Fase subaguda:</strong> incrementar gradualmente la intensidad. No superar 2/10 de aumento del dolor post-sesión.',
     kinesio:{tabs:[
@@ -118,6 +122,8 @@ const FLOW_NODES = {
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 3–6 J/cm² · continuo · 60–90 s/punto · 10–12 ses.',effect:'Síntesis de colágeno, cicatrización acelerada',mech:'Activa TGF-β1 y VEGF, aumenta la proliferación de fibroblastos y mejora la organización del colágeno neoformado.'},
       {name:'Magnetoterapia 10–25 Hz',c:'c-coral',params:'10–25 Hz · 10–30 Gauss · 20–30 min · 15 ses.',effect:'Reparación tisular, proliferación celular',mech:'Las microcorrientes inducidas activan osteoblastos y fibroblastos, acelerando la fase proliferativa de la cicatrización.'},
       {name:'Terapia combinada',c:'c-purple',params:'US pulsado + diadinámicas · 10 min',effect:'Cicatrización + control del dolor',mech:'Sinergia entre el efecto mecánico del US y el analgésico de la corriente eléctrica.'},
+      {name:'Alto voltaje (cátodo→ánodo)',c:'c-orange',params:'>100 V · cátodo (−) inicio · 45–60 min · 1×/día',effect:'Galvanotaxis celular, cicatrización activa',mech:'Imita la corriente de lesión bioeléctrica endógena estimulando la migración de fibroblastos y queratinocitos hacia el lecho de la herida; cambio a polaridad positiva en fase de granulación.'},
+      {name:'Galvánica (iontoforesis)',c:'c-gold',params:'CC · 0.05–0.1 mA/cm² · 20 min',effect:'Introducción de antiinflamatorios locales',mech:'El campo eléctrico introduce iones medicinales por electromigración con concentración local 3–5× mayor que la aplicación tópica sin efecto sistémico.'},
     ],
     note:'<strong>Laser 830 nm:</strong> ventana de 820–850 nm con máxima absorción en citocromo c oxidasa, optimizando la producción de ATP y síntesis proteica para cicatrización.',
     kinesio:{tabs:[
@@ -140,6 +146,7 @@ const FLOW_NODES = {
       {name:'Magnetoterapia 25–50 Hz',c:'c-coral',params:'25–50 Hz · 20–80 Gauss · 20–30 min',effect:'Mejora microcirculación y drenaje',mech:'Incrementa la velocidad de flujo capilar y reduce la viscosidad de la sangre por efecto electromagnético.'},
       {name:'US pulsado 1:4',c:'c-amber',params:'1 MHz · 20% · 0.5–1 W/cm² · 5–8 min',effect:'Favorece reabsorción del exudado',mech:'El micromasaje tisular facilita la reabsorción de proteínas plasmáticas acumuladas en el intersticio.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 2–4 J/cm² · 30–60 s/zona · 8 ses.',effect:'Modulación inflamatoria, linfostimulación',mech:'Activa la motilidad de los vasos linfáticos y reduce la producción de mediadores inflamatorios proedematosos.'},
+      {name:'Diadinámica LP',c:'c-red',params:'Períodos largos · umbral motor leve · 5–8 min',effect:'Bomba muscular rítmica, drenaje venoso',mech:'La estimulación muscular rítmica del modo LP actúa como bomba periférica que facilita el retorno venoso y linfático del edema subagudo.'},
     ],
     note:'<strong>Edema subagudo:</strong> asociar vendaje compresivo y elevación del miembro. La interferencial en barrido 0–100 Hz es también una opción versátil.',
     kinesio:{tabs:[
@@ -161,6 +168,7 @@ const FLOW_NODES = {
       {name:'TENS Burst / EMS',c:'c-blue',params:'50–80 Hz · 200–300 µs · umbral motor · 15–20 min',effect:'Estimulación motora, mantiene masa',mech:'Activa selectivamente unidades motoras, previniendo la atrofia por desuso cuando el paciente no puede contraer voluntariamente.'},
       {name:'US continuo previo',c:'c-amber',params:'1 MHz · 100% · 0.5–1 W/cm² · 5 min (pre-ejercicio)',effect:'Calentamiento, mejora extensibilidad',mech:'El calor profundo aumenta la extensibilidad del tejido conectivo y la velocidad de conducción nerviosa, preparando el músculo para el ejercicio.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 3–5 J/cm² · post-ejercicio · 60 s/zona',effect:'Reduce DOMS, acelera recuperación',mech:'Reduce el daño oxidativo post-ejercicio, disminuye el lactato intramuscular y acelera la resíntesis de ATP.'},
+      {name:'VMS',c:'c-purple',params:'Frecuencia variable 50–100 Hz · ON 6–10 s / OFF 12–20 s · AW 200–400 µs · rampa 1–3 s',effect:'Estimulación muscular adaptativa, anti-acomodación',mech:'La variación automática de frecuencia portadora reduce la acomodación neuromuscular y simula los patrones fisiológicos de activación motora, logrando mayor reclutamiento que la estimulación de frecuencia fija.'},
     ],
     note:'<strong>Corrientes rusas:</strong> indicadas cuando el paciente no puede contraer voluntariamente de forma efectiva. Combinar siempre con ejercicio activo-asistido. Contraindicadas en inflamación aguda activa.',
     kinesio:{tabs:[
@@ -184,6 +192,8 @@ const FLOW_NODES = {
       {name:'US continuo',c:'c-amber',params:'1 MHz · 100% · 1–2 W/cm² · 8–10 min',effect:'Calor profundo, extensibilidad capsular',mech:'El calor profundo (3–5 cm) aumenta la extensibilidad del colágeno cápsular y la velocidad de conducción nerviosa articular.'},
       {name:'Interferencial 0–100 Hz',c:'c-green',params:'Barrido 0–100 Hz · 20 min (sin implantes metálicos)',effect:'Analgesia + antiinflamatorio profundo',mech:'La frecuencia variable evita la acomodación nerviosa y combina efectos analgésicos de alta y baja frecuencia en profundidad.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 5–8 J/cm² · pulsado · 90 s/punto · 12–15 ses.',effect:'Fotobiomodulación articular profunda',mech:'A 830 nm la penetración alcanza 3–5 cm, activando los condrocitos articulares y reduciendo la síntesis de metaloproteasas degradativas.'},
+      {name:'Diadinámica CP/LP',c:'c-red',params:'CP o LP · 15–20 min',effect:'Analgesia articular sin acomodación, trofismo',mech:'CP evita la acomodación nerviosa combinando efectos sedante y analgésico. LP añade estimulación trófica articular con componente galvánico mayor.'},
+      {name:'Träbert',c:'c-lime',params:'143 Hz · impulso 2 ms · electrodos periarticulares · 15–20 min',effect:'Analgesia articular profunda por impulso largo',mech:'Los pulsos de 2 ms activan fibras articulares profundas (A-δ) que el TENS convencional no alcanza, produciendo analgesia en estructuras articulares profundas (cadera, rodilla, hombro).'},
     ],
     note:'<strong>Contraindicación:</strong> no aplicar US ni interferencial sobre prótesis metálicas. La magnetoterapia es la opción de elección en presencia de metal.',
     kinesio:{tabs:[
@@ -209,6 +219,8 @@ const FLOW_NODES = {
       {name:'US continuo',c:'c-amber',params:'1 MHz · 100% · 1–2 W/cm² · 8 min',effect:'Termoterapia profunda, elongación',mech:'El calor profundo aumenta la distensibilidad del tejido conectivo. Aplicar antes del estiramiento para maximizar el alargamiento permanente.'},
       {name:'TENS acupuntural',c:'c-blue',params:'2–10 Hz · 200–300 µs · motor · 20–30 min',effect:'Analgesia endorfínica crónica',mech:'Estimula la producción de β-endorfinas y dinorfinas en el SNC, con efecto analgésico prolongado de 4–6 horas post-sesión.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 4–6 J/cm² · 60–90 s/zona · 10 ses.',effect:'Regeneración, reduce fibrosis muscular',mech:'Inhibe la activación de miofibroblastos y reduce la producción de TGF-β1, previniendo la fibrosis muscular crónica.'},
+      {name:'Diadinámica RS',c:'c-red',params:'Ritmo sincopado · umbral motor visible · 5–10 min',effect:'Estimulación muscular rítmica activa',mech:'El modo RS genera contracciones musculares rítmicas intensas similares a EMS para reeducación muscular y mantenimiento del trofismo.'},
+      {name:'Träbert',c:'c-lime',params:'143 Hz · impulso 2 ms · electrodos sobre músculo · hormigueo profundo · 15–20 min',effect:'Analgesia muscular profunda',mech:'El ancho de pulso de 2 ms activa fibras profundas del músculo generando analgesia duradera sin producir contracción muscular visible.'},
     ],
     note:'<strong>Crónico muscular:</strong> asociar siempre con ejercicio activo. El agente físico potencia pero no reemplaza la rehabilitación activa. Las corrientes rusas son el estándar para atrofia por desuso.',
     kinesio:{tabs:[
@@ -231,6 +243,9 @@ const FLOW_NODES = {
       {name:'Laser 830 nm sobre PG',c:'c-pink',params:'830 nm · 0.5–2 J/punto · continuo · 20–30 s/punto · 6–10 ses.',effect:'Inhibición del punto gatillo miofascial',mech:'A 830 nm penetra 3–5 cm en músculo: reduce la actividad eléctrica del PG, normaliza el potencial de placa motora sin punción.'},
       {name:'Interferencial 1–10 Hz',c:'c-green',params:'AMF 1–10 Hz · motor · 15–20 min',effect:'Estimulación endorfínica profunda',mech:'Similar al TENS acupuntural pero con mayor penetración tisular para estructuras profundas.'},
       {name:'Magnetoterapia 10–25 Hz',c:'c-coral',params:'10–25 Hz · 10–30 Gauss · 20 min',effect:'Modulación inflamatoria neuropática',mech:'Regula los canales de sodio y calcio en fibras nerviosas lesionadas, reduciendo la hiperexcitabilidad neuropática.'},
+      {name:'Onda H',c:'c-indigo',params:'2–10 Hz · onda exponencial · 30–45 min · umbral sensitivo mínimo',effect:'Analgesia neuropática profunda y trófica',mech:'La forma de onda exponencial activa fibras neuropáticas dañadas con menor densidad de corriente; la baja frecuencia libera opioides endógenos y activa BDNF/NGF para recuperación axonal.'},
+      {name:'Träbert',c:'c-lime',params:'143 Hz · impulso 2 ms · sobre trayecto nervioso · 15–20 min',effect:'Analgesia directa sobre nervio afectado',mech:'Electrodo activo sobre el trayecto del nervio doloroso. El ancho de pulso de 2 ms inhibe la hiperexcitabilidad neuropática de fibras A-δ.'},
+      {name:'Galvánica (trofismo axonal)',c:'c-gold',params:'CC catódica · 0.05–0.1 mA/cm² · 15–20 min',effect:'Estimulación trófica axonal, mejora de conducción',mech:'La corriente catódica activa la bomba Na⁺/K⁺-ATPasa mejorando la nutrición axonal y la velocidad de conducción nerviosa periférica.'},
     ],
     note:'<strong>Punto gatillo:</strong> el laser 830 nm es alternativa no invasiva a la punción seca. Descartar contraindicaciones neurológicas antes de usar corrientes de alta intensidad.',
     kinesio:{tabs:[
