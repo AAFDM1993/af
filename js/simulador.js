@@ -643,13 +643,13 @@ const SIM_CASES = [
           { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:18, validMax:22 },
         ]},
       { agentBase:'termo', name:'Baño de contraste',
-        mech:'La vasodilatación-vasoconstricción alternante genera un efecto de bomba que favorece el retorno venoso y linfático, útil en edema distal de manejo prolongado.',
+        mech:'La vasodilatación-vasoconstricción alternante genera un efecto de bomba que favorece el retorno venoso y linfático, útil en edema distal de manejo prolongado. La fase caliente es breve y siempre seguida de frío, a diferencia del calor sostenido que sí está contraindicado en linfedema.',
         sliders:[
           { label:'Nº de ciclos', unit:'ciclos', min:0, max:10, step:1, validMin:4, validMax:6 },
           { label:'Duración total', unit:'min', min:0, max:40, step:5, validMin:16, validMax:30 },
         ]},
       { agentBase:'hidro', name:'Hidroterapia (piscina terapéutica)',
-        mech:'La presión hidrostática proporcional a la profundidad de inmersión comprime circunferencialmente el tejido, favoreciendo el retorno venoso y linfático de forma más homogénea que la compresión manual aislada.',
+        mech:'La presión hidrostática proporcional a la profundidad de inmersión comprime circunferencialmente el tejido, favoreciendo el retorno venoso y linfático de forma más homogénea que la compresión manual aislada. En linfedema, usar el extremo inferior del rango de temperatura y mantener la prenda de compresión durante la inmersión.',
         sliders:[
           { label:'Temperatura', unit:'°C', min:0, max:45, step:1, validMin:33, validMax:36 },
           { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
@@ -677,11 +677,11 @@ const SIM_COMORBILIDADES = [
   { id:'metal', label:'Implante metálico en la zona tratada',
     excludes:['inter','us'] },
   { id:'trombosis', label:'Trombosis venosa activa / TVP',
-    excludes:['tens','inter','us','rusa','ondah','oc','termo'] },
+    excludes:['tens','inter','us','rusa','ondah','oc','termo','ir'] },
   { id:'piel', label:'Piel lesionada / herida abierta en la zona',
-    excludes:['tens','us','termo','hidro'] },
+    excludes:['tens','us','termo','hidro','ir'] },
   { id:'neoplasia', label:'Neoplasia activa en la zona tratada',
-    excludes:['tens','inter','us','mag','laser','rusa','oc','ondah','termo'] },
+    excludes:['tens','inter','us','mag','laser','rusa','oc','ondah','termo','ir'] },
 ];
 
 /* ===== SIMULADOR — GENERADOR DE PACIENTE ===== */
