@@ -311,6 +311,7 @@ const SIM_CASES = [
       { agentBase:'trabert', name:'Träbert',
         mech:'Los pulsos de 2 ms activan fibras articulares profundas (A-δ), produciendo analgesia en estructuras articulares profundas.',
         sliders:[
+          { label:'Frecuencia', unit:'Hz', min:0, max:200, step:1, validMin:140, validMax:146 },
           { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
         ]},
     ]},
@@ -352,6 +353,7 @@ const SIM_CASES = [
       { agentBase:'trabert', name:'Träbert',
         mech:'El ancho de pulso de 2 ms activa fibras profundas del músculo generando analgesia duradera sin producir contracción muscular visible.',
         sliders:[
+          { label:'Frecuencia', unit:'Hz', min:0, max:200, step:1, validMin:140, validMax:146 },
           { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
         ]},
     ]},
@@ -395,6 +397,7 @@ const SIM_CASES = [
       { agentBase:'trabert', name:'Träbert',
         mech:'Electrodo activo sobre el trayecto del nervio doloroso. El ancho de pulso de 2 ms inhibe la hiperexcitabilidad neuropática de fibras A-δ.',
         sliders:[
+          { label:'Frecuencia', unit:'Hz', min:0, max:200, step:1, validMin:140, validMax:146 },
           { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
         ]},
       { agentBase:'galv', name:'Galvánica (trofismo axonal)',
@@ -522,8 +525,12 @@ function shuffle(arr, rng) {
 }
 
 /* ===== SIMULADOR — VALIDACIÓN PASO 1 (AGENTE) ===== */
+function findHomeCases(agentBase) {
+  return SIM_CASES.filter(c => c.agents.some(a => a.agentBase === agentBase));
+}
+
 function findHomeCase(agentBase) {
-  return SIM_CASES.find(c => c.agents.some(a => a.agentBase === agentBase)) || null;
+  return findHomeCases(agentBase)[0] || null;
 }
 
 function evaluateAgentChoice(patient, chosenBase) {
@@ -557,13 +564,19 @@ function evaluateAgentChoice(patient, chosenBase) {
     };
   }
 
-  const home = findHomeCase(chosenBase);
-  const homeAgent = home ? home.agents.find(a => a.agentBase === chosenBase) : null;
+  const homes = findHomeCases(chosenBase);
   const catalogEntry = AGENT_CATALOG.find(a => a.id === chosenBase);
-  const chosenName = homeAgent ? homeAgent.name : (catalogEntry ? catalogEntry.name : chosenBase);
-  const explanation = home
-    ? `${chosenName} es el agente de referencia para «${home.phaseLabel} — ${home.tissueLabel}», no para este cuadro.`
-    : `${chosenName} no es una opción indicada para este cuadro clínico.`;
+  const genericName = catalogEntry ? catalogEntry.name : chosenBase;
+  let explanation;
+  if (homes.length === 0) {
+    explanation = `${genericName} no es una opción indicada para este cuadro clínico.`;
+  } else if (homes.length === 1) {
+    const homeAgent = homes[0].agents.find(a => a.agentBase === chosenBase);
+    explanation = `${homeAgent.name} es el agente de referencia para «${homes[0].phaseLabel} — ${homes[0].tissueLabel}», no para este cuadro.`;
+  } else {
+    const phaseList = homes.map(h => h.phaseLabel).join(', ');
+    explanation = `${genericName} sí está indicado en otros cuadros (${phaseList}), pero no en este.`;
+  }
   return { correct: false, advance: false, explanation };
 }
 
@@ -801,6 +814,6 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     AGENT_CATALOG, SIM_CASES, SIM_COMORBILIDADES,
     pickRandomItem, pickRandomInt, survivingAgents, generatePatient,
-    NONE_OPTION, shuffle, findHomeCase, evaluateAgentChoice, evaluateSliders,
+    NONE_OPTION, shuffle, findHomeCase, findHomeCases, evaluateAgentChoice, evaluateSliders,
   };
 }

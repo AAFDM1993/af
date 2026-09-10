@@ -3,7 +3,7 @@ const { test } = require('node:test');
 const {
   AGENT_CATALOG, SIM_CASES, SIM_COMORBILIDADES,
   pickRandomItem, pickRandomInt, survivingAgents, generatePatient,
-  NONE_OPTION, shuffle, findHomeCase, evaluateAgentChoice, evaluateSliders,
+  NONE_OPTION, shuffle, findHomeCase, findHomeCases, evaluateAgentChoice, evaluateSliders,
 } = require('../js/simulador.js');
 
 function fakeRng(sequence) {
@@ -32,8 +32,11 @@ test('SIM_CASES has 12 well-formed cases with agents keyed by agentBase', () => 
     assert.ok(c.phaseLabel && c.phasePill && c.tissueLabel);
     assert.ok(Array.isArray(c.regions) && c.regions.length >= 3);
     assert.ok(Array.isArray(c.agents) && c.agents.length >= 2, `${c.id}: debe tener al menos 2 agentes`);
+    const seenBases = new Set();
     c.agents.forEach(a => {
       assert.ok(catalogIds.has(a.agentBase), `${c.id}: agentBase desconocido "${a.agentBase}"`);
+      assert.ok(!seenBases.has(a.agentBase), `${c.id}: agentBase duplicado "${a.agentBase}" (sería inalcanzable en el catálogo)`);
+      seenBases.add(a.agentBase);
       assert.ok(a.name && a.mech);
       assert.ok(a.sliders.length >= 1 && a.sliders.length <= 3, `${c.id}/${a.name}: debe tener 1-3 sliders`);
       a.sliders.forEach(s => {
@@ -100,6 +103,19 @@ test('generatePatient: blocked es true solo cuando la comorbilidad excluye TODOS
   assert.equal(p.blocked, true);
 });
 
+test('generatePatient: blocked es false cuando la comorbilidad excluye solo ALGUNOS agentes del caso', () => {
+  // ag_dolor (índice 0): tens, us, laser, mag, diad — "metal" excluye solo inter/us, sobreviven 4
+  const caseIndex = SIM_CASES.findIndex(c => c.id === 'ag_dolor');
+  const comorbIndex = SIM_COMORBILIDADES.findIndex(m => m.id === 'metal');
+  const caseRoll = (caseIndex + 0.5) / SIM_CASES.length;
+  const comorbRoll = (comorbIndex + 0.5) / SIM_COMORBILIDADES.length;
+  const rng = fakeRng([caseRoll, 0, 0, 0.1, comorbRoll]);
+  const p = generatePatient(rng);
+  assert.equal(p.case.id, 'ag_dolor');
+  assert.equal(p.comorbidity.id, 'metal');
+  assert.equal(p.blocked, false);
+});
+
 test('generatePatient: age siempre queda en [18,75]', () => {
   for (let i = 0; i < 50; i++) {
     const p = generatePatient(Math.random);
@@ -127,6 +143,13 @@ test('findHomeCase: ubica el caso dueño de un agentBase exclusivo, o null si no
   assert.equal(findHomeCase('agente-inexistente'), null);
 });
 
+test('findHomeCases: devuelve TODOS los casos donde un agente compartido es válido', () => {
+  const homes = findHomeCases('us'); // Ultrasonido es válido en varios casos, no solo uno
+  assert.ok(homes.length > 1, 'US debería ser válido en más de un caso');
+  homes.forEach(h => assert.ok(h.agents.some(a => a.agentBase === 'us')));
+  assert.deepEqual(findHomeCases('agente-inexistente'), []);
+});
+
 /* ===== evaluateAgentChoice ===== */
 
 test('evaluateAgentChoice: elegir un agente válido y no bloqueado es correcto y avanza', () => {
@@ -148,11 +171,21 @@ test('evaluateAgentChoice: agente válido para el caso pero excluido por la como
   assert.ok(r.explanation.includes(metal.label));
 });
 
-test('evaluateAgentChoice: agente no válido para este caso cita el caso de origen', () => {
+test('evaluateAgentChoice: agente no válido pero exclusivo de otro caso cita ese caso específico', () => {
   const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false }; // ag_dolor
   const r = evaluateAgentChoice(patient, 'oc'); // solo válido en tend_cr
   assert.equal(r.correct, false);
   assert.ok(r.explanation.includes(SIM_CASES[11].phaseLabel));
+});
+
+test('evaluateAgentChoice: agente no válido aquí pero compartido por varios casos no afirma exclusividad falsa', () => {
+  const ag_edema = SIM_CASES.find(c => c.id === 'ag_edema'); // no incluye 'us'
+  const patient = { case: ag_edema, comorbidity: null, blocked: false };
+  const r = evaluateAgentChoice(patient, 'us');
+  assert.equal(r.correct, false);
+  assert.ok(!r.explanation.includes('el agente de referencia para'),
+    'no debe presentar un único caso como si fuera exclusivo cuando el agente es válido en varios');
+  assert.ok(r.explanation.includes('Ultrasonido terapéutico'));
 });
 
 test('evaluateAgentChoice: "Ninguno" es correcto cuando el caso está bloqueado', () => {
