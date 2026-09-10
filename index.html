@@ -813,6 +813,19 @@ body::before {
   }
   .modal-overlay.open .modal { transform: translateY(0) scale(1); }
 }
+
+/* ─── SIMULADOR ─── */
+.patient-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 12px; }
+.sim-slider-row { margin-bottom: 18px; }
+.sim-slider-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; color: var(--text2); margin-bottom: 6px; }
+.sim-slider-value { font-weight: 700; color: var(--accent2); }
+input.sim-slider { width: 100%; accent-color: var(--accent2); }
+.sim-param-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; color: var(--text); flex-wrap: wrap; }
+.sim-param-row:last-of-type { border-bottom: none; }
+.sim-param-range { font-size: 11px; color: var(--text3); white-space: nowrap; }
+.opt-btn.correct { outline: 2px solid var(--green); }
+.opt-btn.incorrect { outline: 2px solid var(--red); }
+.opt-btn.disabled { pointer-events: none; opacity: .85; }
 </style>
 </head>
 <body>
@@ -911,6 +924,14 @@ body::before {
     <div id="pruebas-result"></div>
   </div>
 
+  <!-- PAGE: SIMULADOR -->
+  <div class="page" id="page-sim">
+    <div class="section-eyebrow">Práctica clínica</div>
+    <div class="section-title">Simulador de agentes físicos</div>
+    <div class="section-sub">Se genera un paciente aleatorio: elige el agente físico indicado y ajusta sus parámetros de dosificación.</div>
+    <div id="sim-content"></div>
+  </div>
+
 </div>
 
 <!-- NAVEGACIÓN (bottom mobile / sidebar desktop) -->
@@ -958,6 +979,10 @@ body::before {
     <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
     <span class="nav-label">Pruebas</span>
   </div>
+  <div class="nav-item" onclick="showPage('sim',this)">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span>
+    <span class="nav-label">Simulador</span>
+  </div>
 </nav>
 
 <!-- MODAL -->
@@ -977,6 +1002,7 @@ body::before {
 <script src="js/farmacologia.js?v=2"></script>
 <script src="js/dolor.js?v=2"></script>
 <script src="js/pruebas.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
+<script src="js/simulador.js?v=1"></script>
+<script src="js/app.js?v=3"></script>
 </body>
 </html>

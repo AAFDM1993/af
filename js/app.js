@@ -1042,4 +1042,5 @@ buildDolor();
 buildTime();
 buildKine();
 buildPharma();
+buildSim();
 buildPruebas();
