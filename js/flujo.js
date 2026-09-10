@@ -26,8 +26,9 @@ const FLOW_NODES = {
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 1–3 J/cm² · continuo · 30–60 s/punto · 8–10 ses.',effect:'Fotobiomodulación, analgesia sin calor',mech:'Absorción en citocromo c oxidasa: aumenta ATP, modula mediadores inflamatorios sin efecto térmico.'},
       {name:'Magnetoterapia',c:'c-coral',params:'10–25 Hz · 10–30 Gauss · 20–30 min',effect:'Antiinflamatorio, no invasivo',mech:'Microcorrientes inducidas que reducen prostaglandinas e interleucinas proinflamatorias.'},
       {name:'Diadinámica DF',c:'c-red',params:'100 Hz · umbral sensitivo · 2–3 min inicio de sesión',effect:'Analgesia rápida Gate Control',mech:'La onda completa rectificada a 100 Hz activa fibras Aβ inhibiendo la transmisión nociceptiva en el asta posterior medular, con inicio de acción más rápido que el TENS convencional.'},
+      {name:'Coldpack (crioterapia)',c:'c-blue',params:'0–15 °C · barrera de toalla húmeda · 10–20 min · cada 2 h',effect:'Antiinflamatorio, analgésico, antiedematoso',mech:'Vasoconstricción simpática y reducción del metabolismo celular; limita la extravasación capilar y enlentece la conducción nerviosa nociceptiva.'},
     ],
-    note:'<strong>Contraindicado en aguda:</strong> US continuo, ondas de choque, corrientes rusas, interferencial a alta intensidad. Respetar reposo relativo de la zona.',
+    note:'<strong>Contraindicado en aguda:</strong> US continuo, ondas de choque, corrientes rusas, interferencial a alta intensidad, calor (compresas, infrarrojo). Respetar reposo relativo de la zona.',
     kinesio:{
       tabs:[
         { id:'mov', label:'Movilización articular',
@@ -54,6 +55,7 @@ const FLOW_NODES = {
       {name:'TENS convencional',c:'c-blue',params:'80–100 Hz · 50 µs · sensitivo · 20 min',effect:'Control del dolor asociado',mech:'Bloqueo de la transmisión del dolor por Gate Control a nivel medular.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 1–2 J/cm² · 30 s/punto · 8 ses.',effect:'Modulación inflamatoria local',mech:'Reduce la síntesis de prostaglandinas E2 y modula la actividad de macrófagos en el sitio de inflamación.'},
       {name:'Alto voltaje (cátodo)',c:'c-orange',params:'>100 V pico · cátodo (−) · ~120 pps · 20–30 min',effect:'Reducción de edema, repulsión electrostática',mech:'El electrodo negativo repele las proteínas cargadas negativamente del espacio intersticial, reduciendo la presión osmótica del edema postraumático.'},
+      {name:'Coldpack (crioterapia)',c:'c-blue',params:'0–15 °C · barrera de toalla húmeda · 10–20 min · cada 2 h',effect:'Antiinflamatorio, antiedematoso',mech:'La vasoconstricción y la reducción de la permeabilidad capilar limitan la extravasación de líquido y proteínas hacia el intersticio.'},
     ],
     note:'<strong>Evitar:</strong> calor, US continuo y masaje sobre zona edematosa aguda. Combinar con crioterapia y elevación del miembro.',
     kinesio:{tabs:[
@@ -75,8 +77,9 @@ const FLOW_NODES = {
       {name:'US pulsado 1:4',c:'c-amber',params:'1 MHz · 20% · 0.5 W/cm² · 5–8 min',effect:'Efecto mecánico, reduce espasmo',mech:'La cavitación estable actúa sobre las terminaciones nerviosas reduciendo la hiperexcitabilidad del huso muscular.'},
       {name:'Magnetoterapia 50–100 Hz',c:'c-coral',params:'50–100 Hz · 20–50 Gauss · 20 min',effect:'Efecto sedante y relajante muscular',mech:'Las frecuencias altas inducen microcorrientes con efecto inhibitorio sobre la placa motora.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 2–3 J/cm² · 30–60 s/punto · 8 ses.',effect:'Analgesia, reduce hipertonía refleja',mech:'Inhibe la transmisión en fibras nociceptivas C y A-δ, reduciendo el arco reflejo de espasmo.'},
+      {name:'Coldpack (crioterapia)',c:'c-blue',params:'0–15 °C · barrera de toalla húmeda · 10–20 min',effect:'Relajación muscular refleja, analgesia',mech:'El enfriamiento reduce la actividad del huso neuromuscular y la velocidad de conducción de fibras nociceptivas, disminuyendo el arco reflejo de espasmo.'},
     ],
-    note:'<strong>En espasmo agudo:</strong> priorizar modalidades no térmicas. Las corrientes rusas están contraindicadas en fase aguda inflamatoria activa.',
+    note:'<strong>En espasmo agudo:</strong> priorizar modalidades no térmicas (calor). El frío es de elección; las corrientes rusas están contraindicadas en fase aguda inflamatoria activa.',
     kinesio:{tabs:[
       { id:'manual', label:'Técnicas manuales', progs:[
         {week:'Desde día 1', title:'Inhibición muscular por presión mantenida (PNF inhibitorio)', detail:'Presión digital sostenida sobre el vientre muscular o zona de máxima tensión durante 20–30 segundos. Activa el reflejo inhibitorio del órgano tendinoso de Golgi (OTG), produciendo relajación refleja del músculo en espasmo.', params:['Presión sostenida','20–30 seg/punto','3–5 puntos','Sin dolor agudo'], ref:'<strong>Travell JG & Simons DG.</strong> Myofascial Pain and Dysfunction: The Trigger Point Manual. Williams & Wilkins, 1999. — La presión isquémica sostenida sobre el punto de máxima tensión activa el órgano tendinoso de Golgi generando inhibición autogénica del músculo en espasmo; eficacia del 75% en reducción del dolor en sesión única.'},
@@ -99,8 +102,10 @@ const FLOW_NODES = {
       {name:'Terapia combinada',c:'c-purple',params:'US 50% + TENS acupuntural · 12–15 min',effect:'Analgesia sinérgica profunda',mech:'El US aumenta la permeabilidad de membrana potenciando la respuesta neuronal al TENS de baja frecuencia.'},
       {name:'Diadinámica CP',c:'c-red',params:'50↔100 Hz alternando 1 s · umbral sensitivo · 4–6 min',effect:'Analgesia sostenida sin acomodación',mech:'La alternancia MF/DF evita la acomodación nerviosa combinando Gate Control (DF 100 Hz) con efecto sedante (MF 50 Hz) en la misma sesión.'},
       {name:'Träbert (corriente 2/5)',c:'c-lime',params:'143 Hz fija · impulso 2 ms · 30–60 mA · hormigueo intenso · 15–20 min',effect:'Analgesia profunda por impulso largo',mech:'El ancho de pulso de 2 ms activa fibras Aβ y A-δ produciendo un hormigueo profundo e intenso con analgesia de 1–3 h post-sesión.'},
+      {name:'Calor húmedo (compresas)',c:'c-red',params:'40–45 °C · 6–8 capas de toalla · 15–20 min',effect:'Relajación muscular, analgesia, preparación al movimiento',mech:'Vasodilatación refleja y aumento de la extensibilidad del colágeno; reduce el tono muscular por inhibición del huso neuromuscular.'},
+      {name:'Radiación infrarroja',c:'c-coral',params:'IR-A 760–1400 nm · 40–60 cm · 15–20 min',effect:'Calor superficial sin contacto, relajación muscular',mech:'Radiación electromagnética absorbida por el agua tisular; vasodilatación cutánea refleja sin presión de contacto sobre la piel.'},
     ],
-    note:'<strong>Fase subaguda:</strong> incrementar gradualmente la intensidad. No superar 2/10 de aumento del dolor post-sesión.',
+    note:'<strong>Fase subaguda:</strong> incrementar gradualmente la intensidad. No superar 2/10 de aumento del dolor post-sesión. El calor ya es seguro en esta fase (a diferencia de la fase aguda).',
     kinesio:{tabs:[
       { id:'mov', label:'Movilización articular', progs:[
         {week:'Sem 1–2', title:'Movilización grado II–III (Maitland)', detail:'Oscilaciones hasta el inicio de la resistencia tisular (R1). Efecto analgésico por activación de mecanorreceptores tipo III y IV. Permite inicio de recuperación del ROM.', params:['Grado II–III','3 series × 30 oscilaciones','Ritmo lento-moderado','EVA < 4/10'], ref:'<strong>Zusman M.</strong> Phys Ther Rev, 2011;16(5):353–360. — Las oscilaciones grado II–III estimulan mecanorreceptores de tipo III (terminaciones libres articulares) activando la inhibición descendente del dolor por vías noradrenérgicas y serotoninérgicas desde el troncoencéfalo.'},
@@ -147,6 +152,8 @@ const FLOW_NODES = {
       {name:'US pulsado 1:4',c:'c-amber',params:'1 MHz · 20% · 0.5–1 W/cm² · 5–8 min',effect:'Favorece reabsorción del exudado',mech:'El micromasaje tisular facilita la reabsorción de proteínas plasmáticas acumuladas en el intersticio.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 2–4 J/cm² · 30–60 s/zona · 8 ses.',effect:'Modulación inflamatoria, linfostimulación',mech:'Activa la motilidad de los vasos linfáticos y reduce la producción de mediadores inflamatorios proedematosos.'},
       {name:'Diadinámica LP',c:'c-red',params:'Períodos largos · umbral motor leve · 5–8 min',effect:'Bomba muscular rítmica, drenaje venoso',mech:'La estimulación muscular rítmica del modo LP actúa como bomba periférica que facilita el retorno venoso y linfático del edema subagudo.'},
+      {name:'Baño de contraste',c:'c-purple',params:'38–44 °C / 10–15 °C alternado · 4–6 ciclos · 20–30 min',effect:'Bombeo circulatorio — reabsorción de edema distal',mech:'La vasodilatación-vasoconstricción alternante genera un efecto de bomba que favorece el retorno venoso y linfático.'},
+      {name:'Hidroterapia (piscina terapéutica)',c:'c-blue',params:'33–36 °C · inmersión xifoides-cuello · 20–30 min',effect:'Descarga articular, drenaje por presión hidrostática',mech:'La presión hidrostática proporcional a la profundidad de inmersión comprime circunferencialmente el tejido, favoreciendo el retorno venoso y linfático.'},
     ],
     note:'<strong>Edema subagudo:</strong> asociar vendaje compresivo y elevación del miembro. La interferencial en barrido 0–100 Hz es también una opción versátil.',
     kinesio:{tabs:[
@@ -169,6 +176,8 @@ const FLOW_NODES = {
       {name:'US continuo previo',c:'c-amber',params:'1 MHz · 100% · 0.5–1 W/cm² · 5 min (pre-ejercicio)',effect:'Calentamiento, mejora extensibilidad',mech:'El calor profundo aumenta la extensibilidad del tejido conectivo y la velocidad de conducción nerviosa, preparando el músculo para el ejercicio.'},
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 3–5 J/cm² · post-ejercicio · 60 s/zona',effect:'Reduce DOMS, acelera recuperación',mech:'Reduce el daño oxidativo post-ejercicio, disminuye el lactato intramuscular y acelera la resíntesis de ATP.'},
       {name:'VMS',c:'c-purple',params:'Frecuencia variable 50–100 Hz · ON 6–10 s / OFF 12–20 s · AW 200–400 µs · rampa 1–3 s',effect:'Estimulación muscular adaptativa, anti-acomodación',mech:'La variación automática de frecuencia portadora reduce la acomodación neuromuscular y simula los patrones fisiológicos de activación motora, logrando mayor reclutamiento que la estimulación de frecuencia fija.'},
+      {name:'Calor húmedo (compresas)',c:'c-red',params:'40–45 °C · 6–8 capas de toalla · 15 min (pre-ejercicio)',effect:'Calentamiento, mejora extensibilidad',mech:'Vasodilatación refleja y aumento de la extensibilidad del colágeno; prepara el tejido para el ejercicio de fuerza.'},
+      {name:'Hidroterapia (piscina terapéutica)',c:'c-blue',params:'33–36 °C · inmersión xifoides-cuello · 20–45 min',effect:'Fortalecimiento de bajo impacto, descarga articular',mech:'La flotación reduce la carga articular hasta un 90%, permitiendo ejercicio activo y resistido cuando la carga en tierra aún genera dolor o no está indicada.'},
     ],
     note:'<strong>Corrientes rusas:</strong> indicadas cuando el paciente no puede contraer voluntariamente de forma efectiva. Combinar siempre con ejercicio activo-asistido. Contraindicadas en inflamación aguda activa.',
     kinesio:{tabs:[
@@ -194,6 +203,8 @@ const FLOW_NODES = {
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 5–8 J/cm² · pulsado · 90 s/punto · 12–15 ses.',effect:'Fotobiomodulación articular profunda',mech:'A 830 nm la penetración alcanza 3–5 cm, activando los condrocitos articulares y reduciendo la síntesis de metaloproteasas degradativas.'},
       {name:'Diadinámica CP/LP',c:'c-red',params:'CP o LP · 15–20 min',effect:'Analgesia articular sin acomodación, trofismo',mech:'CP evita la acomodación nerviosa combinando efectos sedante y analgésico. LP añade estimulación trófica articular con componente galvánico mayor.'},
       {name:'Träbert',c:'c-lime',params:'143 Hz · impulso 2 ms · electrodos periarticulares · 15–20 min',effect:'Analgesia articular profunda por impulso largo',mech:'Los pulsos de 2 ms activan fibras articulares profundas (A-δ) que el TENS convencional no alcanza, produciendo analgesia en estructuras articulares profundas (cadera, rodilla, hombro).'},
+      {name:'Calor húmedo (compresas)',c:'c-red',params:'40–45 °C · 6–8 capas de toalla · 15–20 min (pre-movilización)',effect:'Aumenta extensibilidad capsular previo a la movilización',mech:'Eleva la extensibilidad del colágeno cápsular reduciendo la viscosidad de la matriz extracelular.'},
+      {name:'Hidroterapia (piscina terapéutica)',c:'c-blue',params:'33–36 °C · inmersión xifoides-cuello · 20–30 min',effect:'Ejercicio en descarga, mínimo estrés articular',mech:'La flotación reduce la carga articular hasta un 90%, permitiendo mantener la actividad muscular periarticular sin carga axial compresiva sobre el cartílago.'},
     ],
     note:'<strong>Contraindicación:</strong> no aplicar US ni interferencial sobre prótesis metálicas. La magnetoterapia es la opción de elección en presencia de metal.',
     kinesio:{tabs:[
@@ -221,6 +232,8 @@ const FLOW_NODES = {
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 4–6 J/cm² · 60–90 s/zona · 10 ses.',effect:'Regeneración, reduce fibrosis muscular',mech:'Inhibe la activación de miofibroblastos y reduce la producción de TGF-β1, previniendo la fibrosis muscular crónica.'},
       {name:'Diadinámica RS',c:'c-red',params:'Ritmo sincopado · umbral motor visible · 5–10 min',effect:'Estimulación muscular rítmica activa',mech:'El modo RS genera contracciones musculares rítmicas intensas similares a EMS para reeducación muscular y mantenimiento del trofismo.'},
       {name:'Träbert',c:'c-lime',params:'143 Hz · impulso 2 ms · electrodos sobre músculo · hormigueo profundo · 15–20 min',effect:'Analgesia muscular profunda',mech:'El ancho de pulso de 2 ms activa fibras profundas del músculo generando analgesia duradera sin producir contracción muscular visible.'},
+      {name:'Calor húmedo (compresas)',c:'c-red',params:'40–45 °C · 6–8 capas de toalla · 15–20 min (pre-estiramiento)',effect:'Relajación muscular, aumenta extensibilidad',mech:'Vasodilatación refleja y aumento de la extensibilidad viscoelástica del colágeno; reduce el tono muscular por inhibición del huso neuromuscular.'},
+      {name:'Radiación infrarroja',c:'c-coral',params:'IR-A 760–1400 nm · 40–60 cm · 15–20 min',effect:'Calor superficial sin contacto, relajación muscular',mech:'Radiación electromagnética absorbida por el agua tisular; vasodilatación cutánea refleja sin presión de contacto, útil en zonas dolorosas al tacto.'},
     ],
     note:'<strong>Crónico muscular:</strong> asociar siempre con ejercicio activo. El agente físico potencia pero no reemplaza la rehabilitación activa. Las corrientes rusas son el estándar para atrofia por desuso.',
     kinesio:{tabs:[

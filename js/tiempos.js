@@ -13,7 +13,7 @@ const TISSUES = [
         agents:[{l:'US pulsado 1:1',c:'amber'},{l:'Laser 830 nm 3–5 J',c:'pink'},{l:'Corrientes rusas (desde sem 2)',c:'purple'},{l:'Magnetoterapia',c:'coral'},{l:'Galvánica (trofismo)',c:'gold'},{l:'Diadinámica CP',c:'red'}]},
       { name:'Fase de remodelación', time:'3 semanas – 6 meses', color:'green',
         body:'Maduración y reorganización de la cicatriz fibrosa. El colágeno tipo III es reemplazado progresivamente por colágeno tipo I (más resistente), orientado según las líneas de tensión mecánica. Las fibras musculares regeneradas aumentan en diámetro (hipertrofia). La recuperación completa de la fuerza y propiedades viscoelásticas puede tardar hasta 6 meses en lesiones grado III. El tejido cicatrizal nunca recupera la arquitectura perfecta del músculo original.',
-        agents:[{l:'Corrientes rusas',c:'purple'},{l:'US continuo',c:'amber'},{l:'TENS acupuntural',c:'blue'},{l:'Laser 830 nm 4–6 J',c:'pink'},{l:'Träbert',c:'lime'}]},
+        agents:[{l:'Corrientes rusas',c:'purple'},{l:'US continuo',c:'amber'},{l:'TENS acupuntural',c:'blue'},{l:'Laser 830 nm 4–6 J',c:'pink'},{l:'Träbert',c:'lime'},{l:'Calor húmedo (pre-estiramiento)',c:'red'}]},
     ],
     note:'<strong>Factores que alargan la recuperación:</strong> re-lesión en fase proliferativa, inmovilización prolongada, déficit de proteínas, edad avanzada y mala vascularización local. El retorno al deporte antes de recuperar el 90% de fuerza del lado sano multiplica el riesgo de recidiva.'},
 
@@ -27,7 +27,7 @@ const TISSUES = [
         agents:[{l:'US pulsado 1:4',c:'amber'},{l:'Laser 830 nm 1–3 J',c:'pink'},{l:'TENS convencional',c:'blue'},{l:'Magnetoterapia 10–25 Hz',c:'coral'},{l:'Diadinámica DF',c:'red'}]},
       { name:'Fase proliferativa', time:'2 – 10 semanas', color:'amber',
         body:'Proliferación de tenocitos y síntesis masiva de colágeno tipo III (90% del colágeno neoformado). Las fibras son desorganizadas, con orientación aleatoria y menor resistencia mecánica que el tejido original. Vascularización provisional (hipervascularización detectable por ecografía Doppler). Aumento de proteoglicanos (agrecano, decorina) que retienen agua → engrosamiento fusiforme del tendón. Clínicamente: dolor selectivo en carga, inicio de recuperación funcional.',
-        agents:[{l:'US continuo/pulsado',c:'amber'},{l:'Laser 830 nm 3–6 J',c:'pink'},{l:'Interferencial 80 Hz',c:'green'},{l:'Terapia combinada',c:'purple'},{l:'Diadinámica CP',c:'red'}]},
+        agents:[{l:'US continuo/pulsado',c:'amber'},{l:'Laser 830 nm 3–6 J',c:'pink'},{l:'Interferencial 80 Hz',c:'green'},{l:'Terapia combinada',c:'purple'},{l:'Diadinámica CP',c:'red'},{l:'Calor húmedo (pre-carga)',c:'red'}]},
       { name:'Fase de remodelación', time:'3 meses – 2 años', color:'green',
         body:'Reorganización del colágeno tipo III → colágeno tipo I según el eje de tensión mecánica. Este proceso depende directamente de la carga mecánica progresiva (mecanotransducción). La resistencia mecánica del tendón alcanza el 80% del original a los 6 meses y el 100% puede tardar hasta 1–2 años. Sin carga progresiva, el tendón queda como tejido fibrótico desorganizado (tendinosis). En tendinopatías crónicas (>3 meses), la neovascularización patológica y la apoptosis de tenocitos impiden la reparación espontánea.',
         agents:[{l:'Ondas de choque (crónico)',c:'teal'},{l:'Laser 830 nm 6–10 J',c:'pink'},{l:'US continuo',c:'amber'},{l:'Magnetoterapia',c:'coral'}]},
@@ -47,7 +47,7 @@ const TISSUES = [
         agents:[{l:'US pulsado 1:4',c:'amber'},{l:'Laser 830 nm 3–5 J',c:'pink'},{l:'Interferencial 80 Hz',c:'green'},{l:'Magnetoterapia',c:'coral'},{l:'Diadinámica CP',c:'red'}]},
       { name:'Fase de remodelación', time:'6 semanas – 18 meses', color:'green',
         body:'Reorganización del colágeno tipo III → I. El ligamento cicatrizal extraarticular puede alcanzar el 70–80% de resistencia original al año. La propiocepción se recupera más lentamente que la resistencia mecánica (fibras nerviosas mecanorreceptoras en el ligamento deben regenerarse). En reconstrucción del LCA, el injerto pasa por un proceso de "ligamentización": necrosis inicial → revascularización (mes 3–4) → proliferación celular → remodelación (mes 9–18). El criterio de retorno al deporte es funcional, no temporal.',
-        agents:[{l:'US continuo',c:'amber'},{l:'Corrientes rusas (músculo periart.)',c:'purple'},{l:'Laser 830 nm',c:'pink'},{l:'TENS acupuntural',c:'blue'}]},
+        agents:[{l:'US continuo',c:'amber'},{l:'Corrientes rusas (músculo periart.)',c:'purple'},{l:'Laser 830 nm',c:'pink'},{l:'TENS acupuntural',c:'blue'},{l:'Hidroterapia (rehab funcional)',c:'blue'}]},
     ],
     note:'<strong>Ligamento intraarticular vs extraarticular:</strong> el LLI de rodilla (extraarticular) cicatriza espontáneamente en grado III; el LCA (intraarticular) NO cicatriza sin reconstrucción quirúrgica. La rehabilitación post-LCA dura 9–12 meses mínimo para reducir el riesgo de re-rotura.'},
 
@@ -84,7 +84,7 @@ const TISSUES = [
         agents:[{l:'US pulsado 1:4 · 0.5–1.5 W/cm²',c:'amber'},{l:'Laser 830 nm 2–5 J',c:'pink'},{l:'Magnetoterapia 10–25 Hz · 5–15 mT',c:'coral'},{l:'Interferencial 80 Hz',c:'green'},{l:'Diadinámica',c:'red'}]},
       { name:'Maduración y remodelación del fibrocartílago', time:'3 meses – 2 años', color:'green',
         body:'El fibrocartílago neoformado madura progresivamente, pero nunca alcanza las propiedades biomecánicas del cartílago hialino: menor contenido de agrecano, menor resistencia a compresión repetida, mayor riesgo de fisuración tardía. IGF-1 y TGF-β guían la remodelación del colágeno tipo I. <strong>Descarga articular controlada:</strong> fundamental los primeros 3–6 meses para la integración del tejido. <em>Post-ACI/MACI:</em> el implante de condrocitos autólogos puede generar tejido más próximo al hialino; período crítico de 12 semanas para la fijación del implante → evitar US de alta intensidad y cargas de impacto.',
-        agents:[{l:'US pulsado · baja intensidad',c:'amber'},{l:'Laser 830 nm 3–6 J',c:'pink'},{l:'Magnetoterapia 1–25 Hz',c:'coral'},{l:'Interferencial (analgesia)',c:'green'}]},
+        agents:[{l:'US pulsado · baja intensidad',c:'amber'},{l:'Laser 830 nm 3–6 J',c:'pink'},{l:'Magnetoterapia 1–25 Hz',c:'coral'},{l:'Interferencial (analgesia)',c:'green'},{l:'Hidroterapia (descarga)',c:'blue'}]},
     ],
     note:'<strong>El cartílago articular NO se regenera espontáneamente.</strong> Lesión superficial → progresión hacia artrosis. Lesión profunda → fibrocartílago (inferior al hialino). Las microfracturas y el ACI/MACI buscan tejido reparativo con calidad variable. <strong>Condroprotección a largo plazo:</strong> magnetoterapia y laser 830 nm inhiben MMP-13 (degradativa del colágeno tipo II) y estimulan la síntesis de colágeno tipo II. <strong>Contraindicado en aguda sobre cartílago:</strong> US continuo de alta intensidad y cargas mecánicas en las primeras 6–8 semanas post-microfractura.'},
 
