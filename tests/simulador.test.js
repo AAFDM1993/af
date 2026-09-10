@@ -1,43 +1,81 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { SIM_CASES, SIM_COMORBILIDADES } = require('../js/simulador.js');
+const {
+  AGENT_CATALOG, SIM_CASES, SIM_COMORBILIDADES,
+  pickRandomItem, pickRandomInt, survivingAgents, generatePatient,
+  NONE_OPTION, shuffle, findHomeCase, evaluateAgentChoice, evaluateSliders,
+} = require('../js/simulador.js');
 
-test('SIM_CASES has exactly 12 well-formed cases', () => {
+function fakeRng(sequence) {
+  let i = 0;
+  return () => sequence[i++ % sequence.length];
+}
+
+/* ===== DATOS ===== */
+
+test('AGENT_CATALOG has 13 unique agents', () => {
+  assert.equal(AGENT_CATALOG.length, 13);
+  const ids = new Set(AGENT_CATALOG.map(a => a.id));
+  assert.equal(ids.size, 13, 'todos los ids deben ser únicos');
+  AGENT_CATALOG.forEach(a => {
+    assert.ok(a.id && a.name && a.icon && a.color);
+  });
+});
+
+test('SIM_CASES has 12 well-formed cases with agents keyed by agentBase', () => {
   assert.equal(SIM_CASES.length, 12);
+  const catalogIds = new Set(AGENT_CATALOG.map(a => a.id));
   const ids = new Set();
   SIM_CASES.forEach(c => {
     assert.ok(c.id && !ids.has(c.id), `id duplicado o vacío: ${c.id}`);
     ids.add(c.id);
     assert.ok(c.phaseLabel && c.phasePill && c.tissueLabel);
     assert.ok(Array.isArray(c.regions) && c.regions.length >= 3);
-    assert.ok(Array.isArray(c.validAgentNames) && c.validAgentNames.length >= 3);
-    assert.ok(c.validAgentNames.includes(c.target.name),
-      `${c.id}: el agente objetivo debe estar en validAgentNames`);
-    assert.ok(c.target.sliders.length >= 2 && c.target.sliders.length <= 3,
-      `${c.id}: debe tener 2 o 3 sliders`);
-    c.target.sliders.forEach(s => {
-      assert.ok(s.min <= s.validMin && s.validMin <= s.validMax && s.validMax <= s.max,
-        `${c.id}/${s.label}: el rango de control debe contener el rango válido`);
+    assert.ok(Array.isArray(c.agents) && c.agents.length >= 2, `${c.id}: debe tener al menos 2 agentes`);
+    c.agents.forEach(a => {
+      assert.ok(catalogIds.has(a.agentBase), `${c.id}: agentBase desconocido "${a.agentBase}"`);
+      assert.ok(a.name && a.mech);
+      assert.ok(a.sliders.length >= 1 && a.sliders.length <= 3, `${c.id}/${a.name}: debe tener 1-3 sliders`);
+      a.sliders.forEach(s => {
+        assert.ok(s.min <= s.validMin && s.validMin <= s.validMax && s.validMax <= s.max,
+          `${c.id}/${a.name}/${s.label}: el rango de control debe contener el rango válido`);
+      });
     });
   });
 });
 
+test('every catalog agent is valid in at least one case', () => {
+  AGENT_CATALOG.forEach(cat => {
+    const used = SIM_CASES.some(c => c.agents.some(a => a.agentBase === cat.id));
+    assert.ok(used, `${cat.id} (${cat.name}) nunca aparece como agente válido en ningún caso`);
+  });
+});
+
 test('SIM_COMORBILIDADES has exactly 6 entries referencing known agent bases', () => {
-  const knownBases = new Set(SIM_CASES.map(c => c.agentBase));
+  const catalogIds = new Set(AGENT_CATALOG.map(a => a.id));
   assert.equal(SIM_COMORBILIDADES.length, 6);
   SIM_COMORBILIDADES.forEach(m => {
     assert.ok(m.id && m.label);
     assert.ok(Array.isArray(m.excludes) && m.excludes.length >= 1);
-    m.excludes.forEach(base => assert.ok(knownBases.has(base), `${m.id}: base desconocida "${base}"`));
+    m.excludes.forEach(base => assert.ok(catalogIds.has(base), `${m.id}: base desconocida "${base}"`));
   });
 });
 
-const { generatePatient } = require('../js/simulador.js');
+/* ===== survivingAgents / generatePatient ===== */
 
-function fakeRng(sequence) {
-  let i = 0;
-  return () => sequence[i++ % sequence.length];
-}
+test('survivingAgents: sin comorbilidad devuelve todos los agentes del caso', () => {
+  const c = SIM_CASES[0];
+  assert.deepEqual(survivingAgents(c, null), c.agents);
+});
+
+test('survivingAgents: con comorbilidad filtra solo los agentes excluidos, no todos', () => {
+  const c = SIM_CASES[0]; // ag_dolor: tens, us, laser, mag, diad
+  const metal = SIM_COMORBILIDADES.find(m => m.id === 'metal'); // excludes inter, us
+  const surviving = survivingAgents(c, metal);
+  assert.equal(surviving.length, 4);
+  assert.ok(!surviving.some(a => a.agentBase === 'us'));
+  assert.ok(surviving.some(a => a.agentBase === 'tens'));
+});
 
 test('generatePatient: rng en 0 elige el primer caso/región, edad mínima, sin comorbilidad', () => {
   const rng = fakeRng([0, 0, 0, 0.99]);
@@ -49,14 +87,16 @@ test('generatePatient: rng en 0 elige el primer caso/región, edad mínima, sin 
   assert.equal(p.blocked, false);
 });
 
-test('generatePatient: con roll < 0.4 asigna comorbilidad y calcula "blocked" correctamente', () => {
-  const targetCaseIndex = SIM_CASES.findIndex(c => SIM_COMORBILIDADES[0].excludes.includes(c.agentBase));
-  assert.ok(targetCaseIndex >= 0, 'fixture: debe existir un caso excluido por la primera comorbilidad');
-  const caseRoll = (targetCaseIndex + 0.5) / SIM_CASES.length;
-  const rng = fakeRng([caseRoll, 0, 0, 0.1, 0]);
+test('generatePatient: blocked es true solo cuando la comorbilidad excluye TODOS los agentes del caso', () => {
+  // ag_espasmo (índice 2): tens, us, mag, laser — los 4 están en excludes de "neoplasia"
+  const caseIndex = SIM_CASES.findIndex(c => c.id === 'ag_espasmo');
+  const comorbIndex = SIM_COMORBILIDADES.findIndex(m => m.id === 'neoplasia');
+  const caseRoll = (caseIndex + 0.5) / SIM_CASES.length;
+  const comorbRoll = (comorbIndex + 0.5) / SIM_COMORBILIDADES.length;
+  const rng = fakeRng([caseRoll, 0, 0, 0.1, comorbRoll]);
   const p = generatePatient(rng);
-  assert.equal(p.case, SIM_CASES[targetCaseIndex]);
-  assert.equal(p.comorbidity, SIM_COMORBILIDADES[0]);
+  assert.equal(p.case.id, 'ag_espasmo');
+  assert.equal(p.comorbidity.id, 'neoplasia');
   assert.equal(p.blocked, true);
 });
 
@@ -67,68 +107,61 @@ test('generatePatient: age siempre queda en [18,75]', () => {
   }
 });
 
-const { pickDistractors, buildChoices, NONE_OPTION } = require('../js/simulador.js');
+/* ===== shuffle ===== */
 
-test('pickDistractors: siempre devuelve 3 nombres que no son válidos para ese caso', () => {
-  SIM_CASES.forEach(c => {
-    const distractors = pickDistractors(c, Math.random);
-    assert.equal(distractors.length, 3);
-    distractors.forEach(name => {
-      assert.notEqual(name, c.target.name);
-      assert.ok(!c.validAgentNames.includes(name), `${c.id}: "${name}" en realidad es válido para este caso`);
-    });
-  });
+test('shuffle: devuelve una permutación del mismo arreglo, sin mutar el original', () => {
+  const original = AGENT_CATALOG.slice();
+  const copy = AGENT_CATALOG.slice();
+  const shuffled = shuffle(copy, Math.random);
+  assert.deepEqual(copy, original, 'no debe mutar el arreglo pasado');
+  assert.equal(shuffled.length, original.length);
+  assert.deepEqual([...shuffled].sort((a, b) => a.id.localeCompare(b.id)),
+    [...original].sort((a, b) => a.id.localeCompare(b.id)));
 });
 
-test('buildChoices: sin comorbilidad -> objetivo + 3 distractores, sin "Ninguno"', () => {
-  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false };
-  const options = buildChoices(patient, Math.random);
-  assert.equal(options.length, 4);
-  assert.ok(options.includes(SIM_CASES[0].target.name));
-  assert.ok(!options.includes(NONE_OPTION));
+/* ===== findHomeCase ===== */
+
+test('findHomeCase: ubica el caso dueño de un agentBase exclusivo, o null si no existe', () => {
+  const home = findHomeCase('oc'); // Ondas de choque solo aparece en tend_cr
+  assert.equal(home.id, 'tend_cr');
+  assert.equal(findHomeCase('agente-inexistente'), null);
 });
 
-test('buildChoices: comorbilidad que bloquea -> sin objetivo, con "Ninguno" (4 opciones)', () => {
-  const patient = { case: SIM_CASES[0], comorbidity: SIM_COMORBILIDADES[0], blocked: true };
-  const options = buildChoices(patient, Math.random);
-  assert.equal(options.length, 4);
-  assert.ok(!options.includes(SIM_CASES[0].target.name));
-  assert.ok(options.includes(NONE_OPTION));
-});
+/* ===== evaluateAgentChoice ===== */
 
-test('buildChoices: comorbilidad presente que no bloquea -> objetivo + distractores + "Ninguno" (5)', () => {
-  const patient = { case: SIM_CASES[0], comorbidity: SIM_COMORBILIDADES[0], blocked: false };
-  const options = buildChoices(patient, Math.random);
-  assert.equal(options.length, 5);
-  assert.ok(options.includes(SIM_CASES[0].target.name));
-  assert.ok(options.includes(NONE_OPTION));
-});
-
-const { findHomeCase, evaluateAgentChoice } = require('../js/simulador.js');
-
-test('evaluateAgentChoice: elegir el objetivo sin bloqueo es correcto y avanza a sliders', () => {
-  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false };
-  const r = evaluateAgentChoice(patient, SIM_CASES[0].target.name);
+test('evaluateAgentChoice: elegir un agente válido y no bloqueado es correcto y avanza', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false }; // ag_dolor
+  const r = evaluateAgentChoice(patient, 'tens');
   assert.equal(r.correct, true);
   assert.equal(r.advance, true);
-  assert.equal(r.explanation, SIM_CASES[0].target.mech);
+  assert.equal(r.agent.agentBase, 'tens');
+  assert.equal(r.explanation, SIM_CASES[0].agents.find(a => a.agentBase === 'tens').mech);
 });
 
-test('evaluateAgentChoice: elegir un distractor es incorrecto y cita el caso de origen', () => {
-  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false };
-  const distractorName = SIM_CASES[1].target.name;
-  const r = evaluateAgentChoice(patient, distractorName);
+test('evaluateAgentChoice: agente válido para el caso pero excluido por la comorbilidad del paciente', () => {
+  const metal = SIM_COMORBILIDADES.find(m => m.id === 'metal');
+  const patient = { case: SIM_CASES[0], comorbidity: metal, blocked: false }; // ag_dolor, us excluido por metal
+  const r = evaluateAgentChoice(patient, 'us');
   assert.equal(r.correct, false);
   assert.equal(r.advance, false);
-  assert.ok(r.explanation.includes(SIM_CASES[1].phaseLabel));
+  assert.ok(r.explanation.includes('US pulsado 1:4'));
+  assert.ok(r.explanation.includes(metal.label));
+});
+
+test('evaluateAgentChoice: agente no válido para este caso cita el caso de origen', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false }; // ag_dolor
+  const r = evaluateAgentChoice(patient, 'oc'); // solo válido en tend_cr
+  assert.equal(r.correct, false);
+  assert.ok(r.explanation.includes(SIM_CASES[11].phaseLabel));
 });
 
 test('evaluateAgentChoice: "Ninguno" es correcto cuando el caso está bloqueado', () => {
-  const patient = { case: SIM_CASES[0], comorbidity: SIM_COMORBILIDADES[0], blocked: true };
+  const neoplasia = SIM_COMORBILIDADES.find(m => m.id === 'neoplasia');
+  const patient = { case: SIM_CASES[2], comorbidity: neoplasia, blocked: true }; // ag_espasmo
   const r = evaluateAgentChoice(patient, NONE_OPTION);
   assert.equal(r.correct, true);
   assert.equal(r.advance, false);
-  assert.ok(r.explanation.includes(SIM_COMORBILIDADES[0].label));
+  assert.ok(r.explanation.includes(neoplasia.label));
 });
 
 test('evaluateAgentChoice: "Ninguno" es incorrecto cuando no hay bloqueo', () => {
@@ -138,34 +171,29 @@ test('evaluateAgentChoice: "Ninguno" es incorrecto cuando no hay bloqueo', () =>
   assert.equal(r.advance, false);
 });
 
-test('findHomeCase: ubica el caso dueño de un agente objetivo, o null si no existe', () => {
-  assert.equal(findHomeCase(SIM_CASES[3].target.name), SIM_CASES[3]);
-  assert.equal(findHomeCase('Agente inexistente'), null);
-});
-
-const { evaluateSliders } = require('../js/simulador.js');
+/* ===== evaluateSliders ===== */
 
 test('evaluateSliders: todos los valores dentro de rango -> allOk true', () => {
-  const target = SIM_CASES[0].target;
-  const midValues = target.sliders.map(s => (s.validMin + s.validMax) / 2);
-  const r = evaluateSliders(target, midValues);
+  const agent = SIM_CASES[0].agents[0]; // TENS convencional
+  const midValues = agent.sliders.map(s => (s.validMin + s.validMax) / 2);
+  const r = evaluateSliders(agent, midValues);
   assert.equal(r.allOk, true);
   r.results.forEach(res => assert.equal(res.ok, true));
 });
 
 test('evaluateSliders: un valor fuera de rango marca solo ese parámetro como incorrecto', () => {
-  const target = SIM_CASES[0].target;
-  const values = target.sliders.map(s => s.validMin);
-  values[0] = target.sliders[0].validMin - 10;
-  const r = evaluateSliders(target, values);
+  const agent = SIM_CASES[0].agents[0];
+  const values = agent.sliders.map(s => s.validMin);
+  values[0] = agent.sliders[0].validMin - 10;
+  const r = evaluateSliders(agent, values);
   assert.equal(r.allOk, false);
   assert.equal(r.results[0].ok, false);
   assert.equal(r.results[1].ok, true);
 });
 
 test('evaluateSliders: los límites validMin/validMax cuentan como correctos', () => {
-  const target = SIM_CASES[0].target;
-  const values = target.sliders.map(s => s.validMax);
-  const r = evaluateSliders(target, values);
+  const agent = SIM_CASES[0].agents[0];
+  const values = agent.sliders.map(s => s.validMax);
+  const r = evaluateSliders(agent, values);
   assert.equal(r.allOk, true);
 });
