@@ -66,3 +66,40 @@ test('generatePatient: age siempre queda en [18,75]', () => {
     assert.ok(p.age >= 18 && p.age <= 75);
   }
 });
+
+const { pickDistractors, buildChoices, NONE_OPTION } = require('../js/simulador.js');
+
+test('pickDistractors: siempre devuelve 3 nombres que no son válidos para ese caso', () => {
+  SIM_CASES.forEach(c => {
+    const distractors = pickDistractors(c, Math.random);
+    assert.equal(distractors.length, 3);
+    distractors.forEach(name => {
+      assert.notEqual(name, c.target.name);
+      assert.ok(!c.validAgentNames.includes(name), `${c.id}: "${name}" en realidad es válido para este caso`);
+    });
+  });
+});
+
+test('buildChoices: sin comorbilidad -> objetivo + 3 distractores, sin "Ninguno"', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false };
+  const options = buildChoices(patient, Math.random);
+  assert.equal(options.length, 4);
+  assert.ok(options.includes(SIM_CASES[0].target.name));
+  assert.ok(!options.includes(NONE_OPTION));
+});
+
+test('buildChoices: comorbilidad que bloquea -> sin objetivo, con "Ninguno" (4 opciones)', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: SIM_COMORBILIDADES[0], blocked: true };
+  const options = buildChoices(patient, Math.random);
+  assert.equal(options.length, 4);
+  assert.ok(!options.includes(SIM_CASES[0].target.name));
+  assert.ok(options.includes(NONE_OPTION));
+});
+
+test('buildChoices: comorbilidad presente que no bloquea -> objetivo + distractores + "Ninguno" (5)', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: SIM_COMORBILIDADES[0], blocked: false };
+  const options = buildChoices(patient, Math.random);
+  assert.equal(options.length, 5);
+  assert.ok(options.includes(SIM_CASES[0].target.name));
+  assert.ok(options.includes(NONE_OPTION));
+});

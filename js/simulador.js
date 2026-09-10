@@ -188,6 +188,42 @@ function generatePatient(rng) {
   return { case: patientCase, region, age, comorbidity, blocked };
 }
 
+/* ===== SIMULADOR — CONSTRUCCIÓN DE OPCIONES ===== */
+const NONE_OPTION = 'Ninguno de estos — contraindicado, derivar o posponer';
+
+function shuffle(arr, rng) {
+  const copy = arr.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+  }
+  return copy;
+}
+
+function pickDistractors(patientCase, rng) {
+  const pool = SIM_CASES
+    .map(c => c.target.name)
+    .filter(name => name !== patientCase.target.name)
+    .filter(name => !patientCase.validAgentNames.includes(name));
+  return shuffle(pool, rng).slice(0, 3);
+}
+
+function buildChoices(patient, rng) {
+  const distractors = pickDistractors(patient.case, rng);
+  let options;
+  if (patient.blocked) {
+    options = distractors.concat([NONE_OPTION]);
+  } else if (patient.comorbidity) {
+    options = [patient.case.target.name].concat(distractors, [NONE_OPTION]);
+  } else {
+    options = [patient.case.target.name].concat(distractors);
+  }
+  return shuffle(options, rng);
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { SIM_CASES, SIM_COMORBILIDADES, pickRandomItem, pickRandomInt, generatePatient };
+  module.exports = {
+    SIM_CASES, SIM_COMORBILIDADES, pickRandomItem, pickRandomInt, generatePatient,
+    NONE_OPTION, pickDistractors, buildChoices,
+  };
 }
