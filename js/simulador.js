@@ -3,7 +3,7 @@ const SIM_CASES = [
   { id:'ag_dolor', phaseLabel:'Aguda — dolor e inflamación', phasePill:'pill-red',
     tissueLabel:'dolor agudo con inflamación',
     regions:['tobillo','rodilla','zona lumbar','hombro'],
-    validAgentNames:['TENS convencional','US pulsado 1:4','Laser 830 nm','Magnetoterapia','Diadinámica DF'],
+    validAgentNames:['TENS convencional','US pulsado 1:4','Laser 830 nm','Magnetoterapia','Diadinámica DF','Magnetoterapia 25–50 Hz','Magnetoterapia 1–25 Hz'],
     agentBase:'tens',
     target:{ name:'TENS convencional',
       mech:'Activa fibras A-β que bloquean la transmisión del dolor a nivel medular (Gate Control).',
@@ -16,7 +16,7 @@ const SIM_CASES = [
   { id:'ag_edema', phaseLabel:'Aguda — edema prominente', phasePill:'pill-red',
     tissueLabel:'edema postraumático agudo',
     regions:['tobillo','rodilla','mano','pie'],
-    validAgentNames:['Interferencial 25–50 Hz','Magnetoterapia','TENS convencional','Laser 830 nm','Alto voltaje (cátodo)'],
+    validAgentNames:['Interferencial 25–50 Hz','Magnetoterapia','TENS convencional','Laser 830 nm','Alto voltaje (cátodo)','Magnetoterapia 25–50 Hz','Magnetoterapia 1–25 Hz'],
     agentBase:'inter',
     target:{ name:'Interferencial 25–50 Hz',
       mech:'Efecto simpaticolítico: vasodilatación y mejora del retorno venoso y linfático.',
@@ -41,7 +41,7 @@ const SIM_CASES = [
   { id:'sub_dolor', phaseLabel:'Subaguda — dolor residual', phasePill:'pill-amber',
     tissueLabel:'dolor residual subagudo',
     regions:['hombro','rodilla','zona lumbar','cadera'],
-    validAgentNames:['TENS acupuntural','Interferencial 80–100 Hz','Laser 830 nm','Terapia combinada','Diadinámica CP','Träbert (corriente 2/5)'],
+    validAgentNames:['TENS acupuntural','Interferencial 80–100 Hz','Laser 830 nm','Terapia combinada','Diadinámica CP','Träbert (corriente 2/5)','Interferencial 80 Hz'],
     agentBase:'tens',
     target:{ name:'TENS acupuntural',
       mech:'Estimula la liberación de β-endorfinas y encefalinas en el asta posterior medular y a nivel sistémico.',
@@ -79,7 +79,7 @@ const SIM_CASES = [
   { id:'sub_fuerza', phaseLabel:'Subaguda — recuperación de fuerza', phasePill:'pill-amber',
     tissueLabel:'debilidad muscular por desuso',
     regions:['cuádriceps','hombro','gemelo','isquiotibiales'],
-    validAgentNames:['Corrientes rusas','TENS Burst / EMS','US continuo previo','Laser 830 nm','VMS'],
+    validAgentNames:['Corrientes rusas','TENS Burst / EMS','US continuo previo','Laser 830 nm','VMS','TENS Burst'],
     agentBase:'rusa',
     target:{ name:'Corrientes rusas',
       mech:'La media frecuencia (2500 Hz) supera la resistencia cutánea sin dolor; las ráfagas a 50 Hz generan contracción tetánica fuerte, estimulando fibras tipo II.',
@@ -91,7 +91,7 @@ const SIM_CASES = [
   { id:'cr_articular', phaseLabel:'Crónica — articular / hueso', phasePill:'pill-green',
     tissueLabel:'afección articular crónica',
     regions:['rodilla','cadera','hombro','mano'],
-    validAgentNames:['Magnetoterapia 1–25 Hz','US continuo','Interferencial 0–100 Hz','Laser 830 nm','Diadinámica CP/LP','Träbert'],
+    validAgentNames:['Magnetoterapia 1–25 Hz','US continuo','Interferencial 0–100 Hz','Laser 830 nm','Diadinámica CP/LP','Träbert','Interferencial 25–50 Hz','Interferencial 80 Hz'],
     agentBase:'mag',
     target:{ name:'Magnetoterapia 1–25 Hz',
       mech:'Estimula osteoblastos y activa la síntesis de colágeno óseo.',
@@ -116,7 +116,7 @@ const SIM_CASES = [
   { id:'cr_neuro', phaseLabel:'Crónica — dolor neuropático / punto gatillo', phasePill:'pill-blue',
     tissueLabel:'dolor neuropático / punto gatillo miofascial',
     regions:['trapecio superior','glúteo','cervical','antebrazo'],
-    validAgentNames:['TENS acupuntural','Laser 830 nm sobre PG','Interferencial 1–10 Hz','Magnetoterapia 10–25 Hz','Onda H','Träbert','Galvánica (trofismo axonal)'],
+    validAgentNames:['TENS acupuntural','Laser 830 nm sobre PG','Interferencial 1–10 Hz','Magnetoterapia 10–25 Hz','Onda H','Träbert','Galvánica (trofismo axonal)','Laser 830 nm'],
     agentBase:'ondah',
     target:{ name:'Onda H',
       mech:'La forma de onda exponencial activa fibras neuropáticas dañadas con menor densidad de corriente; la baja frecuencia libera opioides endógenos.',
@@ -128,7 +128,7 @@ const SIM_CASES = [
   { id:'tend_sub', phaseLabel:'Tendinopatía subaguda-crónica', phasePill:'pill-amber',
     tissueLabel:'tendinopatía subaguda-crónica',
     regions:['tendón de Aquiles','manguito rotador','tendón rotuliano','epicóndilo'],
-    validAgentNames:['US continuo/pulsado','Laser 830 nm','Terapia combinada','Interferencial 80 Hz'],
+    validAgentNames:['US continuo/pulsado','Laser 830 nm','Terapia combinada','Interferencial 80 Hz','US pulsado 1:1'],
     agentBase:'inter',
     target:{ name:'Interferencial 80 Hz',
       mech:'Alta frecuencia interferencial activa Gate Control en profundidad, apropiado para tendones profundos.',
@@ -140,7 +140,7 @@ const SIM_CASES = [
   { id:'tend_cr', phaseLabel:'Tendinopatía crónica refractaria', phasePill:'pill-red',
     tissueLabel:'tendinopatía crónica refractaria (>3 meses)',
     regions:['tendón de Aquiles','tendón rotuliano','fascia plantar','epicóndilo'],
-    validAgentNames:['Ondas de choque radiales','Laser 830 nm','US continuo','Magnetoterapia'],
+    validAgentNames:['Ondas de choque radiales','Laser 830 nm','US continuo','Magnetoterapia','Magnetoterapia 25–50 Hz','Magnetoterapia 1–25 Hz'],
     agentBase:'oc',
     target:{ name:'Ondas de choque radiales',
       mech:'Generan microtraumatismo controlado que reinicia la cascada de reparación: estimulan VEGF, IGF-1 y TGF-β1.',
@@ -238,7 +238,9 @@ function evaluateAgentChoice(patient, chosen) {
     }
     return {
       correct: false, advance: false,
-      explanation: `${targetName} sí está indicado aquí: no hay contraindicación activa para este paciente.`,
+      explanation: patient.comorbidity
+        ? `${targetName} sí está indicado aquí: ${patient.comorbidity.label} no lo contraindica.`
+        : `${targetName} sí está indicado aquí: no hay contraindicación activa para este paciente.`,
     };
   }
 
@@ -248,9 +250,13 @@ function evaluateAgentChoice(patient, chosen) {
 
   const home = findHomeCase(chosen);
   const homeDesc = home ? `${home.phaseLabel} — ${home.tissueLabel}` : 'otro cuadro clínico';
+  let explanation = `${chosen} es el agente de referencia para «${homeDesc}», no para este cuadro.`;
+  if (patient.blocked && patient.comorbidity) {
+    explanation += ` Además, ${patient.comorbidity.label} contraindica el agente indicado para este cuadro.`;
+  }
   return {
     correct: false, advance: false,
-    explanation: `${chosen} es el agente de referencia para «${homeDesc}», no para este cuadro.`,
+    explanation,
   };
 }
 
