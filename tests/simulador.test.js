@@ -13,17 +13,17 @@ function fakeRng(sequence) {
 
 /* ===== DATOS ===== */
 
-test('AGENT_CATALOG has 13 unique agents', () => {
-  assert.equal(AGENT_CATALOG.length, 13);
+test('AGENT_CATALOG has 17 unique agents', () => {
+  assert.equal(AGENT_CATALOG.length, 17);
   const ids = new Set(AGENT_CATALOG.map(a => a.id));
-  assert.equal(ids.size, 13, 'todos los ids deben ser únicos');
+  assert.equal(ids.size, 17, 'todos los ids deben ser únicos');
   AGENT_CATALOG.forEach(a => {
     assert.ok(a.id && a.name && a.icon && a.color);
   });
 });
 
-test('SIM_CASES has 12 well-formed cases with agents keyed by agentBase', () => {
-  assert.equal(SIM_CASES.length, 12);
+test('SIM_CASES has 15 well-formed cases with agents keyed by agentBase', () => {
+  assert.equal(SIM_CASES.length, 15);
   const catalogIds = new Set(AGENT_CATALOG.map(a => a.id));
   const ids = new Set();
   SIM_CASES.forEach(c => {
@@ -47,8 +47,12 @@ test('SIM_CASES has 12 well-formed cases with agents keyed by agentBase', () => 
   });
 });
 
-test('every catalog agent is valid in at least one case', () => {
-  AGENT_CATALOG.forEach(cat => {
+test('every catalog agent except uv is valid in at least one case', () => {
+  // 'uv' (radiación ultravioleta) es deliberadamente catálogo-only: no encaja en el
+  // árbol de decisión orientado a fases de lesión musculoesquelética (ver flujo.js y
+  // el spec de nuevos-agentes-fisicos), igual que ocurre en el Flujograma. Actúa como
+  // distractor universal en el simulador.
+  AGENT_CATALOG.filter(cat => cat.id !== 'uv').forEach(cat => {
     const used = SIM_CASES.some(c => c.agents.some(a => a.agentBase === cat.id));
     assert.ok(used, `${cat.id} (${cat.name}) nunca aparece como agente válido en ningún caso`);
   });
@@ -64,6 +68,14 @@ test('SIM_COMORBILIDADES has exactly 6 entries referencing known agent bases', (
   });
 });
 
+test('los 3 casos nuevos (ag_inestabilidad, sub_rigidez, cr_edema) existen con agentes válidos', () => {
+  ['ag_inestabilidad', 'sub_rigidez', 'cr_edema'].forEach(id => {
+    const c = SIM_CASES.find(x => x.id === id);
+    assert.ok(c, `falta el caso ${id}`);
+    assert.ok(c.agents.length >= 4, `${id}: se esperaban al menos 4 agentes`);
+  });
+});
+
 /* ===== survivingAgents / generatePatient ===== */
 
 test('survivingAgents: sin comorbilidad devuelve todos los agentes del caso', () => {
@@ -72,10 +84,10 @@ test('survivingAgents: sin comorbilidad devuelve todos los agentes del caso', ()
 });
 
 test('survivingAgents: con comorbilidad filtra solo los agentes excluidos, no todos', () => {
-  const c = SIM_CASES[0]; // ag_dolor: tens, us, laser, mag, diad
+  const c = SIM_CASES[0]; // ag_dolor: tens, us, laser, mag, diad, termo
   const metal = SIM_COMORBILIDADES.find(m => m.id === 'metal'); // excludes inter, us
   const surviving = survivingAgents(c, metal);
-  assert.equal(surviving.length, 4);
+  assert.equal(surviving.length, c.agents.length - 1);
   assert.ok(!surviving.some(a => a.agentBase === 'us'));
   assert.ok(surviving.some(a => a.agentBase === 'tens'));
 });

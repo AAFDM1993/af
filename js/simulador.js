@@ -13,6 +13,10 @@ const AGENT_CATALOG = [
   { id:'ondah',   name:'Onda H (H-Wave Therapy)',             icon:'〜', color:'c-indigo' },
   { id:'hvpc',    name:'Alto voltaje (HVPC)',                 icon:'⚡', color:'c-orange' },
   { id:'trabert', name:'Corriente de Träbert (2/5)',          icon:'◻', color:'c-lime' },
+  { id:'termo',   name:'Termoterapia (calor, frío y contraste)', icon:'♨', color:'c-red' },
+  { id:'ir',      name:'Radiación infrarroja',                icon:'☀', color:'c-coral' },
+  { id:'uv',      name:'Radiación ultravioleta',               icon:'◈', color:'c-indigo' },
+  { id:'hidro',   name:'Hidroterapia',                         icon:'≈', color:'c-blue' },
 ];
 
 /* ===== SIMULADOR — DATOS ===== */
@@ -53,6 +57,12 @@ const SIM_CASES = [
           { label:'Frecuencia', unit:'Hz', min:0, max:150, step:5, validMin:95, validMax:105 },
           { label:'Duración', unit:'min', min:0, max:10, step:1, validMin:2, validMax:3 },
         ]},
+      { agentBase:'termo', name:'Coldpack (crioterapia)',
+        mech:'Vasoconstricción simpática y reducción del metabolismo celular; limita la extravasación capilar y enlentece la conducción nerviosa nociceptiva.',
+        sliders:[
+          { label:'Temperatura (interfase)', unit:'°C', min:0, max:25, step:1, validMin:0, validMax:15 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:10, validMax:20 },
+        ]},
     ]},
 
   { id:'ag_edema', phaseLabel:'Aguda — edema prominente', phasePill:'pill-red',
@@ -91,6 +101,12 @@ const SIM_CASES = [
           { label:'Frecuencia', unit:'pps', min:0, max:200, step:5, validMin:110, validMax:130 },
           { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
         ]},
+      { agentBase:'termo', name:'Coldpack (crioterapia)',
+        mech:'La vasoconstricción y la reducción de la permeabilidad capilar limitan la extravasación de líquido y proteínas hacia el intersticio.',
+        sliders:[
+          { label:'Temperatura (interfase)', unit:'°C', min:0, max:25, step:1, validMin:0, validMax:15 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:10, validMax:20 },
+        ]},
     ]},
 
   { id:'ag_espasmo', phaseLabel:'Aguda — espasmo muscular', phasePill:'pill-red',
@@ -122,6 +138,12 @@ const SIM_CASES = [
         sliders:[
           { label:'Dosis', unit:'J/cm²', min:0, max:6, step:0.5, validMin:2, validMax:3 },
           { label:'Tiempo por punto', unit:'s', min:0, max:90, step:5, validMin:30, validMax:60 },
+        ]},
+      { agentBase:'termo', name:'Coldpack (crioterapia)',
+        mech:'El enfriamiento reduce la actividad del huso neuromuscular y la velocidad de conducción de fibras nociceptivas, disminuyendo el arco reflejo de espasmo.',
+        sliders:[
+          { label:'Temperatura (interfase)', unit:'°C', min:0, max:25, step:1, validMin:0, validMax:15 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:10, validMax:20 },
         ]},
     ]},
 
@@ -162,6 +184,18 @@ const SIM_CASES = [
         mech:'El ancho de pulso de 2 ms activa fibras Aβ y A-δ produciendo un hormigueo profundo e intenso con analgesia de 1–3 h post-sesión.',
         sliders:[
           { label:'Intensidad', unit:'mA', min:0, max:100, step:5, validMin:30, validMax:60 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
+        ]},
+      { agentBase:'termo', name:'Calor húmedo (compresas)',
+        mech:'Vasodilatación refleja y aumento de la extensibilidad del colágeno; reduce el tono muscular por inhibición del huso neuromuscular.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:60, step:1, validMin:40, validMax:45 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
+        ]},
+      { agentBase:'ir', name:'Radiación infrarroja',
+        mech:'Radiación electromagnética absorbida por el agua tisular; vasodilatación cutánea refleja sin presión de contacto sobre la piel.',
+        sliders:[
+          { label:'Distancia', unit:'cm', min:0, max:100, step:5, validMin:40, validMax:60 },
           { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
         ]},
     ]},
@@ -241,6 +275,18 @@ const SIM_CASES = [
         sliders:[
           { label:'Duración', unit:'min', min:0, max:15, step:1, validMin:5, validMax:8 },
         ]},
+      { agentBase:'termo', name:'Baño de contraste',
+        mech:'La vasodilatación-vasoconstricción alternante genera un efecto de bomba que favorece el retorno venoso y linfático.',
+        sliders:[
+          { label:'Nº de ciclos', unit:'ciclos', min:0, max:10, step:1, validMin:4, validMax:6 },
+          { label:'Duración total', unit:'min', min:0, max:40, step:5, validMin:16, validMax:30 },
+        ]},
+      { agentBase:'hidro', name:'Hidroterapia (piscina terapéutica)',
+        mech:'La presión hidrostática proporcional a la profundidad de inmersión comprime circunferencialmente el tejido, favoreciendo el retorno venoso y linfático.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:45, step:1, validMin:33, validMax:36 },
+          { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
+        ]},
     ]},
 
   { id:'sub_fuerza', phaseLabel:'Subaguda — recuperación de fuerza', phasePill:'pill-amber',
@@ -271,6 +317,18 @@ const SIM_CASES = [
         sliders:[
           { label:'Dosis', unit:'J/cm²', min:0, max:8, step:0.5, validMin:3, validMax:5 },
           { label:'Tiempo por zona', unit:'s', min:0, max:90, step:5, validMin:55, validMax:65 },
+        ]},
+      { agentBase:'termo', name:'Calor húmedo (compresas)',
+        mech:'Vasodilatación refleja y aumento de la extensibilidad del colágeno; prepara el tejido para el ejercicio de fuerza.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:60, step:1, validMin:40, validMax:45 },
+          { label:'Duración', unit:'min', min:0, max:30, step:1, validMin:13, validMax:17 },
+        ]},
+      { agentBase:'hidro', name:'Hidroterapia (piscina terapéutica)',
+        mech:'La flotación reduce la carga articular hasta un 90%, permitiendo ejercicio activo y resistido cuando la carga en tierra aún genera dolor o no está indicada.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:45, step:1, validMin:33, validMax:36 },
+          { label:'Duración', unit:'min', min:0, max:60, step:5, validMin:20, validMax:45 },
         ]},
     ]},
 
@@ -314,6 +372,18 @@ const SIM_CASES = [
           { label:'Frecuencia', unit:'Hz', min:0, max:200, step:1, validMin:140, validMax:146 },
           { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
         ]},
+      { agentBase:'termo', name:'Calor húmedo (compresas)',
+        mech:'Eleva la extensibilidad del colágeno cápsular reduciendo la viscosidad de la matriz extracelular.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:60, step:1, validMin:40, validMax:45 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
+        ]},
+      { agentBase:'hidro', name:'Hidroterapia (piscina terapéutica)',
+        mech:'La flotación reduce la carga articular hasta un 90%, permitiendo mantener la actividad muscular periarticular sin carga axial compresiva sobre el cartílago.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:45, step:1, validMin:33, validMax:36 },
+          { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
+        ]},
     ]},
 
   { id:'cr_muscular', phaseLabel:'Crónica — músculo / tejido blando', phasePill:'pill-green',
@@ -354,6 +424,18 @@ const SIM_CASES = [
         mech:'El ancho de pulso de 2 ms activa fibras profundas del músculo generando analgesia duradera sin producir contracción muscular visible.',
         sliders:[
           { label:'Frecuencia', unit:'Hz', min:0, max:200, step:1, validMin:140, validMax:146 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
+        ]},
+      { agentBase:'termo', name:'Calor húmedo (compresas)',
+        mech:'Vasodilatación refleja y aumento de la extensibilidad viscoelástica del colágeno; reduce el tono muscular por inhibición del huso neuromuscular.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:60, step:1, validMin:40, validMax:45 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
+        ]},
+      { agentBase:'ir', name:'Radiación infrarroja',
+        mech:'Radiación electromagnética absorbida por el agua tisular; vasodilatación cutánea refleja sin presión de contacto, útil en zonas dolorosas al tacto.',
+        sliders:[
+          { label:'Distancia', unit:'cm', min:0, max:100, step:5, validMin:40, validMax:60 },
           { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
         ]},
     ]},
@@ -468,6 +550,123 @@ const SIM_CASES = [
           { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
         ]},
     ]},
+
+  { id:'ag_inestabilidad', phaseLabel:'Aguda — esguince / inestabilidad articular', phasePill:'pill-red',
+    tissueLabel:'esguince agudo con inestabilidad ligamentosa',
+    regions:['tobillo','rodilla','muñeca','dedo'],
+    agents:[
+      { agentBase:'inter', name:'Interferencial 25–50 Hz',
+        mech:'Combina Gate Control con efecto simpaticolítico: analgesia y mejora del retorno venoso y linfático en la misma sesión, clave cuando dolor y edema coexisten.',
+        sliders:[
+          { label:'AMF', unit:'Hz', min:0, max:150, step:5, validMin:25, validMax:50 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
+        ]},
+      { agentBase:'tens', name:'TENS convencional',
+        mech:'Activa fibras A-β que bloquean la transmisión del dolor a nivel medular, permitiendo tolerar antes la carga protegida.',
+        sliders:[
+          { label:'Frecuencia', unit:'Hz', min:0, max:250, step:5, validMin:80, validMax:150 },
+          { label:'Ancho de pulso', unit:'µs', min:0, max:400, step:10, validMin:50, validMax:80 },
+          { label:'Duración', unit:'min', min:0, max:60, step:5, validMin:20, validMax:30 },
+        ]},
+      { agentBase:'laser', name:'Laser 830 nm',
+        mech:'Absorción en citocromo c oxidasa: aumenta ATP, modula mediadores inflamatorios sin efecto térmico sobre el ligamento lesionado.',
+        sliders:[
+          { label:'Dosis', unit:'J/cm²', min:0, max:6, step:0.5, validMin:1, validMax:3 },
+          { label:'Tiempo por punto', unit:'s', min:0, max:90, step:5, validMin:30, validMax:60 },
+        ]},
+      { agentBase:'hvpc', name:'Alto voltaje (cátodo)',
+        mech:'El electrodo negativo repele las proteínas cargadas negativamente del espacio intersticial, reduciendo la presión osmótica del hemartros/edema periarticular.',
+        sliders:[
+          { label:'Frecuencia', unit:'pps', min:0, max:200, step:5, validMin:110, validMax:130 },
+          { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
+        ]},
+      { agentBase:'termo', name:'Coldpack (crioterapia)',
+        mech:'Vasoconstricción simpática y reducción del metabolismo celular; limita la extravasación capilar y enlentece la conducción nerviosa nociceptiva.',
+        sliders:[
+          { label:'Temperatura (interfase)', unit:'°C', min:0, max:25, step:1, validMin:0, validMax:15 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:10, validMax:20 },
+        ]},
+      { agentBase:'mag', name:'Magnetoterapia',
+        mech:'Microcorrientes inducidas que activan fibroblastos ligamentosos y reducen mediadores proinflamatorios, favoreciendo la fase inicial de cicatrización del ligamento.',
+        sliders:[
+          { label:'Frecuencia', unit:'Hz', min:0, max:50, step:1, validMin:10, validMax:25 },
+          { label:'Intensidad', unit:'Gauss', min:0, max:60, step:5, validMin:10, validMax:30 },
+          { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
+        ]},
+    ]},
+
+  { id:'sub_rigidez', phaseLabel:'Subaguda — rigidez articular / contractura', phasePill:'pill-amber',
+    tissueLabel:'rigidez articular subaguda con pérdida de rango',
+    regions:['hombro','codo','rodilla','cadera'],
+    agents:[
+      { agentBase:'termo', name:'Calor húmedo (compresas)',
+        mech:'Eleva la extensibilidad viscoelástica del colágeno cápsular reduciendo la viscosidad de la matriz extracelular; maximiza la ganancia de ROM cuando se moviliza en los 3–5 min posteriores.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:60, step:1, validMin:40, validMax:45 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
+        ]},
+      { agentBase:'us', name:'US continuo',
+        mech:'El calor profundo (3–5 cm) aumenta la extensibilidad del colágeno cápsular y la velocidad de conducción nerviosa articular.',
+        sliders:[
+          { label:'Intensidad', unit:'W/cm²', min:0, max:3, step:0.1, validMin:1, validMax:1.5 },
+          { label:'Duración', unit:'min', min:0, max:20, step:1, validMin:8, validMax:10 },
+        ]},
+      { agentBase:'inter', name:'Interferencial 80–100 Hz',
+        mech:'Penetración profunda sin resistencia cutánea: activa Gate Control permitiendo una movilización articular más agresiva sin generar dolor reactivo.',
+        sliders:[
+          { label:'AMF', unit:'Hz', min:0, max:150, step:5, validMin:80, validMax:100 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:15, validMax:20 },
+        ]},
+      { agentBase:'mag', name:'Magnetoterapia',
+        mech:'Microcorrientes inducidas que reducen mediadores proinflamatorios residuales y estimulan la remodelación del tejido periarticular.',
+        sliders:[
+          { label:'Frecuencia', unit:'Hz', min:0, max:50, step:1, validMin:10, validMax:25 },
+          { label:'Intensidad', unit:'Gauss', min:0, max:60, step:5, validMin:10, validMax:30 },
+          { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
+        ]},
+      { agentBase:'laser', name:'Laser 830 nm',
+        mech:'Reduce la producción de TGF-β1 por miofibroblastos periarticulares, limitando la fibrosis excesiva que perpetúa la rigidez.',
+        sliders:[
+          { label:'Dosis', unit:'J/cm²', min:0, max:8, step:0.5, validMin:3, validMax:5 },
+          { label:'Tiempo por punto', unit:'s', min:0, max:90, step:5, validMin:55, validMax:65 },
+        ]},
+    ]},
+
+  { id:'cr_edema', phaseLabel:'Crónica — edema persistente / linfedema', phasePill:'pill-green',
+    tissueLabel:'edema crónico / linfedema establecido',
+    regions:['mano','pie','brazo','pierna'],
+    agents:[
+      { agentBase:'inter', name:'Interferencial 25–50 Hz',
+        mech:'La contracción muscular rítmica inducida actúa como bomba periférica, manteniendo el retorno venoso y linfático en un edema ya cronificado donde el drenaje espontáneo es insuficiente.',
+        sliders:[
+          { label:'AMF', unit:'Hz', min:0, max:100, step:5, validMin:25, validMax:50 },
+          { label:'Duración', unit:'min', min:0, max:40, step:5, validMin:18, validMax:22 },
+        ]},
+      { agentBase:'termo', name:'Baño de contraste',
+        mech:'La vasodilatación-vasoconstricción alternante genera un efecto de bomba que favorece el retorno venoso y linfático, útil en edema distal de manejo prolongado.',
+        sliders:[
+          { label:'Nº de ciclos', unit:'ciclos', min:0, max:10, step:1, validMin:4, validMax:6 },
+          { label:'Duración total', unit:'min', min:0, max:40, step:5, validMin:16, validMax:30 },
+        ]},
+      { agentBase:'hidro', name:'Hidroterapia (piscina terapéutica)',
+        mech:'La presión hidrostática proporcional a la profundidad de inmersión comprime circunferencialmente el tejido, favoreciendo el retorno venoso y linfático de forma más homogénea que la compresión manual aislada.',
+        sliders:[
+          { label:'Temperatura', unit:'°C', min:0, max:45, step:1, validMin:33, validMax:36 },
+          { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
+        ]},
+      { agentBase:'mag', name:'Magnetoterapia 25–50 Hz',
+        mech:'Incrementa la velocidad de flujo capilar y reduce la viscosidad sanguínea por efecto electromagnético, favoreciendo la reabsorción del líquido intersticial acumulado crónicamente.',
+        sliders:[
+          { label:'Frecuencia', unit:'Hz', min:0, max:100, step:5, validMin:25, validMax:50 },
+          { label:'Intensidad', unit:'Gauss', min:0, max:150, step:5, validMin:20, validMax:80 },
+          { label:'Duración', unit:'min', min:0, max:45, step:5, validMin:20, validMax:30 },
+        ]},
+      { agentBase:'diad', name:'Diadinámica LP',
+        mech:'La estimulación muscular rítmica del modo LP actúa como bomba periférica que facilita el retorno venoso y linfático del edema crónico establecido.',
+        sliders:[
+          { label:'Duración', unit:'min', min:0, max:15, step:1, validMin:5, validMax:8 },
+        ]},
+    ]},
 ];
 
 const SIM_COMORBILIDADES = [
@@ -478,11 +677,11 @@ const SIM_COMORBILIDADES = [
   { id:'metal', label:'Implante metálico en la zona tratada',
     excludes:['inter','us'] },
   { id:'trombosis', label:'Trombosis venosa activa / TVP',
-    excludes:['tens','inter','us','rusa','ondah','oc'] },
+    excludes:['tens','inter','us','rusa','ondah','oc','termo'] },
   { id:'piel', label:'Piel lesionada / herida abierta en la zona',
-    excludes:['tens','us'] },
+    excludes:['tens','us','termo','hidro'] },
   { id:'neoplasia', label:'Neoplasia activa en la zona tratada',
-    excludes:['tens','inter','us','mag','laser','rusa','oc','ondah'] },
+    excludes:['tens','inter','us','mag','laser','rusa','oc','ondah','termo'] },
 ];
 
 /* ===== SIMULADOR — GENERADOR DE PACIENTE ===== */
