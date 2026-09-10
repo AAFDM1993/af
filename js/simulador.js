@@ -362,8 +362,103 @@ function handleAgentChoice(choice, grid) {
   grid.parentElement.appendChild(btn);
 }
 
-function renderStep2(container) { /* implementado en la Tarea 8 */ }
-function renderStep3(container) { /* implementado en la Tarea 8 */ }
+let simSliderValues = [];
+
+function randomSliderStart(slider, rng) {
+  const steps = Math.round((slider.max - slider.min) / slider.step);
+  const stepIndex = Math.floor(rng() * (steps + 1));
+  const raw = slider.min + stepIndex * slider.step;
+  return Math.round(raw * 100) / 100;
+}
+
+function renderStep2(container) {
+  const target = simPatient.case.target;
+  simSliderValues = target.sliders.map(s => randomSliderStart(s, Math.random));
+
+  const wrap = document.createElement('div');
+  wrap.className = 'question-card';
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = `Ajustar parámetros — ${target.name}`;
+  wrap.appendChild(title);
+
+  target.sliders.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'sim-slider-row';
+
+    const labelRow = document.createElement('div');
+    labelRow.className = 'sim-slider-label';
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = s.label;
+    const valSpan = document.createElement('span');
+    valSpan.className = 'sim-slider-value';
+    valSpan.textContent = `${simSliderValues[i]} ${s.unit}`;
+    labelRow.appendChild(nameSpan);
+    labelRow.appendChild(valSpan);
+
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.className = 'sim-slider';
+    input.min = s.min; input.max = s.max; input.step = s.step;
+    input.value = simSliderValues[i];
+    input.oninput = () => {
+      simSliderValues[i] = parseFloat(input.value);
+      valSpan.textContent = `${simSliderValues[i]} ${s.unit}`;
+    };
+
+    row.appendChild(labelRow);
+    row.appendChild(input);
+    wrap.appendChild(row);
+  });
+
+  const applyBtn = document.createElement('button');
+  applyBtn.className = 'restart-btn';
+  applyBtn.textContent = 'Aplicar tratamiento';
+  applyBtn.onclick = () => {
+    simSliderFeedback = evaluateSliders(target, simSliderValues);
+    simStep = 3;
+    renderSim();
+  };
+  wrap.appendChild(applyBtn);
+  container.appendChild(wrap);
+}
+
+function renderStep3(container) {
+  const wrap = document.createElement('div');
+  wrap.className = 'question-card';
+
+  if (!simSliderFeedback) {
+    const fb = document.createElement('div');
+    fb.className = 'note-box';
+    fb.innerHTML = `<strong>${simAgentFeedback.correct ? '✅' : '❌'}</strong> ${simAgentFeedback.explanation}`;
+    wrap.appendChild(fb);
+  } else {
+    const verdict = document.createElement('div');
+    verdict.className = `phase-pill ${simSliderFeedback.allOk ? 'pill-green' : 'pill-red'}`;
+    verdict.innerHTML = `<span class="phase-dot"></span>${simSliderFeedback.allOk ? 'Tratamiento correcto' : 'Parámetros a revisar'}`;
+    wrap.appendChild(verdict);
+
+    simSliderFeedback.results.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'sim-param-row';
+      row.innerHTML = `<span>${r.ok ? '✅' : '❌'} ${r.label}: <strong>${r.value} ${r.unit}</strong></span><span class="sim-param-range">rango válido: ${r.validMin}–${r.validMax} ${r.unit}</span>`;
+      wrap.appendChild(row);
+    });
+
+    const mech = document.createElement('div');
+    mech.className = 'note-box';
+    mech.innerHTML = simPatient.case.target.mech;
+    wrap.appendChild(mech);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'restart-btn';
+  nextBtn.textContent = '↻ Siguiente paciente';
+  nextBtn.onclick = () => newSimPatient();
+  wrap.appendChild(nextBtn);
+  container.appendChild(wrap);
+}
 
 function renderSim() {
   const c = document.getElementById('sim-content');
