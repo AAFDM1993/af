@@ -166,6 +166,28 @@ const SIM_COMORBILIDADES = [
     excludes:['tens','inter','us','mag','laser','rusa','oc','ondah'] },
 ];
 
+/* ===== SIMULADOR — GENERADOR DE PACIENTE ===== */
+function pickRandomItem(arr, rng) {
+  return arr[Math.floor(rng() * arr.length)];
+}
+
+function pickRandomInt(minInclusive, maxInclusive, rng) {
+  return Math.floor(rng() * (maxInclusive - minInclusive + 1)) + minInclusive;
+}
+
+function generatePatient(rng) {
+  rng = rng || Math.random;
+  const patientCase = pickRandomItem(SIM_CASES, rng);
+  const region = pickRandomItem(patientCase.regions, rng);
+  const age = pickRandomInt(18, 75, rng);
+  let comorbidity = null;
+  if (rng() < 0.4) {
+    comorbidity = pickRandomItem(SIM_COMORBILIDADES, rng);
+  }
+  const blocked = !!(comorbidity && comorbidity.excludes.includes(patientCase.agentBase));
+  return { case: patientCase, region, age, comorbidity, blocked };
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { SIM_CASES, SIM_COMORBILIDADES };
+  module.exports = { SIM_CASES, SIM_COMORBILIDADES, pickRandomItem, pickRandomInt, generatePatient };
 }

@@ -31,3 +31,38 @@ test('SIM_COMORBILIDADES has exactly 6 entries referencing known agent bases', (
     m.excludes.forEach(base => assert.ok(knownBases.has(base), `${m.id}: base desconocida "${base}"`));
   });
 });
+
+const { generatePatient } = require('../js/simulador.js');
+
+function fakeRng(sequence) {
+  let i = 0;
+  return () => sequence[i++ % sequence.length];
+}
+
+test('generatePatient: rng en 0 elige el primer caso/región, edad mínima, sin comorbilidad', () => {
+  const rng = fakeRng([0, 0, 0, 0.99]);
+  const p = generatePatient(rng);
+  assert.equal(p.case, SIM_CASES[0]);
+  assert.equal(p.region, SIM_CASES[0].regions[0]);
+  assert.equal(p.age, 18);
+  assert.equal(p.comorbidity, null);
+  assert.equal(p.blocked, false);
+});
+
+test('generatePatient: con roll < 0.4 asigna comorbilidad y calcula "blocked" correctamente', () => {
+  const targetCaseIndex = SIM_CASES.findIndex(c => SIM_COMORBILIDADES[0].excludes.includes(c.agentBase));
+  assert.ok(targetCaseIndex >= 0, 'fixture: debe existir un caso excluido por la primera comorbilidad');
+  const caseRoll = (targetCaseIndex + 0.5) / SIM_CASES.length;
+  const rng = fakeRng([caseRoll, 0, 0, 0.1, 0]);
+  const p = generatePatient(rng);
+  assert.equal(p.case, SIM_CASES[targetCaseIndex]);
+  assert.equal(p.comorbidity, SIM_COMORBILIDADES[0]);
+  assert.equal(p.blocked, true);
+});
+
+test('generatePatient: age siempre queda en [18,75]', () => {
+  for (let i = 0; i < 50; i++) {
+    const p = generatePatient(Math.random);
+    assert.ok(p.age >= 18 && p.age <= 75);
+  }
+});
