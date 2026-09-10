@@ -254,9 +254,21 @@ function evaluateAgentChoice(patient, chosen) {
   };
 }
 
+/* ===== SIMULADOR — VALIDACIÓN PASO 2 (PARÁMETROS) ===== */
+function evaluateSliders(target, values) {
+  const results = target.sliders.map((s, i) => {
+    const value = values[i];
+    const ok = value >= s.validMin && value <= s.validMax;
+    return { label: s.label, unit: s.unit, value, ok, validMin: s.validMin, validMax: s.validMax };
+  });
+  const allOk = results.every(r => r.ok);
+  return { results, allOk };
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     SIM_CASES, SIM_COMORBILIDADES, pickRandomItem, pickRandomInt, generatePatient,
     NONE_OPTION, pickDistractors, buildChoices, findHomeCase, evaluateAgentChoice,
+    evaluateSliders,
   };
 }

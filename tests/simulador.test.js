@@ -142,3 +142,30 @@ test('findHomeCase: ubica el caso dueño de un agente objetivo, o null si no exi
   assert.equal(findHomeCase(SIM_CASES[3].target.name), SIM_CASES[3]);
   assert.equal(findHomeCase('Agente inexistente'), null);
 });
+
+const { evaluateSliders } = require('../js/simulador.js');
+
+test('evaluateSliders: todos los valores dentro de rango -> allOk true', () => {
+  const target = SIM_CASES[0].target;
+  const midValues = target.sliders.map(s => (s.validMin + s.validMax) / 2);
+  const r = evaluateSliders(target, midValues);
+  assert.equal(r.allOk, true);
+  r.results.forEach(res => assert.equal(res.ok, true));
+});
+
+test('evaluateSliders: un valor fuera de rango marca solo ese parámetro como incorrecto', () => {
+  const target = SIM_CASES[0].target;
+  const values = target.sliders.map(s => s.validMin);
+  values[0] = target.sliders[0].validMin - 10;
+  const r = evaluateSliders(target, values);
+  assert.equal(r.allOk, false);
+  assert.equal(r.results[0].ok, false);
+  assert.equal(r.results[1].ok, true);
+});
+
+test('evaluateSliders: los límites validMin/validMax cuentan como correctos', () => {
+  const target = SIM_CASES[0].target;
+  const values = target.sliders.map(s => s.validMax);
+  const r = evaluateSliders(target, values);
+  assert.equal(r.allOk, true);
+});
