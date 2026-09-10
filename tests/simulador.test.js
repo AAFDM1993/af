@@ -103,3 +103,42 @@ test('buildChoices: comorbilidad presente que no bloquea -> objetivo + distracto
   assert.ok(options.includes(SIM_CASES[0].target.name));
   assert.ok(options.includes(NONE_OPTION));
 });
+
+const { findHomeCase, evaluateAgentChoice } = require('../js/simulador.js');
+
+test('evaluateAgentChoice: elegir el objetivo sin bloqueo es correcto y avanza a sliders', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false };
+  const r = evaluateAgentChoice(patient, SIM_CASES[0].target.name);
+  assert.equal(r.correct, true);
+  assert.equal(r.advance, true);
+  assert.equal(r.explanation, SIM_CASES[0].target.mech);
+});
+
+test('evaluateAgentChoice: elegir un distractor es incorrecto y cita el caso de origen', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false };
+  const distractorName = SIM_CASES[1].target.name;
+  const r = evaluateAgentChoice(patient, distractorName);
+  assert.equal(r.correct, false);
+  assert.equal(r.advance, false);
+  assert.ok(r.explanation.includes(SIM_CASES[1].phaseLabel));
+});
+
+test('evaluateAgentChoice: "Ninguno" es correcto cuando el caso está bloqueado', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: SIM_COMORBILIDADES[0], blocked: true };
+  const r = evaluateAgentChoice(patient, NONE_OPTION);
+  assert.equal(r.correct, true);
+  assert.equal(r.advance, false);
+  assert.ok(r.explanation.includes(SIM_COMORBILIDADES[0].label));
+});
+
+test('evaluateAgentChoice: "Ninguno" es incorrecto cuando no hay bloqueo', () => {
+  const patient = { case: SIM_CASES[0], comorbidity: null, blocked: false };
+  const r = evaluateAgentChoice(patient, NONE_OPTION);
+  assert.equal(r.correct, false);
+  assert.equal(r.advance, false);
+});
+
+test('findHomeCase: ubica el caso dueño de un agente objetivo, o null si no existe', () => {
+  assert.equal(findHomeCase(SIM_CASES[3].target.name), SIM_CASES[3]);
+  assert.equal(findHomeCase('Agente inexistente'), null);
+});

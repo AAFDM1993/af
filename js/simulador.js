@@ -221,9 +221,42 @@ function buildChoices(patient, rng) {
   return shuffle(options, rng);
 }
 
+/* ===== SIMULADOR — VALIDACIÓN PASO 1 (AGENTE) ===== */
+function findHomeCase(agentName) {
+  return SIM_CASES.find(c => c.target.name === agentName) || null;
+}
+
+function evaluateAgentChoice(patient, chosen) {
+  const targetName = patient.case.target.name;
+
+  if (chosen === NONE_OPTION) {
+    if (patient.blocked) {
+      return {
+        correct: true, advance: false,
+        explanation: `${patient.comorbidity.label} contraindica ${targetName} en este cuadro — corresponde derivar o posponer el agente físico.`,
+      };
+    }
+    return {
+      correct: false, advance: false,
+      explanation: `${targetName} sí está indicado aquí: no hay contraindicación activa para este paciente.`,
+    };
+  }
+
+  if (chosen === targetName && !patient.blocked) {
+    return { correct: true, advance: true, explanation: patient.case.target.mech };
+  }
+
+  const home = findHomeCase(chosen);
+  const homeDesc = home ? `${home.phaseLabel} — ${home.tissueLabel}` : 'otro cuadro clínico';
+  return {
+    correct: false, advance: false,
+    explanation: `${chosen} es el agente de referencia para «${homeDesc}», no para este cuadro.`,
+  };
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     SIM_CASES, SIM_COMORBILIDADES, pickRandomItem, pickRandomInt, generatePatient,
-    NONE_OPTION, pickDistractors, buildChoices,
+    NONE_OPTION, pickDistractors, buildChoices, findHomeCase, evaluateAgentChoice,
   };
 }
