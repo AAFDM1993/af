@@ -265,6 +265,128 @@ function evaluateSliders(target, values) {
   return { results, allOk };
 }
 
+/* ===== SIMULADOR — CAPA DOM ===== */
+let simPatient = null;
+let simChoices = [];
+let simStep = 1;
+let simAgentFeedback = null;
+let simSliderFeedback = null;
+
+function renderPatientCard(container) {
+  const card = document.createElement('div');
+  card.className = 'question-card';
+
+  const pill = document.createElement('div');
+  pill.className = `phase-pill ${simPatient.case.phasePill}`;
+  pill.innerHTML = `<span class="phase-dot"></span>${simPatient.case.phaseLabel}`;
+  card.appendChild(pill);
+
+  const badges = document.createElement('div');
+  badges.className = 'patient-badges';
+  [`${simPatient.age} años`, simPatient.region].forEach(txt => {
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.style.borderColor = 'var(--border2)';
+    tag.style.color = 'var(--text2)';
+    tag.textContent = txt;
+    badges.appendChild(tag);
+  });
+  if (simPatient.comorbidity) {
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.style.borderColor = 'var(--red-border)';
+    tag.style.color = 'var(--red)';
+    tag.textContent = simPatient.comorbidity.label;
+    badges.appendChild(tag);
+  }
+  card.appendChild(badges);
+
+  const vignette = document.createElement('div');
+  vignette.className = 'q-hint';
+  vignette.textContent = `Paciente de ${simPatient.age} años con ${simPatient.case.tissueLabel} en ${simPatient.region}.`;
+  card.appendChild(vignette);
+
+  container.appendChild(card);
+}
+
+function renderStep1(container) {
+  const wrap = document.createElement('div');
+  wrap.className = 'question-card';
+
+  const label = document.createElement('div');
+  label.className = 'result-label';
+  label.textContent = '¿Qué agente físico aplicarías?';
+  wrap.appendChild(label);
+
+  const grid = document.createElement('div');
+  grid.className = 'opt-grid';
+  simChoices.forEach(choice => {
+    const b = document.createElement('button');
+    b.className = 'opt-btn opt-blue';
+    const dot = document.createElement('span'); dot.className = 'opt-dot'; b.appendChild(dot);
+    b.appendChild(document.createTextNode(choice));
+    b.onclick = () => handleAgentChoice(choice, grid);
+    grid.appendChild(b);
+  });
+  wrap.appendChild(grid);
+  container.appendChild(wrap);
+}
+
+function handleAgentChoice(choice, grid) {
+  const result = evaluateAgentChoice(simPatient, choice);
+  simAgentFeedback = result;
+
+  const correctLabel = simPatient.blocked ? NONE_OPTION : simPatient.case.target.name;
+  grid.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.onclick = null;
+    btn.classList.add('disabled');
+    const label = btn.textContent;
+    if (label === correctLabel) btn.classList.add('correct');
+    if (label === choice && !result.correct) btn.classList.add('incorrect');
+  });
+
+  const fb = document.createElement('div');
+  fb.className = 'note-box';
+  fb.innerHTML = `<strong>${result.correct ? '✅ Correcto.' : '❌ No es lo indicado.'}</strong> ${result.explanation}`;
+  grid.parentElement.appendChild(fb);
+
+  const btn = document.createElement('button');
+  btn.className = 'restart-btn';
+  if (result.advance) {
+    btn.textContent = 'Continuar → ajustar parámetros';
+    btn.onclick = () => { simStep = 2; renderSim(); };
+  } else {
+    btn.textContent = '↻ Siguiente paciente';
+    btn.onclick = () => newSimPatient();
+  }
+  grid.parentElement.appendChild(btn);
+}
+
+function renderStep2(container) { /* implementado en la Tarea 8 */ }
+function renderStep3(container) { /* implementado en la Tarea 8 */ }
+
+function renderSim() {
+  const c = document.getElementById('sim-content');
+  c.innerHTML = '';
+  renderPatientCard(c);
+  if (simStep === 1) renderStep1(c);
+  else if (simStep === 2) renderStep2(c);
+  else renderStep3(c);
+}
+
+function newSimPatient() {
+  simPatient = generatePatient(Math.random);
+  simChoices = buildChoices(simPatient, Math.random);
+  simAgentFeedback = null;
+  simSliderFeedback = null;
+  simStep = 1;
+  renderSim();
+}
+
+function buildSim() {
+  newSimPatient();
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     SIM_CASES, SIM_COMORBILIDADES, pickRandomItem, pickRandomInt, generatePatient,
