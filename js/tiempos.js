@@ -13,7 +13,7 @@ const TISSUES = [
         agents:[{l:'US pulsado 1:1',c:'amber'},{l:'Laser 830 nm 3–5 J',c:'pink'},{l:'Corrientes rusas (desde sem 2)',c:'purple'},{l:'Magnetoterapia',c:'coral'},{l:'Galvánica (trofismo)',c:'gold'},{l:'Diadinámica CP',c:'red'}]},
       { name:'Fase de remodelación', time:'3 semanas – 6 meses', color:'green',
         body:'Maduración y reorganización de la cicatriz fibrosa. El colágeno tipo III es reemplazado progresivamente por colágeno tipo I (más resistente), orientado según las líneas de tensión mecánica. Las fibras musculares regeneradas aumentan en diámetro (hipertrofia). La recuperación completa de la fuerza y propiedades viscoelásticas puede tardar hasta 6 meses en lesiones grado III. El tejido cicatrizal nunca recupera la arquitectura perfecta del músculo original.',
-        agents:[{l:'Corrientes rusas',c:'purple'},{l:'US continuo',c:'amber'},{l:'TENS acupuntural',c:'blue'},{l:'Laser 830 nm 4–6 J',c:'pink'},{l:'Träbert',c:'lime'},{l:'Calor húmedo (pre-estiramiento)',c:'red'}]},
+        agents:[{l:'Corrientes rusas',c:'purple'},{l:'US continuo',c:'amber'},{l:'TENS acupuntural',c:'blue'},{l:'Laser 830 nm 4–6 J',c:'pink'},{l:'Träbert',c:'lime'},{l:'Calor húmedo (pre-estiramiento)',c:'coral'}]},
     ],
     note:'<strong>Factores que alargan la recuperación:</strong> re-lesión en fase proliferativa, inmovilización prolongada, déficit de proteínas, edad avanzada y mala vascularización local. El retorno al deporte antes de recuperar el 90% de fuerza del lado sano multiplica el riesgo de recidiva.'},
 
@@ -27,7 +27,7 @@ const TISSUES = [
         agents:[{l:'US pulsado 1:4',c:'amber'},{l:'Laser 830 nm 1–3 J',c:'pink'},{l:'TENS convencional',c:'blue'},{l:'Magnetoterapia 10–25 Hz',c:'coral'},{l:'Diadinámica DF',c:'red'}]},
       { name:'Fase proliferativa', time:'2 – 10 semanas', color:'amber',
         body:'Proliferación de tenocitos y síntesis masiva de colágeno tipo III (90% del colágeno neoformado). Las fibras son desorganizadas, con orientación aleatoria y menor resistencia mecánica que el tejido original. Vascularización provisional (hipervascularización detectable por ecografía Doppler). Aumento de proteoglicanos (agrecano, decorina) que retienen agua → engrosamiento fusiforme del tendón. Clínicamente: dolor selectivo en carga, inicio de recuperación funcional.',
-        agents:[{l:'US continuo/pulsado',c:'amber'},{l:'Laser 830 nm 3–6 J',c:'pink'},{l:'Interferencial 80 Hz',c:'green'},{l:'Terapia combinada',c:'purple'},{l:'Diadinámica CP',c:'red'},{l:'Calor húmedo (pre-carga)',c:'red'}]},
+        agents:[{l:'US continuo/pulsado',c:'amber'},{l:'Laser 830 nm 3–6 J',c:'pink'},{l:'Interferencial 80 Hz',c:'green'},{l:'Terapia combinada',c:'purple'},{l:'Diadinámica CP',c:'red'},{l:'Calor húmedo (pre-carga)',c:'coral'}]},
       { name:'Fase de remodelación', time:'3 meses – 2 años', color:'green',
         body:'Reorganización del colágeno tipo III → colágeno tipo I según el eje de tensión mecánica. Este proceso depende directamente de la carga mecánica progresiva (mecanotransducción). La resistencia mecánica del tendón alcanza el 80% del original a los 6 meses y el 100% puede tardar hasta 1–2 años. Sin carga progresiva, el tendón queda como tejido fibrótico desorganizado (tendinosis). En tendinopatías crónicas (>3 meses), la neovascularización patológica y la apoptosis de tenocitos impiden la reparación espontánea.',
         agents:[{l:'Ondas de choque (crónico)',c:'teal'},{l:'Laser 830 nm 6–10 J',c:'pink'},{l:'US continuo',c:'amber'},{l:'Magnetoterapia',c:'coral'}]},

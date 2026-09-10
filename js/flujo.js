@@ -79,7 +79,7 @@ const FLOW_NODES = {
       {name:'Laser 830 nm',c:'c-pink',params:'830 nm · 2–3 J/cm² · 30–60 s/punto · 8 ses.',effect:'Analgesia, reduce hipertonía refleja',mech:'Inhibe la transmisión en fibras nociceptivas C y A-δ, reduciendo el arco reflejo de espasmo.'},
       {name:'Coldpack (crioterapia)',c:'c-blue',params:'0–15 °C · barrera de toalla húmeda · 10–20 min',effect:'Relajación muscular refleja, analgesia',mech:'El enfriamiento reduce la actividad del huso neuromuscular y la velocidad de conducción de fibras nociceptivas, disminuyendo el arco reflejo de espasmo.'},
     ],
-    note:'<strong>En espasmo agudo:</strong> priorizar modalidades no térmicas (calor). El frío es de elección; las corrientes rusas están contraindicadas en fase aguda inflamatoria activa.',
+    note:'<strong>En espasmo agudo:</strong> evitar el calor; el frío es de elección. Las corrientes rusas están contraindicadas en fase aguda inflamatoria activa.',
     kinesio:{tabs:[
       { id:'manual', label:'Técnicas manuales', progs:[
         {week:'Desde día 1', title:'Inhibición muscular por presión mantenida (PNF inhibitorio)', detail:'Presión digital sostenida sobre el vientre muscular o zona de máxima tensión durante 20–30 segundos. Activa el reflejo inhibitorio del órgano tendinoso de Golgi (OTG), produciendo relajación refleja del músculo en espasmo.', params:['Presión sostenida','20–30 seg/punto','3–5 puntos','Sin dolor agudo'], ref:'<strong>Travell JG & Simons DG.</strong> Myofascial Pain and Dysfunction: The Trigger Point Manual. Williams & Wilkins, 1999. — La presión isquémica sostenida sobre el punto de máxima tensión activa el órgano tendinoso de Golgi generando inhibición autogénica del músculo en espasmo; eficacia del 75% en reducción del dolor en sesión única.'},
