@@ -370,6 +370,23 @@ body::before {
 }
 .restart-btn:hover { background: var(--surface2); border-color: var(--accent); color: var(--text); }
 
+/* ─── ACCESO AL LABORATORIO ─── */
+.lab-access {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin: 0 0 18px; padding: 14px 16px;
+  background: var(--teal-bg); border: 1px solid var(--teal-border); border-radius: 14px;
+}
+.lab-access-text { flex: 1 1 240px; min-width: 0; }
+.lab-access-title { font-weight: 700; color: var(--text); font-size: 15px; margin-bottom: 3px; }
+.lab-access-sub { color: var(--text2); font-size: 13px; line-height: 1.45; }
+.lab-access-btn {
+  display: inline-block; padding: 10px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;
+  color: #04201d; background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 0 14px var(--accent-glow); white-space: nowrap;
+}
+.lab-access-btn:hover { filter: brightness(1.08); }
+.lab-access-btn:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
 /* ─── REFERENCIA ──────────────────────────────────────────────── */
 .ref-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
 .ref-tab {
@@ -929,6 +946,13 @@ input.sim-slider { width: 100%; accent-color: var(--accent2); }
     <div class="section-eyebrow">Práctica clínica</div>
     <div class="section-title">Simulador de agentes físicos</div>
     <div class="section-sub">Se genera un paciente aleatorio: elige el agente físico indicado y ajusta sus parámetros de dosificación.</div>
+    <div class="lab-access">
+      <div class="lab-access-text">
+        <div class="lab-access-title">Laboratorio de agentes físicos</div>
+        <div class="lab-access-sub">Simuladores y esquemas dinámicos de cada agente: qué pasa en el tejido, dosis y técnica, contraindicaciones y casos clínicos. Pensado para proyectar en clase; funciona sin internet.</div>
+      </div>
+      <a class="lab-access-btn" href="laboratorio/index.html" target="_blank" rel="noopener">Abrir el laboratorio →</a>
+    </div>
     <div id="sim-content"></div>
   </div>
 
