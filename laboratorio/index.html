@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorio de Agentes Físicos</title>
+<link rel="stylesheet" href="css/lab.css">
+</head>
+<body>
+<header class="top"><h1>Laboratorio de Agentes Físicos</h1><span>Simuladores didácticos para proyección</span><button id="volver" type="button" hidden>← Portada</button></header>
+<main>
+<section id="portada"></section>
+<section id="modulo" hidden></section>
+</main>
+<script src="js/lab-core.js"></script>
+<script src="js/lab-kit.js"></script>
+<script src="js/electro-core.js"></script>
+<script src="js/lab-wave.js"></script>
+<script src="js/laser-core.js"></script>
+<script src="js/lab-laser.js"></script>
+<script src="js/us-core.js"></script>
+<script src="js/lab-ultrasonido.js"></script>
+<script src="js/chc-core.js"></script>
+<script src="js/lab-chc.js"></script>
+<script src="js/parafina-core.js"></script>
+<script src="js/lab-parafina.js"></script>
+<script src="js/crioterapia-core.js"></script>
+<script src="js/lab-crioterapia.js"></script>
+<script src="js/fototerapia-core.js"></script>
+<script src="js/lab-fototerapia.js"></script>
+<script src="js/hidroterapia-core.js"></script>
+<script src="js/lab-hidroterapia.js"></script>
+<script src="js/galvanica-core.js"></script>
+<script src="js/lab-galvanica.js"></script>
+<script src="js/diadinamicas-core.js"></script>
+<script src="js/lab-diadinamicas.js"></script>
+<script src="js/alto-voltaje-core.js"></script>
+<script src="js/lab-alto-voltaje.js"></script>
+<script src="js/microcorrientes-core.js"></script>
+<script src="js/lab-microcorrientes.js"></script>
+<script src="js/exponenciales-core.js"></script>
+<script src="js/lab-exponenciales.js"></script>
+<script src="js/vms-core.js"></script>
+<script src="js/lab-vms.js"></script>
+<script src="js/tens-core.js"></script>
+<script src="js/lab-tens.js"></script>
+<script src="js/ems-core.js"></script>
+<script src="js/lab-ems.js"></script>
+<script src="js/interferencial-core.js"></script>
+<script src="js/lab-interferencial.js"></script>
+<script src="js/kotz-core.js"></script>
+<script src="js/lab-kotz.js"></script>
+<script src="js/analgesia-core.js"></script>
+<script src="js/lab-analgesia.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var portada = $('portada'), modulo = $('modulo'), volver = $('volver');
+
+  function drawPortada() {
+    portada.innerHTML = '';
+    LabCore.portadaGroups(LabCore.registered()).forEach(function (g) {
+      var box = document.createElement('div'); box.className = 'grupo';
+      var h = document.createElement('h2'); h.textContent = g.title; box.appendChild(h);
+      var row = document.createElement('div'); row.className = 'btns'; box.appendChild(row);
+      g.agents.forEach(function (a) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'agente';
+        b.textContent = a.title;
+        if (a.ready) { b.addEventListener('click', function () { location.hash = '#' + a.id; }); }
+        else { b.disabled = true; var s = document.createElement('small'); s.textContent = 'próximamente'; b.appendChild(s); }
+        row.appendChild(b);
+      });
+      portada.appendChild(box);
+    });
+  }
+
+  var controller = LabCore.createController(function (id) {
+    var def = LabCore.getDef(id);
+    if (!def) return null;
+    var host = document.createElement('div');
+    modulo.appendChild(host);
+    var h = LabCore.mountInShadow(host, def);
+    document.title = def.title + ' · Laboratorio de Agentes Físicos';
+    return { destroy: function () { h.destroy(); if (host.parentNode) host.parentNode.removeChild(host); } };
+  });
+
+  function route() {
+    var id = LabCore.parseHash(location.hash, LabCore.registered());
+    var ok = id ? controller.open(id) : (controller.close(), false);
+    portada.hidden = ok; modulo.hidden = !ok; volver.hidden = !ok;
+    if (!ok) document.title = 'Laboratorio de Agentes Físicos';
+  }
+  volver.addEventListener('click', function () { location.hash = ''; });
+  window.addEventListener('hashchange', route);
+  drawPortada();
+  route();
+})();
+</script>
+</body>
+</html>
