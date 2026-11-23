@@ -11,6 +11,8 @@ var LabCore = (function () {
     { id: 'ultrasonido-laser', title: 'Ultrasonido y láser', agents: [
       { id: 'ultrasonido', title: 'Ultrasonido' },
       { id: 'laser', title: 'Láser' }] },
+    { id: 'magnetoterapia', title: 'Magnetoterapia', agents: [
+      { id: 'magneto', title: 'Magnetoterapia' }] },
     { id: 'electroterapia', title: 'Electroterapia', agents: [
       { id: 'analgesia', title: '¿Cómo quita el dolor?' },
       { id: 'galvanica', title: 'Galvánica y Trabert' },

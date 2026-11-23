@@ -1,0 +1,135 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const M = require('../js/magneto-core.js');
+const H = require('./helpers.js');
+const near = (a, b, e) => Math.abs(a - b) <= (e || 1e-9);
+
+test('conversión Gauss–Tesla', () => {
+  assert.equal(M.GAUSS_PER_TESLA, 10000);
+  assert.equal(M.gaussToTesla(10000), 1);
+  assert.equal(M.teslaToGauss(3), 30000);
+  assert.ok(near(M.gaussToTesla(100), 0.01));
+});
+
+test('fieldAtDepth: solenoide uniforme y plano decae', () => {
+  assert.equal(M.fieldAtDepth('solenoide', 0, 60), 60);
+  assert.equal(M.fieldAtDepth('solenoide', 10, 60), 60);
+  assert.equal(M.fieldAtDepth('plano', 0, 60), 60);
+  assert.equal(M.fieldAtDepth('plano', 15, 60), 0);
+  assert.ok(near(M.fieldAtDepth('plano', 7.5, 60), 15));
+  assert.equal(M.fieldAtDepth('plano', -3, 60), 60);
+  assert.equal(M.fieldAtDepth('plano', 40, 60), 0);
+  assert.equal(M.fieldAtDepth('solenoide', 40, 60), 60);
+  assert.throws(() => M.fieldAtDepth('zzz', 1, 1));
+});
+
+test('polos: N miorrelajante, S analgésico y antiinflamatorio', () => {
+  assert.equal(M.poleEffect('N'), 'miorrelajante');
+  assert.equal(M.poleEffect('S'), 'analgesico-antiinflamatorio');
+  assert.throws(() => M.poleEffect('X'));
+});
+
+test('profileFor: <50 ataque, >50 analgésico, 50 sin perfil', () => {
+  assert.equal(M.profileFor(30), 'ataque');
+  assert.equal(M.profileFor(49), 'ataque');
+  assert.equal(M.profileFor(50), null);
+  assert.equal(M.profileFor(51), 'analgesico');
+  assert.equal(M.profileFor(100), 'analgesico');
+});
+
+test('PATHOLOGIES: 16 filas con los valores de la clase', () => {
+  const P = M.PATHOLOGIES;
+  assert.equal(P.length, 16);
+  assert.equal(new Set(P.map(p => p.id)).size, 16);
+  const by = id => P.find(p => p.id === id);
+  assert.deepEqual(by('epicondilitis').gauss, [40, 60]);
+  assert.equal(by('epicondilitis').minutes, 15);
+  assert.equal(by('epicondilitis').sesiones, '2-dia');
+  assert.deepEqual(by('celulitis').gauss, [80, 200]);
+  assert.equal(by('osteomielitis').sesiones, '2-dia');
+  assert.deepEqual(by('raquialgias').gauss, [20, 40]);
+  assert.equal(by('fracturas').minutes, null);
+  assert.equal(by('osteoporosis').minutes, null);
+  assert.equal(P.filter(p => p.maxDevice).length, 2);
+  assert.ok(by('artropatias-degenerativas').maxDevice && by('retardo-consolidacion').maxDevice);
+});
+
+test('evaluateProtocol', () => {
+  const ok = { pathology: 'epicondilitis', applicator: 'plano', pole: 'S', hz: 30, gauss: 50, minutes: 15 };
+  assert.equal(M.evaluateProtocol(ok).veredicto, 'ok');
+  assert.equal(M.evaluateProtocol({ pathology: 'raquialgias', applicator: 'plano', pole: 'N', hz: 70, gauss: 50, minutes: 15 }).veredicto, 'ajustar');
+  assert.equal(M.evaluateProtocol({ pathology: 'raquialgias', applicator: 'plano', pole: 'N', hz: 70, gauss: 30, minutes: 15 }).veredicto, 'ok');
+  assert.equal(M.evaluateProtocol(Object.assign({}, ok, { gauss: 0 })).veredicto, 'no');
+  assert.equal(M.evaluateProtocol(Object.assign({}, ok, { gauss: 250 })).veredicto, 'no');
+  assert.equal(M.evaluateProtocol(Object.assign({}, ok, { minutes: 0 })).veredicto, 'no');
+  assert.equal(M.evaluateProtocol(Object.assign({}, ok, { pathology: 'zzz' })).veredicto, 'no');
+  const f50 = M.evaluateProtocol(Object.assign({}, ok, { hz: 50 }));
+  assert.equal(f50.veredicto, 'ajustar');
+  assert.ok(f50.mensajes.some(m => /50 Hz/.test(m)));
+  assert.equal(M.evaluateProtocol({ pathology: 'cefaleas', applicator: 'plano', pole: 'N', hz: 70, gauss: 18, minutes: 15 }).veredicto, 'ajustar');
+  assert.equal(M.evaluateProtocol({ pathology: 'cefaleas', applicator: 'plano', pole: 'S', hz: 70, gauss: 18, minutes: 15 }).veredicto, 'ok');
+  assert.equal(M.evaluateProtocol(Object.assign({}, ok, { applicator: 'solenoide' })).veredicto, 'ok');
+  assert.ok(M.evaluateProtocol(Object.assign({}, ok, { applicator: 'solenoide' })).mensajes.length > 0);
+  assert.equal(M.evaluateProtocol({ pathology: 'retardo-consolidacion', applicator: 'solenoide', pole: 'S', hz: 30, gauss: 120, minutes: 20 }).veredicto, 'ok');
+});
+
+test('condiciones, notas y casos', () => {
+  H.assertConditions(M.CONDITIONS, { contra: 7 });
+  assert.ok(M.NOTES.length >= 5);
+  assert.ok(/3 T/.test(M.HIGH_INTENSITY_NOTE));
+  H.assertCases(M.CASES, 4);
+  assert.deepEqual(M.CASES[0].spec.gauss, { min: 30, max: 50 });
+});
+
+test('TISSUES: 6 tejidos de la clase con mecanismo, efecto y patologías válidas', () => {
+  assert.equal(M.TISSUES.length, 6);
+  assert.equal(new Set(M.TISSUES.map(t => t.id)).size, 6);
+  const ids = M.PATHOLOGIES.map(p => p.id);
+  for (const t of M.TISSUES) {
+    assert.ok(t.nombre && t.efecto && t.pasos.length >= 3, t.id);
+    assert.ok(t.usos.length >= 2 && t.usos.every(u => ids.includes(u)), t.id);
+    assert.ok(t.polo === null || t.polo === 'N' || t.polo === 'S', t.id);
+  }
+  const by = id => M.TISSUES.find(t => t.id === id);
+  assert.equal(by('musculo').polo, 'N');
+  assert.equal(by('nervio').polo, 'S');
+  assert.ok(by('hueso').usos.includes('fracturas'));
+  assert.ok(/osteobl/i.test(by('hueso').pasos.join(' ')));
+  assert.ok(/colágeno/i.test(by('conectivo').pasos.join(' ')));
+  assert.ok(/sodio/i.test(by('membrana').pasos.join(' ')));
+});
+
+test('LAYERS y layerAt: capas didácticas del miembro (15 cm)', () => {
+  assert.equal(M.LAYERS[0].id, 'piel');
+  assert.equal(M.LAYERS[M.LAYERS.length - 1].to, 15);
+  for (let i = 1; i < M.LAYERS.length; i++) assert.equal(M.LAYERS[i].from, M.LAYERS[i - 1].to);
+  assert.equal(M.layerAt(0).id, 'piel');
+  assert.equal(M.layerAt(1).id, 'grasa');
+  assert.equal(M.layerAt(4).id, 'musculo');
+  assert.equal(M.layerAt(7).id, 'hueso');
+  assert.equal(M.layerAt(12).id, 'musculo');
+  assert.equal(M.layerAt(-2).id, 'piel');
+  assert.equal(M.layerAt(99).id, 'musculo');
+});
+
+test('TISSUES: nivel, resultado clínico y dosis desde la tabla de la clase', () => {
+  const NIV = ['Bioquímico', 'Bioquímico y celular', 'Órganos y sistemas'];
+  for (const t of M.TISSUES) {
+    assert.ok(NIV.includes(t.nivel), t.id);
+    assert.ok(t.clinico && t.clinico.length > 20, t.id);
+    assert.ok(t.dato === null || t.dato.length > 10, t.id);
+  }
+  assert.equal(M.TISSUES.find(t => t.id === 'hueso').nivel, 'Bioquímico');
+  assert.equal(M.TISSUES.find(t => t.id === 'vasos').nivel, 'Órganos y sistemas');
+  const rows = M.tissueDoses('hueso');
+  assert.equal(rows.length, 3);
+  const fx = rows.find(r => r.id === 'fracturas');
+  assert.equal(fx.gauss, '30 – 50 G');
+  assert.equal(fx.minutes, 'varía');
+  assert.equal(fx.sesiones, 'diarias');
+  const rc = rows.find(r => r.id === 'retardo-consolidacion');
+  assert.equal(rc.gauss, 'Máximo del equipo');
+  assert.equal(rc.minutes, '20 min');
+  assert.equal(M.tissueDoses('nervio').find(r => r.id === 'lesiones-nerviosas').sesiones, '3 por semana');
+  assert.deepEqual(M.tissueDoses('zzz'), []);
+});
