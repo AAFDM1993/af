@@ -2,16 +2,16 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const C = require('../js/lab-core.js');
 
-test('GROUPS: 4 grupos, 18 agentes, ids únicos', () => {
-  assert.equal(C.GROUPS.length, 4);
+test('GROUPS: 5 grupos, 19 agentes, ids únicos', () => {
+  assert.equal(C.GROUPS.length, 5);
   const ids = C.GROUPS.flatMap(g => g.agents.map(a => a.id));
-  assert.equal(ids.length, 18);
-  assert.equal(new Set(ids).size, 18);
+  assert.equal(ids.length, 19);
+  assert.equal(new Set(ids).size, 19);
 });
 
 test('portadaGroups([]): todos ready:false', () => {
   const all = C.portadaGroups([]).flatMap(g => g.agents);
-  assert.equal(all.length, 18);
+  assert.equal(all.length, 19);
   assert.ok(all.every(a => a.ready === false));
 });
 
