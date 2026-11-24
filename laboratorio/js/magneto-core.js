@@ -161,8 +161,80 @@ var MagnetoCore = (function () {
       respuesta: 'No. El marcapasos es contraindicación de la magnetoterapia: el campo puede interferir con el dispositivo.' }
   ];
 
+  /* ---- Animación: funciones puras (el dibujo vive en lab-magneto-anim.js) ---- */
+  function num(v, d) { return typeof v === 'number' && isFinite(v) ? v : d; }
+  function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
+  /* Ciclos por segundo visibles: 1 Hz -> 0,5 y 100 Hz -> 3,0 (lineal). */
+  function visualHz(hz) { var h = clamp(num(hz, 1), DEVICE.hzMin, DEVICE.hzMax); return 0.5 + 2.5 * (h - 1) / 99; }
+  function fieldStrength(gauss) { return clamp(num(gauss, 0), 0, DEVICE.gaussAbsMax) / DEVICE.gaussAbsMax; }
+  function fieldPhase(tMs, hz, speed) {
+    var c = (num(tMs, 0) / 1000) * visualHz(hz) * clamp(num(speed, 1), 0, 4);
+    return c - Math.floor(c);
+  }
+  /* Tres cuartos: la clase solo nombra la forma; criterio didáctico: seno que se corta en el último cuarto del ciclo. */
+  function wavePoint(shape, phase) {
+    var f = phase - Math.floor(phase);
+    if (shape === 'sinusoidal') return Math.sin(2 * Math.PI * f);
+    if (shape === 'rectangular') return f < 0.5 ? 1 : -1;
+    if (shape === 'tres-cuartos') return f < 0.75 ? Math.sin(2 * Math.PI * f) : 0;
+    throw new Error('forma de onda desconocida: ' + shape);
+  }
+  function sweepPosition(tMs, periodMs) {
+    var f = (tMs / periodMs) - Math.floor(tMs / periodMs), x = f < 0.5 ? f * 2 : 2 - f * 2;
+    return { x: x, index: Math.round(x * (THEORY.posiciones.length - 1)) };
+  }
+
+  /* Marco teórico: contenido de las láminas de la clase (sin correcciones externas). */
+  var THEORY = {
+    concepto: [
+      'Aplicación de campos magnéticos artificiales sobre la zona del cuerpo humano aquejada de una disfunción o trauma, controlando la frecuencia o la intensidad de estos campos.',
+      'El campo magnético se induce de dos formas: a través de la corriente eléctrica (cables) y con imanes (imanterapia).',
+      'Según su transmisión es conversivo.',
+      'Penetración de 5 a 15 cm según el equipo: el solenoide es más profundo y uniforme; el aplicador plano o placa es más superficial y, al ir ganando profundidad, pierde energía.'
+    ],
+    unidades: [
+      'Inducción magnética: susceptibilidad de los cuerpos al ser sometidos a campos magnéticos.',
+      'Unidad: gauss (1975); hoy, en el Sistema Internacional, el tesla.',
+      '1 tesla = 10 000 gauss (1 gauss = 10⁻⁴ tesla).'
+    ],
+    sustancias: [
+      { id: 'diamagneticas', nombre: 'Diamagnéticas', susceptibilidad: 'Susceptibilidad magnética negativa.',
+        comportamiento: 'Se imantan poco al ser sometidas al campo magnético y son repelidas por él.', ejemplos: 'En la membrana celular. Otros: bismuto, cobre, antimonio.' },
+      { id: 'paramagneticas', nombre: 'Paramagnéticas', susceptibilidad: 'Susceptibilidad magnética positiva.',
+        comportamiento: 'Son atraídas por los campos magnéticos; su permeabilidad magnética tiene una intensidad igual a la del campo.', ejemplos: 'En el cuerpo humano. Otros: aluminio, platino, sodio.' },
+      { id: 'ferromagneticas', nombre: 'Ferromagnéticas', susceptibilidad: 'Susceptibilidad magnética grande.',
+        comportamiento: 'Se imantan tanto dentro del cuerpo como fuera.', ejemplos: 'El hierro, que está en la hemoglobina. Otros, en menor proporción: níquel y cobalto.' }
+    ],
+    polos: {
+      N: 'Polo norte: miorrelajante.',
+      S: 'Polo sur: analgésico y antiinflamatorio. El magnetismo fluye de sur a norte.'
+    },
+    equipo: {
+      consola: [
+        'Frecuencia entre 1 y 100 Hz; algunas unidades presentan frecuencia fija de 50 Hz.',
+        'Se pueden variar la frecuencia, la intensidad y el tiempo de aplicación (según la patología).',
+        'Forma de aplicación: fijo (patología local) o barrido (patología global).',
+        'Tiene 2 canales independientes.',
+        'Forma de la onda que se aplica: sinusoidal, rectangular o en «tres cuartos».'
+      ],
+      solenoide: [
+        'Cuando se necesitan campos magnéticos intensos se usan los producidos por conductores enrollados que forman una bobina larga con muchas espiras circulares en su interior.',
+        'El campo magnético es uniforme; es de material plástico para facilitar la limpieza y en él se introduce la zona a tratar.',
+        'Pequeños, de 15 a 20 cm. Grandes, de 60 cm, para hacer barrido de cuerpo entero.'
+      ],
+      camilla: ['La camilla es la tercera parte del equipo, junto con la consola y el solenoide.']
+    },
+    formasOnda: [
+      { id: 'sinusoidal', nombre: 'Sinusoidal' },
+      { id: 'rectangular', nombre: 'Rectangular' },
+      { id: 'tres-cuartos', nombre: 'En «tres cuartos»' }
+    ],
+    posiciones: ['pie', 'rodilla', 'cadera', 'dorsal baja', 'cabeza y cuello'],
+    tecnica: { fijo: 'Fijo, para patologías locales.', barrido: 'Barrido, para patologías globales (efecto de relajación general). Existen 5 posiciones: pie, rodilla, cadera, dorsal baja, cabeza y cuello.' }
+  };
+
   return { GAUSS_PER_TESLA: GAUSS_PER_TESLA, DEVICE: DEVICE, gaussToTesla: gaussToTesla, teslaToGauss: teslaToGauss, fieldAtDepth: fieldAtDepth,
     POLES: POLES, poleEffect: poleEffect, profileFor: profileFor, PROFILES: PROFILES, PATHOLOGIES: PATHOLOGIES, evaluateProtocol: evaluateProtocol,
-    CONDITIONS: CONDITIONS, LAYERS: LAYERS, layerAt: layerAt, TISSUES: TISSUES, tissueDoses: tissueDoses, NOTES: NOTES, HIGH_INTENSITY_NOTE: HIGH_INTENSITY_NOTE, CASES: CASES };
+    CONDITIONS: CONDITIONS, visualHz: visualHz, fieldStrength: fieldStrength, fieldPhase: fieldPhase, wavePoint: wavePoint, sweepPosition: sweepPosition, THEORY: THEORY, LAYERS: LAYERS, layerAt: layerAt, TISSUES: TISSUES, tissueDoses: tissueDoses, NOTES: NOTES, HIGH_INTENSITY_NOTE: HIGH_INTENSITY_NOTE, CASES: CASES };
 })();
 if (typeof module !== 'undefined') module.exports = MagnetoCore;
