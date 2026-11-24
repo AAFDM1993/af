@@ -72,6 +72,7 @@
     tabs: [
       { title: 'Marco teórico', html: T0, init: function (root) {
         var $ = function (id) { return root.getElementById(id); }, TH = M.THEORY, shape = 'sinusoidal', hz = 30, wv = null, sw = null;
+        if (window.MagnetoAnim) MagnetoAnim.setMode('proyeccion'); /* el conmutador siempre arranca en Proyección */
         U.fill($('mgtconc'), TH.concepto); U.fill($('mgtuni'), TH.unidades);
         $('mgtun2').textContent = 'Ejemplo: 100 G = ' + K.fx(M.gaussToTesla(100), 3) + ' T.';
         TH.sustancias.forEach(function (x) {

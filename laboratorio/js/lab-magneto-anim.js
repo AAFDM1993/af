@@ -71,6 +71,8 @@ var MagnetoAnim = (function () {
       if (p.dead) return;
       if (wrap.isConnected === false) { if (p.seen) p.destroy(); return; } /* sacado del DOM: no deja bucles huérfanos */
       p.seen = true;
+      /* pestaña oculta (display:none): no se calcula ni se dibuja nada */
+      if (wrap.getClientRects().length === 0) { p.last = 0; if (p.playing) p.raf = requestAnimationFrame(frame); return; }
       var dt = p.last ? clamp(now - p.last, 0, 100) : 0;
       p.last = now;
       h.tick(dt * p.speed);
@@ -222,11 +224,11 @@ var MagnetoAnim = (function () {
       s += T((X0 + MX + MW + 42) / 2, YB + 89, '', { a: 'middle', fs: 17, b: true, r: 'sign' });
       /* sonda: línea a la profundidad elegida, asa a la derecha y lectura */
       s += '<g class="mga-probe" data-r="probe" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="' + DMAX + '" aria-label="Sonda: profundidad en el corte">';
-      s += '<rect data-r="hit" x="' + X0 + '" y="-18" width="' + (X1 - X0 + 6) + '" height="36" fill="transparent"/>';
+      s += '<rect data-r="hit" x="' + X0 + '" y="-40" width="' + (X1 - X0 + 6) + '" height="80" fill="transparent"/>';
       s += '<line x1="' + X0 + '" y1="0" x2="' + X1 + '" y2="0" stroke="' + NAR + '" stroke-width="4" stroke-dasharray="12 6" pointer-events="none"/>';
       s += '<line x1="' + X1 + '" y1="0" x2="' + (MX - 16) + '" y2="0" stroke="' + NAR + '" stroke-width="2" stroke-dasharray="3 4" pointer-events="none"/>';
       s += '<path d="M' + (MX - 16) + ' -7L' + (MX - 4) + ' 0L' + (MX - 16) + ' 7z" fill="' + NAR + '" stroke="' + INK + '" stroke-width="1"/>';
-      s += '<circle class="mga-ring" cx="' + (X1 - 18) + '" cy="0" r="15" fill="' + NAR + '" stroke="#fff" stroke-width="3"/>';
+      s += '<circle class="mga-ring" cx="' + (X1 - 18) + '" cy="0" r="21" fill="' + NAR + '" stroke="#fff" stroke-width="3"/>';
       s += '<path d="M' + (X1 - 18) + ' -9L' + (X1 - 13) + ' -3H' + (X1 - 23) + 'z M' + (X1 - 18) + ' 9L' + (X1 - 13) + ' 3H' + (X1 - 23) + 'z" fill="#fff" pointer-events="none"/>';
       s += '<g data-r="ptag" pointer-events="none"><rect x="' + (cx - 118) + '" y="-36" width="236" height="27" rx="7" fill="#fff" fill-opacity="0.94" stroke="' + NAR + '" stroke-width="2.5"/>' +
         T(cx, -16, '', { a: 'middle', fs: 17, b: true, r: 'ptxt' }) + '</g>';
