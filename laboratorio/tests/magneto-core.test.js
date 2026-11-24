@@ -189,3 +189,37 @@ test('THEORY completo', () => {
     T.sustancias.map((s) => [s.nombre, s.susceptibilidad, s.comportamiento, s.ejemplos]).reduce((a, b) => a.concat(b), []));
   strs.forEach((s) => assert.ok(typeof s === 'string' && s.trim().length > 0));
 });
+
+test('sweepPosition: periodo no válido no da NaN', () => {
+  [0, -5, NaN].forEach((p) => { const r = M.sweepPosition(1000, p); assert.equal(r.x, 0); assert.equal(r.index, 0); });
+});
+
+test('sweepPosition: el índice sigue las paradas reales (no igualmente espaciadas)', () => {
+  const stops = [0, 0.2655, 0.5364, 0.7491, 1];
+  assert.equal(M.sweepPosition(0, 4000, stops).index, 0);
+  assert.equal(M.sweepPosition(1500, 4000, stops).x, 0.75);
+  assert.equal(M.sweepPosition(1500, 4000, stops).index, 3);
+  assert.equal(M.sweepPosition(750, 4000, stops).x, 0.375);
+  assert.equal(M.sweepPosition(750, 4000, stops).index, 1);
+  assert.equal(M.sweepPosition(2000, 4000, stops).index, 4);
+});
+
+test('frecuencia por patología según su perfil', () => {
+  assert.equal(M.frequencyText('bursitis'), 'Menos de 50 Hz');
+  assert.equal(M.frequencyText('cefaleas'), 'Más de 50 Hz');
+  assert.equal(M.frequencyText('raquialgias'), 'Más de 50 Hz');
+  M.PATHOLOGIES.forEach((p) => assert.ok(/50 Hz/.test(M.frequencyText(p.id))));
+  assert.throws(() => M.frequencyText('zzz'));
+});
+
+test('WHY_PROFILES compara frecuencias e intensidades bajas y altas con datos de PROFILES', () => {
+  const W = M.WHY_PROFILES;
+  assert.deepEqual(W.columnas.map((c) => c.perfil), ['ataque', 'analgesico']);
+  W.columnas.forEach((c) => {
+    const d = M.PROFILES[c.perfil];
+    assert.equal(c.frecuencia.indexOf(d.hz) >= 0, true);
+    assert.ok(c.intensidad.indexOf(String(d.gauss[0])) >= 0 && c.intensidad.indexOf(String(d.gauss[1])) >= 0);
+    assert.ok(c.predomina && c.cuando && c.tiempo && c.sesiones);
+  });
+  assert.ok(W.regla.length > 0);
+});
