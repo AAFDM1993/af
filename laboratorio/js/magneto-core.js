@@ -161,6 +161,26 @@ var MagnetoCore = (function () {
       respuesta: 'No. El marcapasos es contraindicación de la magnetoterapia: el campo puede interferir con el dispositivo.' }
   ];
 
+  /* Frecuencia por patología: la clase da la frecuencia por perfil (ataque o analgésico), no por patología; el perfil de cada patología es criterio del módulo. */
+  function frequencyText(pathologyId) {
+    var p = PATHOLOGIES.filter(function (x) { return x.id === pathologyId; })[0];
+    if (!p) throw new Error('patología desconocida: ' + pathologyId);
+    return p.perfil === 'ataque' ? 'Menos de 50 Hz' : 'Más de 50 Hz';
+  }
+
+  /* Cuadro «por qué frecuencias e intensidades bajas o altas» (láminas de los perfiles de la clase). */
+  var WHY_PROFILES = {
+    regla: 'Terapia de ataque: frecuencia baja (menos de 50 Hz) con intensidad media (40–100 G) para actuar sobre el edema y reparar el tejido. Perfil analgésico: frecuencia por encima de 50 Hz con intensidad baja (0–40 G) para aliviar el dolor y la contractura y mejorar el flujo vascular, con sesiones más largas. Con 50 Hz exactos la clase no define perfil.',
+    columnas: [
+      { perfil: 'ataque', titulo: 'Frecuencia baja, intensidad media', frecuencia: 'Baja: menos de 50 Hz', intensidad: 'Media: 40–100 G',
+        predomina: 'Efecto antiedematoso y de reparación tisular', cuando: 'Terapia de ataque; la clase la ejemplifica con traumas leves',
+        tiempo: '20 a 30 minutos', sesiones: 'Una o dos veces por día; 5 a 10 sesiones (traumas leves)' },
+      { perfil: 'analgesico', titulo: 'Frecuencia más alta, intensidad baja', frecuencia: 'Media o alta: más de 50 Hz', intensidad: 'Baja: 0–40 G',
+        predomina: 'Efecto analgésico, miorrelajante y mejora del flujo vascular', cuando: 'Cuando domina el dolor, la contractura o la mala circulación',
+        tiempo: 'Más de 30 hasta 60 minutos', sesiones: '3 veces por semana; 2 o 3 series de 20 sesiones, con descanso de 2 semanas entre series' }
+    ]
+  };
+
   /* ---- Animación: funciones puras (el dibujo vive en lab-magneto-anim.js) ---- */
   function num(v, d) { return typeof v === 'number' && isFinite(v) ? v : d; }
   function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
@@ -179,9 +199,13 @@ var MagnetoCore = (function () {
     if (shape === 'tres-cuartos') return f < 0.75 ? Math.sin(2 * Math.PI * f) : 0;
     throw new Error('forma de onda desconocida: ' + shape);
   }
-  function sweepPosition(tMs, periodMs) {
-    var f = (tMs / periodMs) - Math.floor(tMs / periodMs), x = f < 0.5 ? f * 2 : 2 - f * 2;
-    return { x: x, index: Math.round(x * (THEORY.posiciones.length - 1)) };
+  /* stops (opcional): posiciones normalizadas 0–1 de cada parada; sin ellas se supone espaciado igual. */
+  function sweepPosition(tMs, periodMs, stops) {
+    if (!(periodMs > 0) || !isFinite(tMs)) return { x: 0, index: 0 };
+    var f = (tMs / periodMs) - Math.floor(tMs / periodMs), x = f < 0.5 ? f * 2 : 2 - f * 2, i, best = 0;
+    if (!stops || !stops.length) return { x: x, index: Math.round(x * (THEORY.posiciones.length - 1)) };
+    for (i = 1; i < stops.length; i++) if (Math.abs(stops[i] - x) < Math.abs(stops[best] - x)) best = i;
+    return { x: x, index: best };
   }
 
   /* Marco teórico: contenido de las láminas de la clase (sin correcciones externas). */
@@ -235,6 +259,6 @@ var MagnetoCore = (function () {
 
   return { GAUSS_PER_TESLA: GAUSS_PER_TESLA, DEVICE: DEVICE, gaussToTesla: gaussToTesla, teslaToGauss: teslaToGauss, fieldAtDepth: fieldAtDepth,
     POLES: POLES, poleEffect: poleEffect, profileFor: profileFor, PROFILES: PROFILES, PATHOLOGIES: PATHOLOGIES, evaluateProtocol: evaluateProtocol,
-    CONDITIONS: CONDITIONS, visualHz: visualHz, fieldStrength: fieldStrength, fieldPhase: fieldPhase, wavePoint: wavePoint, sweepPosition: sweepPosition, THEORY: THEORY, LAYERS: LAYERS, layerAt: layerAt, TISSUES: TISSUES, tissueDoses: tissueDoses, NOTES: NOTES, HIGH_INTENSITY_NOTE: HIGH_INTENSITY_NOTE, CASES: CASES };
+    CONDITIONS: CONDITIONS, visualHz: visualHz, fieldStrength: fieldStrength, fieldPhase: fieldPhase, wavePoint: wavePoint, sweepPosition: sweepPosition, THEORY: THEORY, frequencyText: frequencyText, WHY_PROFILES: WHY_PROFILES, LAYERS: LAYERS, layerAt: layerAt, TISSUES: TISSUES, tissueDoses: tissueDoses, NOTES: NOTES, HIGH_INTENSITY_NOTE: HIGH_INTENSITY_NOTE, CASES: CASES };
 })();
 if (typeof module !== 'undefined') module.exports = MagnetoCore;

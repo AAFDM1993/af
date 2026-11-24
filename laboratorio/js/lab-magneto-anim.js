@@ -14,6 +14,7 @@ var MagnetoAnim = (function () {
   var CSS =
     '.mga{width:100%;max-width:100%;min-width:0}' +
     '.mga-stage svg{display:block;width:100%;height:auto;max-width:100%}' +
+    '@media(max-width:560px){.mga-stage{overflow-x:auto;-webkit-overflow-scrolling:touch}.mga-stage svg{min-width:560px;max-width:none;width:560px}}' +
     '.mga-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:8px}' +
     '.mga-play{font:inherit;font-size:20px;font-weight:bold;min-height:48px;min-width:160px;padding:8px 20px;border:0;border-radius:12px;background:' + VIO + ';color:#fff;cursor:pointer}' +
     '.mga-play:focus-visible,.mga-speed button:focus-visible{outline:3px solid ' + NAR + ';outline-offset:2px}' +
@@ -137,6 +138,12 @@ var MagnetoAnim = (function () {
       var i = live.indexOf(p); if (i > -1) live.splice(i, 1);
       if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
     };
+    /* si el usuario activa «reducir movimiento» con el módulo abierto, se pausa */
+    var mq = null;
+    function onMq(e) { if (e.matches) p.pause(); }
+    try { mq = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)'); if (mq && mq.addEventListener) mq.addEventListener('change', onMq); else mq = null; } catch (e1) { mq = null; }
+    var baseDestroy = p.destroy;
+    p.destroy = function () { if (mq) { try { mq.removeEventListener('change', onMq); } catch (e2) { /* nada */ } mq = null; } baseDestroy(); };
     live.push(p);
     return p;
   }
@@ -152,7 +159,7 @@ var MagnetoAnim = (function () {
     var MX = 452, MW = 88, NL = 7, NCH = 3, LX0 = X0 + 12, LX1 = X1 - 14;
     var ARCS = [1.5, 3, 4.6, 6.5, 8.8, 11.5, 14.4];
     var id = uid('s'), phase = 0, depth = BONE, drag = null, interactive = false, chOp = 1, chSc = 1, R = {};
-    var p = makePiece(el, { tick: tick, render: render, onMode: onMode, hint: 'Arrastre la sonda naranja o use las flechas ↑ ↓' });
+    var p = makePiece(el, { tick: tick, render: render, onMode: onMode, hint: 'Arrastre la sonda naranja o use las flechas del teclado (↑ y → profundizan; ↓ y ← suben)' });
 
     function lineY(i) { return Y0 + PX + i * 2.1 * PX; }
     function build() {
@@ -272,7 +279,7 @@ var MagnetoAnim = (function () {
       R.svg.addEventListener('pointercancel', end);
       R.probe.addEventListener('keydown', function (e) {
         if (!interactive) return;
-        var d = { ArrowUp: -0.5, ArrowLeft: -0.5, ArrowDown: 0.5, ArrowRight: 0.5, PageUp: -2, PageDown: 2 }[e.key];
+        var d = { ArrowUp: 0.5, ArrowRight: 0.5, ArrowDown: -0.5, ArrowLeft: -0.5, PageUp: 2, PageDown: -2 }[e.key];
         if (e.key === 'Home') setDepth(0); else if (e.key === 'End') setDepth(DMAX);
         else if (d !== undefined) setDepth(Math.round((depth + d) * 2) / 2);
         else return;
@@ -320,7 +327,7 @@ var MagnetoAnim = (function () {
       R.sign.textContent = 'Al hueso (7 cm) llegan ' + K.fx(M.fieldAtDepth(apl, BONE, g), 0) + ' G de los ' + K.fx(g, 0) + ' G de la piel';
       probe(); aria();
     }
-    function tick(dt) { phase = (phase + M.fieldPhase(dt, hz, 1)) % 1; }
+    function tick(dt) { if (M.fieldStrength(g) > 0) phase = (phase + M.fieldPhase(dt, hz, 1)) % 1; }
     function render() {
       if (sol) {
         var L = LX1 - LX0 - 18;
@@ -599,6 +606,7 @@ var MagnetoAnim = (function () {
       if (l && (l + ' ' + w).length > max && lines.length < 2) lines.push(w);
       else lines[lines.length - 1] = l ? l + ' ' + w : w;
     });
+    if (lines[1] && lines[1].length > max) lines[1] = lines[1].slice(0, max - 1) + '…';
     return lines;
   }
 
@@ -696,7 +704,7 @@ var MagnetoAnim = (function () {
     var PX0 = 70, PX1 = 470, MID = 118, A = 66, GX0 = 512, GW = 40;
     var p = makePiece(el, { tick: tick, render: render });
     function build() {
-      var s = '<svg viewBox="0 0 600 244" role="img" data-r="svg">';
+      var s = '<svg viewBox="0 0 600 268" role="img" data-r="svg">';
       s += '<rect x="' + PX0 + '" y="' + (MID - A - 12) + '" width="' + (PX1 - PX0) + '" height="' + (2 * A + 24) + '" rx="8" fill="#FBF6F0" stroke="#D9C7B6" stroke-width="1.5"/>';
       s += '<line x1="' + PX0 + '" y1="' + (MID - A) + '" x2="' + PX1 + '" y2="' + (MID - A) + '" stroke="#D9C7B6" stroke-width="1.5" stroke-dasharray="6 5"/>';
       s += '<line x1="' + PX0 + '" y1="' + (MID + A) + '" x2="' + PX1 + '" y2="' + (MID + A) + '" stroke="#D9C7B6" stroke-width="1.5" stroke-dasharray="6 5"/>';
@@ -711,12 +719,14 @@ var MagnetoAnim = (function () {
       s += '<rect data-r="gf" x="' + (GX0 + 3) + '" y="' + MID + '" width="' + (GW - 6) + '" height="0" fill="' + VIO + '"/>';
       s += '<line x1="' + (GX0 - 4) + '" y1="' + MID + '" x2="' + (GX0 + GW + 4) + '" y2="' + MID + '" stroke="' + INK + '" stroke-width="2"/>';
       s += T(16, 234, '', { fs: 16, c: MUTED, r: 'nt' });
+      s += T(16, 258, '', { fs: 16, b: true, c: VIO, r: 'nt2' });
       s += '</svg>';
       p.stage.innerHTML = s;
-      R.svg = q(p.stage, 'svg'); R.tr = q(p.stage, 'tr'); R.hd = q(p.stage, 'hd'); R.gf = q(p.stage, 'gf'); R.ttl = q(p.stage, 'ttl'); R.nt = q(p.stage, 'nt');
+      R.svg = q(p.stage, 'svg'); R.tr = q(p.stage, 'tr'); R.hd = q(p.stage, 'hd'); R.gf = q(p.stage, 'gf'); R.ttl = q(p.stage, 'ttl'); R.nt = q(p.stage, 'nt'); R.nt2 = q(p.stage, 'nt2');
     }
     function style() {
       R.ttl.textContent = shapeName(shape) + ' · ' + fxHz(hz) + ' Hz';
+      R.nt2.textContent = shape === 'tres-cuartos' ? 'La clase solo nombra la forma «tres cuartos»: este dibujo es un criterio didáctico.' : '';
       R.nt.textContent = 'Animación ralentizada: ' + fxHz(hz) + ' Hz se muestran a ' + K.fx(M.visualHz(hz), 1) + ' ciclos por segundo.';
       R.svg.setAttribute('aria-label', 'Forma de onda ' + shapeName(shape).toLowerCase() + ' a ' + fxHz(hz) + ' Hz. La animación está ralentizada: se ven ' + K.fx(M.visualHz(hz), 1) + ' ciclos por segundo.');
     }
@@ -751,7 +761,7 @@ var MagnetoAnim = (function () {
      ===================================================================== */
   function sweep(el) {
     var id = uid('b'), t = 0, PERIOD = 12000, idx = -1, R = {};
-    var XS = [50, 196, 345, 462, 600], NAMES = M.THEORY.posiciones, OYB = 226;
+    var XS = [50, 196, 345, 462, 600], STOPS = XS.map(function (x) { return (x - XS[0]) / (XS[4] - XS[0]); }), NAMES = M.THEORY.posiciones, OYB = 226;
     var p = makePiece(el, { tick: tick, render: render });
     function body(oy) {
       var sk = '#E8B58F', st = '#8E5B3A', s = '';
@@ -808,7 +818,7 @@ var MagnetoAnim = (function () {
     }
     function tick(dt) { t = (t + dt) % PERIOD; }
     function render() {
-      var sp = M.sweepPosition(t, PERIOD), x = XS[0] + sp.x * (XS[4] - XS[0]);
+      var sp = M.sweepPosition(t, PERIOD, STOPS), x = XS[0] + sp.x * (XS[4] - XS[0]);
       translate(R.ring, x, 0);
       if (sp.index !== idx) {
         idx = sp.index;

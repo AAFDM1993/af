@@ -27,8 +27,8 @@
     '<div class="card" style="grid-column:1/-1"><h2>Los dos aplicadores con la misma intensidad</h2>' +
     slider('mgag', 'Intensidad en la piel', 1, 200, 1, 60) + slider('mgah', 'Frecuencia', 1, 100, 1, 30) +
     '<p class="note">Cambie la intensidad y la frecuencia y observe cómo se mueve el campo. En el modo Exploración puede arrastrar la sonda naranja para leer los gauss a cada profundidad.</p>' +
-    '<div style="display:flex;gap:18px;flex-wrap:wrap"><div style="flex:1 1 400px;min-width:300px"><h3 style="margin:4px 0">Solenoide</h3><p style="font-weight:bold">Rodea la zona y llega parejo a todas las capas.</p><div id="mgsol"></div></div>' +
-    '<div style="flex:1 1 400px;min-width:300px"><h3 style="margin:4px 0">Plano</h3><p style="font-weight:bold">Se apoya en la piel y se debilita al profundizar.</p><div id="mgpla"></div></div></div></div>' +
+    '<div style="display:flex;gap:18px;flex-wrap:wrap"><div style="flex:1 1 400px;min-width:min(300px,100%)"><h3 style="margin:4px 0">Solenoide</h3><p style="font-weight:bold">Rodea la zona y llega parejo a todas las capas.</p><div id="mgsol"></div></div>' +
+    '<div style="flex:1 1 400px;min-width:min(300px,100%)"><h3 style="margin:4px 0">Plano</h3><p style="font-weight:bold">Se apoya en la piel y se debilita al profundizar.</p><div id="mgpla"></div></div></div></div>' +
     '<div class="card" style="grid-column:1/-1"><h2>Cuántos gauss llegan a cada capa (con la intensidad elegida arriba)</h2><div id="mgtabd" style="overflow-x:auto"></div></div>' +
     '<div class="card"><h2>Cómo leer el dibujo</h2><ul class="l" id="mgleer"></ul></div>' +
     '<div class="card"><h2>¿Cuál uso?</h2><ul class="l" id="mgaplnotes"></ul></div>' +
@@ -55,12 +55,16 @@
     '<div class="row"><label>Polo</label>' + segHtml('mgpol2', POL, 'S') + '</div>' +
     slider('mgf2', 'Frecuencia', 1, 100, 1, 30) + slider('mgg2', 'Intensidad', 0, 200, 1, 50) + slider('mgt2', 'Tiempo', 0, 60, 1, 20) +
     '<div id="mgverd"></div><div class="res" id="mgmsg"></div></div>' +
-    '<div class="card"><h2>Tabla de la clase</h2><div id="mgtab" style="overflow-x:auto"></div></div>';
+    '<div class="card"><h2>Tabla de la clase</h2><div id="mgtab" style="overflow-x:auto"></div>' +
+    '<p class="note">La clase da la frecuencia por perfil (menos o más de 50 Hz), no por patología: asignar un perfil a cada patología es criterio del módulo.</p></div>' +
+    '<div class="card" style="grid-column:1/-1"><h2>¿Por qué elegir frecuencias e intensidades bajas o altas?</h2><p id="mgwhyr" style="font-weight:bold"></p><div id="mgwhy" style="overflow-x:auto"></div>' +
+    '<p class="note">Se resalta el perfil de la patología elegida arriba. Con 50 Hz exactos la clase no define perfil.</p></div>';
 
   var def = U.build({
     id: 'magneto', title: 'Magnetoterapia', subtitle: 'Campo magnético de baja frecuencia · solenoide y plano · modelo didáctico para proyección', accent: '#5B3A8C',
     css: 'table{border-collapse:collapse;width:100%;font-size:17px}th,td{border:1px solid var(--line);padding:4px 8px;text-align:left}th{background:#EFE7F7}tr.on td{background:#FFF1D6;font-weight:bold}' +
       'h3.tt{margin:0 0 8px;font-size:24px;color:var(--accent)}' +
+      'td.pcol,th.pcol{background:#FFF1D6;font-weight:bold}' +
       '@media(max-width:820px){section.tab.on{grid-template-columns:minmax(0,1fr)}.card{min-width:0}.row{flex-wrap:wrap}.row input[type=range]{min-width:0;flex:1 1 140px}#mgtinfo,#mgtscene{flex:1 1 100% !important;min-width:0 !important}}' +
       'h4{margin:12px 0 4px;font-size:19px;color:var(--accent)}' +
       'tr.on td{background:#FFF1D6;font-weight:bold}' +
@@ -91,7 +95,7 @@
         var hd = root.querySelector('header.mh');
         if (hd && window.MagnetoAnim) {
           var mb = U.el('div', 'seg'); mb.id = 'mgmode'; mb.style.marginLeft = 'auto';
-          mb.setAttribute('aria-label', 'Modo de los esquemas');
+          mb.setAttribute('role', 'group'); mb.setAttribute('aria-label', 'Modo de los esquemas');
           mb.innerHTML = '<button type="button" data-v="proyeccion" class="on">Proyección</button><button type="button" data-v="exploracion">Exploración</button>';
           hd.style.display = 'flex'; hd.style.alignItems = 'center'; hd.style.gap = '16px'; hd.style.flexWrap = 'wrap'; hd.appendChild(mb);
           U.seg(mb, function (v) { MagnetoAnim.setMode(v); });
@@ -190,14 +194,22 @@
         var $ = function (id) { return root.getElementById(id); }, apl = 'solenoide', pol = 'S';
         M.PATHOLOGIES.forEach(function (p) { var o = U.el('option', '', p.nombre); o.value = p.id; $('mgpat').appendChild(o); });
         function table() {
-          var cur = $('mgpat').value, h = '<table><tr><th>Patología</th><th>Gauss</th><th>Tiempo</th><th>Sesiones</th></tr>';
+          var cur = $('mgpat').value, h = '<table><tr><th>Patología</th><th>Frecuencia</th><th>Gauss</th><th>Tiempo</th><th>Sesiones</th></tr>';
           M.PATHOLOGIES.forEach(function (p) {
-            h += '<tr' + (p.id === cur ? ' class="on"' : '') + '><td>' + p.nombre + '</td><td>' + (p.maxDevice ? 'Máximo' : p.gauss[0] + ' – ' + p.gauss[1]) + '</td><td>' + (p.minutes === null ? 'varía' : p.minutes + ' min') + '</td><td>' + SES[p.sesiones] + '</td></tr>';
+            h += '<tr' + (p.id === cur ? ' class="on"' : '') + '><td>' + p.nombre + '</td><td>' + M.frequencyText(p.id) + '</td><td>' + (p.maxDevice ? 'Máximo' : p.gauss[0] + ' – ' + p.gauss[1]) + '</td><td>' + (p.minutes === null ? 'varía' : p.minutes + ' min') + '</td><td>' + SES[p.sesiones] + '</td></tr>';
           });
           $('mgtab').innerHTML = h + '</table>';
         }
+        function why() {
+          var W = M.WHY_PROFILES, cur = M.PATHOLOGIES.filter(function (x) { return x.id === $('mgpat').value; })[0], on = cur ? cur.perfil : '';
+          $('mgwhyr').textContent = W.regla;
+          var rows = [['Frecuencia', 'frecuencia'], ['Intensidad', 'intensidad'], ['Qué predomina', 'predomina'], ['Cuándo', 'cuando'], ['Tiempo', 'tiempo'], ['Sesiones y series', 'sesiones']];
+          var h = '<table><tr><th></th>' + W.columnas.map(function (c) { return '<th' + (c.perfil === on ? ' class="pcol"' : '') + '>' + c.titulo + '</th>'; }).join('') + '</tr>';
+          rows.forEach(function (r) { h += '<tr><th>' + r[0] + '</th>' + W.columnas.map(function (c) { return '<td' + (c.perfil === on ? ' class="pcol"' : '') + '>' + c[r[1]] + '</td>'; }).join('') + '</tr>'; });
+          $('mgwhy').innerHTML = h + '</table>';
+        }
         function upd() {
-          table();
+          table(); why();
           U.verdict($('mgverd'), $('mgmsg'), M.evaluateProtocol({ pathology: $('mgpat').value, applicator: apl, pole: pol, hz: +$('mgf2').value, gauss: +$('mgg2').value, minutes: +$('mgt2').value }), { ok: 'Adecuado', ajustar: 'Ajustar', no: 'No válido' });
         }
         $('mgpat').addEventListener('change', upd);
