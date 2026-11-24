@@ -185,7 +185,7 @@ test('THEORY completo', () => {
   assert.equal(T.posiciones[4], 'cabeza y cuello');
   assert.deepEqual(T.formasOnda.map((f) => f.id), ['sinusoidal', 'rectangular', 'tres-cuartos']);
   assert.ok(T.tecnica.fijo && T.tecnica.barrido);
-  const strs = [].concat(T.concepto, T.unidades, T.equipo.consola, T.equipo.solenoide, T.equipo.camilla, T.polos.N, T.polos.S,
+  const strs = [].concat(T.concepto, T.unidades, T.partes.consola, T.partes.solenoide, T.partes.camilla, T.polos.N, T.polos.S,
     T.sustancias.map((s) => [s.nombre, s.susceptibilidad, s.comportamiento, s.ejemplos]).reduce((a, b) => a.concat(b), []));
   strs.forEach((s) => assert.ok(typeof s === 'string' && s.trim().length > 0));
 });

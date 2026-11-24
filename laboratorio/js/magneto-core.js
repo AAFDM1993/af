@@ -190,7 +190,7 @@ var MagnetoCore = (function () {
       'Aplicación de campos magnéticos artificiales sobre la zona del cuerpo humano aquejada de una disfunción o trauma, controlando la frecuencia o la intensidad de estos campos.',
       'El campo magnético se induce de dos formas: a través de la corriente eléctrica (cables) y con imanes (imanterapia).',
       'Según su transmisión es conversivo.',
-      'Penetración de 5 a 15 cm según el equipo: el solenoide es más profundo y uniforme; el aplicador plano o placa es más superficial y, al ir ganando profundidad, pierde energía.'
+      'Penetración de 5 a 15 cm según el equipo, el solenoide es más profundo y uniforme; el aplicador plano o placa es más superficial y, al ir ganando profundidad, pierde energía.'
     ],
     unidades: [
       'Inducción magnética: susceptibilidad de los cuerpos al ser sometidos a campos magnéticos.',
@@ -209,7 +209,7 @@ var MagnetoCore = (function () {
       N: 'Polo norte: miorrelajante.',
       S: 'Polo sur: analgésico y antiinflamatorio. El magnetismo fluye de sur a norte.'
     },
-    equipo: {
+    partes: {
       consola: [
         'Frecuencia entre 1 y 100 Hz; algunas unidades presentan frecuencia fija de 50 Hz.',
         'Se pueden variar la frecuencia, la intensidad y el tiempo de aplicación (según la patología).',
