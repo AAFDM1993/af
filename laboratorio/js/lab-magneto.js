@@ -61,6 +61,7 @@
     id: 'magneto', title: 'Magnetoterapia', subtitle: 'Campo magnético de baja frecuencia · solenoide y plano · modelo didáctico para proyección', accent: '#5B3A8C',
     css: 'table{border-collapse:collapse;width:100%;font-size:17px}th,td{border:1px solid var(--line);padding:4px 8px;text-align:left}th{background:#EFE7F7}tr.on td{background:#FFF1D6;font-weight:bold}' +
       'h3.tt{margin:0 0 8px;font-size:24px;color:var(--accent)}' +
+      '@media(max-width:820px){section.tab.on{grid-template-columns:minmax(0,1fr)}.card{min-width:0}.row{flex-wrap:wrap}.row input[type=range]{min-width:0;flex:1 1 140px}#mgtinfo,#mgtscene{flex:1 1 100% !important;min-width:0 !important}}' +
       'h4{margin:12px 0 4px;font-size:19px;color:var(--accent)}' +
       'tr.on td{background:#FFF1D6;font-weight:bold}' +
       'ol.steps{list-style:none;margin:6px 0 10px;padding:0;counter-reset:p}' +
