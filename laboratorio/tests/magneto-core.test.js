@@ -133,3 +133,59 @@ test('TISSUES: nivel, resultado clínico y dosis desde la tabla de la clase', ()
   assert.equal(M.tissueDoses('nervio').find(r => r.id === 'lesiones-nerviosas').sesiones, '3 por semana');
   assert.deepEqual(M.tissueDoses('zzz'), []);
 });
+
+test('visualHz acota y mapea', () => {
+  assert.equal(M.visualHz(1), 0.5);
+  assert.equal(M.visualHz(100), 3);
+  assert.equal(M.visualHz(0), 0.5);
+  assert.equal(M.visualHz(1000), 3);
+  assert.equal(M.visualHz(NaN), 0.5);
+  assert.ok(near(M.visualHz(50.5), 1.75));
+});
+
+test('fieldStrength', () => {
+  assert.equal(M.fieldStrength(0), 0);
+  assert.equal(M.fieldStrength(200), 1);
+  assert.equal(M.fieldStrength(500), 1);
+  assert.equal(M.fieldStrength(-5), 0);
+  assert.ok(near(M.fieldStrength(100), 0.5));
+});
+
+test('fieldPhase es periódica y acotada', () => {
+  assert.equal(M.fieldPhase(0, 30, 1), 0);
+  [1e9, 123456789, 7].forEach((t) => { const p = M.fieldPhase(t, 30, 1); assert.ok(p >= 0 && p < 1); });
+  assert.equal(M.fieldPhase(5000, 30, -2), 0);
+  assert.ok(near(M.fieldPhase(1000, 1, 1), 0.5));
+});
+
+test('wavePoint por forma', () => {
+  assert.ok(near(M.wavePoint('sinusoidal', 0.25), 1));
+  assert.ok(near(M.wavePoint('sinusoidal', 0.75), -1));
+  assert.equal(M.wavePoint('rectangular', 0.1), 1);
+  assert.equal(M.wavePoint('rectangular', 0.6), -1);
+  assert.ok(near(M.wavePoint('tres-cuartos', 0.25), 1));
+  assert.equal(M.wavePoint('tres-cuartos', 0.9), 0);
+  assert.throws(() => M.wavePoint('zzz', 0));
+  assert.ok(near(M.wavePoint('sinusoidal', 1.25), M.wavePoint('sinusoidal', 0.25)));
+});
+
+test('sweepPosition triangular', () => {
+  assert.equal(M.sweepPosition(0, 4000).x, 0);
+  assert.equal(M.sweepPosition(2000, 4000).x, 1);
+  assert.equal(M.sweepPosition(4000, 4000).x, 0);
+  assert.equal(M.sweepPosition(0, 4000).index, 0);
+  assert.equal(M.sweepPosition(2000, 4000).index, 4);
+});
+
+test('THEORY completo', () => {
+  const T = M.THEORY;
+  assert.deepEqual(T.sustancias.map((s) => s.id), ['diamagneticas', 'paramagneticas', 'ferromagneticas']);
+  assert.equal(T.posiciones.length, 5);
+  assert.equal(T.posiciones[0], 'pie');
+  assert.equal(T.posiciones[4], 'cabeza y cuello');
+  assert.deepEqual(T.formasOnda.map((f) => f.id), ['sinusoidal', 'rectangular', 'tres-cuartos']);
+  assert.ok(T.tecnica.fijo && T.tecnica.barrido);
+  const strs = [].concat(T.concepto, T.unidades, T.partes.consola, T.partes.solenoide, T.partes.camilla, T.polos.N, T.polos.S,
+    T.sustancias.map((s) => [s.nombre, s.susceptibilidad, s.comportamiento, s.ejemplos]).reduce((a, b) => a.concat(b), []));
+  strs.forEach((s) => assert.ok(typeof s === 'string' && s.trim().length > 0));
+});
