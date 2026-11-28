@@ -42,8 +42,7 @@
     '<div class="card" style="grid-column:1/-1"><h2>Qué hace el campo en cada tejido</h2><p class="note">Toque un tejido del esquema o elíjalo en la lista: el tejido elegido se anima paso a paso. Esquema didáctico con los efectos de la clase.</p>' +
     '<div class="seg" id="mgtis">' + MagnetoCore.TISSUES.map(function (t, i) { return '<button type="button" data-v="' + t.id + '"' + (i ? '' : ' class="on"') + '>' + t.nombre + '</button>'; }).join('') + '</div>' +
     '<div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:12px"><div id="mgtscene" style="flex:1.6 1 560px;min-width:280px"></div><div id="mgtinfo" style="flex:1 1 320px"></div></div></div>' +
-    '<div class="card" style="grid-column:1/-1"><h2>Resumen: qué mejora el campo en cada tejido</h2><p class="note">Toque una fila para ver ese tejido arriba.</p><div id="mgresumen" style="overflow-x:auto"></div></div>' +
-    '<div class="card" style="grid-column:1/-1"><h2>Qué dice la evidencia (bibliografía externa a la clase)</h2><p class="note">Consultada en noviembre de 2026. No es una revisión exhaustiva: «No se encontró» se refiere a la búsqueda hecha. Los niveles son criterio del módulo.</p><div id="mgevi" style="overflow-x:auto"></div><div id="mgevipol"></div></div>';
+    '<div class="card" style="grid-column:1/-1"><h2>Resumen: qué mejora el campo en cada tejido</h2><p class="note">Toque una fila para ver ese tejido arriba.</p><div id="mgresumen" style="overflow-x:auto"></div></div>';
 
   var T3 =
     '<div class="card"><h2>Perfiles de la clase</h2><div class="row"><label>Frecuencia</label><input type="range" id="mgf" min="1" max="100" step="1" value="30"><span class="val" id="mgfv" style="min-width:90px"></span></div><div id="mgprof"></div><div id="mgpwave" style="margin-top:10px"></div></div>' +
@@ -66,11 +65,6 @@
     css: 'table{border-collapse:collapse;width:100%;font-size:17px}th,td{border:1px solid var(--line);padding:4px 8px;text-align:left}th{background:#EFE7F7}tr.on td{background:#FFF1D6;font-weight:bold}' +
       'h3.tt{margin:0 0 8px;font-size:24px;color:var(--accent)}' +
       'td.pcol,th.pcol{background:#FFF1D6;font-weight:bold}' +
-      '.tagc{display:inline-block;font-weight:bold;color:var(--accent);border:2px solid var(--accent);border-radius:999px;padding:0 12px}' +
-      'details.evi{margin-top:14px;border:2px dashed var(--accent);border-radius:10px;padding:8px 14px;background:#fff;overflow-wrap:anywhere}' +
-      'details.evi summary{cursor:pointer;font-weight:bold;font-size:20px;color:var(--accent)}' +
-      '.lvl{font-weight:bold}.lvl.moderada{background:#E3F2E8}.lvl.baja{background:#FFF1D6}.lvl.preclinica{background:#EFE7F7}.lvl.no-encontrada{background:#F1ECE8}' +
-      'p.lvl{padding:4px 10px;border-radius:8px}' +
       '@media(max-width:820px){section.tab.on{grid-template-columns:minmax(0,1fr)}.card{min-width:0}.row{flex-wrap:wrap}.row input[type=range]{min-width:0;flex:1 1 140px}#mgtinfo,#mgtscene{flex:1 1 100% !important;min-width:0 !important}}' +
       'h4{margin:12px 0 4px;font-size:19px;color:var(--accent)}' +
       'tr.on td{background:#FFF1D6;font-weight:bold}' +
@@ -148,7 +142,6 @@
         function info() {
           var t = M.TISSUES.filter(function (x) { return x.id === sel; })[0], b = $('mgtinfo');
           b.innerHTML = ''; b.appendChild(U.el('h3', 'tt', t.nombre));
-          b.appendChild(U.el('span', 'tagc', 'Clase'));
           b.appendChild(U.el('p', 'note', 'Nivel de acción (clase): ' + t.nivel));
           b.appendChild(U.el('h4', '', 'Qué le pasa al tejido'));
           var ol = U.el('ol', 'steps');
@@ -162,41 +155,6 @@
           M.tissueDoses(t.id).forEach(function (d) { h += '<tr><td>' + d.nombre + '</td><td>' + d.gauss + '</td><td>' + d.minutes + '</td><td>' + d.sesiones + '</td></tr>'; });
           var box = U.el('div'); box.style.overflowX = 'auto'; box.innerHTML = h + '</table>'; b.appendChild(box);
           if (t.polo) b.appendChild(U.el('p', 'note', 'Polo habitual: ' + t.polo + ' (' + (t.polo === 'N' ? 'miorrelajante' : 'analgésico y antiinflamatorio') + ').'));
-          b.appendChild(profundizar(t.id));
-        }
-        function fuentes(box, list) {
-          var ul = U.el('ul', 'l');
-          list.forEach(function (f) {
-            var li = U.el('li'), a = U.el('a', '', f.titulo); a.href = f.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-            li.appendChild(a); li.appendChild(document.createTextNode(' (' + f.origen + ')')); ul.appendChild(li);
-          });
-          box.appendChild(ul);
-        }
-        function hallazgos(box, list) {
-          var ul = U.el('ul', 'l');
-          list.forEach(function (h) { var li = U.el('li'); li.appendChild(U.el('b', '', 'En ' + h.enQuien + ': ')); li.appendChild(document.createTextNode(h.texto)); ul.appendChild(li); });
-          box.appendChild(ul);
-        }
-        var abierto = false; /* el bloque sigue abierto o cerrado al cambiar de tejido */
-        function profundizar(id) {
-          var e = M.EVIDENCE[id], d = U.el('details', 'evi'), ul = U.el('ul', 'l');
-          d.open = abierto; d.addEventListener('toggle', function () { if (d.isConnected) abierto = d.open; });
-          d.appendChild(U.el('summary', '', 'Para profundizar (bibliografía)'));
-          d.appendChild(U.el('p', 'lvl ' + e.nivel, 'Evidencia: ' + M.EVIDENCE_LEVELS[e.nivel]));
-          d.appendChild(U.el('p', '', e.resumen));
-          d.appendChild(U.el('h4', '', 'Cómo se cree que actúa')); U.fill(ul, e.mecanismo); d.appendChild(ul);
-          d.appendChild(U.el('h4', '', 'Qué se ha visto y en quién')); hallazgos(d, e.hallazgos);
-          d.appendChild(U.el('h4', '', 'Fuentes (abren en otra pestaña; requieren internet)')); fuentes(d, e.fuentes);
-          return d;
-        }
-        function evidencia() {
-          var h = '<table><tr><th>Tejido</th><th>Dice la clase</th><th>Evidencia</th><th>En una frase</th></tr>';
-          function fila(nombre, clase, e) { h += '<tr><td>' + nombre + '</td><td>' + clase + '</td><td class="lvl ' + e.nivel + '">' + M.EVIDENCE_LEVELS[e.nivel] + '</td><td>' + e.resumen + '</td></tr>'; }
-          M.TISSUES.forEach(function (t) { fila(t.nombre, t.efecto, M.EVIDENCE[t.id]); });
-          var p = M.POLARITY_EVIDENCE;
-          fila('Polaridad N / S', M.THEORY.polos.N + ' ' + M.THEORY.polos.S, p);
-          $('mgevi').innerHTML = h + '</table>';
-          var box = $('mgevipol'); box.appendChild(U.el('h4', '', 'Sobre la polaridad: lo más cercano encontrado')); hallazgos(box, p.hallazgos); fuentes(box, p.fuentes);
         }
         function resumen() {
           var h = '<table><tr><th>Tejido</th><th>Nivel</th><th>Qué cambia</th><th>Qué se nota</th><th>Se usa en</th></tr>';
@@ -212,7 +170,7 @@
         }
         U.seg($('mgtis'), function (v) { sel = v; upd(); });
         $('mgresumen').addEventListener('click', function (e) { var n = e.target.closest ? e.target.closest('tr[data-t]') : null; if (n) { sel = n.getAttribute('data-t'); upd(); } });
-        evidencia(); upd();
+        upd();
         return { destroy: function () { if (tis) tis.destroy(); tis = null; } };
       } },
       { title: 'Protocolo', html: T3, init: function (root) {

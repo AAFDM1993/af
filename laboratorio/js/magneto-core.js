@@ -208,58 +208,6 @@ var MagnetoCore = (function () {
     return { x: x, index: best };
   }
 
-  /* ---- Bibliografía externa a la clase (consultada el 27-11-2026). Va aparte: no corrige ni reemplaza lo de la clase. ---- */
-  var EVIDENCE_LEVELS = { moderada: 'Moderada', baja: 'Baja o contradictoria', preclinica: 'Preclínica', 'no-encontrada': 'No se encontró' };
-  function F(titulo, origen, url) { return { titulo: titulo, origen: origen, url: url }; }
-  function H(texto, enQuien) { return { texto: texto, enQuien: enQuien }; }
-  var SRC = {
-    huesoCochrane: F('¿Ayuda la estimulación electromagnética a las fracturas que no consolidan?', 'Revisión Cochrane CD008471, 2022', 'https://www.cochrane.org/CD008471'),
-    huesoMecanismos: F('Campo electromagnético pulsado en consolidación ósea y articulaciones: mecanismos celulares', 'Revisión no sistemática, 2020; un autor ligado a una empresa del sector', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7434032/'),
-    inflamacion: F('Regulación de la respuesta inflamatoria con campo electromagnético pulsado', 'Revisión no sistemática, Bioengineering, 2025', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC12109083/'),
-    tendon: F('Campo pulsado de baja frecuencia en fibroblastos de tendón humano', 'Estudio en cultivo, European Journal of Medical Research, 2014', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4096547/'),
-    espasticidad: F('Campos electromagnéticos periféricos y espasticidad', 'Revisión sistemática, Journal of Clinical Medicine, 2022', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9267146/'),
-    flujoEstatico: F('Campos magnéticos estáticos y flujo sanguíneo', 'Revisión, Cureus, 2025', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC11859515/'),
-    flujo50: F('Campo de 50 Hz, circulación y función del endotelio en adultos sanos', 'Ensayo piloto, PLoS One, 2021', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8341886/'),
-    artrosisCochrane: F('Campos electromagnéticos para la artrosis', 'Revisión Cochrane CD003523, 2013', 'https://www.cochrane.org/evidence/CD003523'),
-    artrosisMeta: F('Campo electromagnético pulsado en dolor, rigidez y función en la artrosis', 'Metaanálisis, Pain Research and Management, 2022', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9110240/'),
-    nervio: F('Campo pulsado y ultrasonido en la regeneración del nervio periférico', 'Revisión narrativa, International Journal of Molecular Sciences, 2025', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC12525245/'),
-    imanesDolor: F('Imanes estáticos para el dolor', 'Revisión sistemática, CMAJ, 2007', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC1976658/')
-  };
-  var EVIDENCE = {
-    hueso: { nivel: 'baja', resumen: 'En fracturas que no consolidan, la revisión Cochrane considera la evidencia no concluyente.',
-      mecanismo: ['Propuesta: el campo pulsado actúa como una señal sobre las células.', 'Intervendrían receptores de adenosina de la membrana.', 'En animales aumenta un factor de reparación (TGF-β) y bajan mediadores de inflamación en el cartílago.'],
-      hallazgos: [H('Fracturas que no consolidan, 4 ensayos con 125 pacientes (3 con campo pulsado y 1 con campo eléctrico): la mejora no fue significativa (riesgo relativo 1,96; intervalo 0,86 a 4,48).', 'personas'),
-        H('En cobayas, el campo pulsado redujo en el cartílago un mediador de inflamación (IL-1, −48 %) y aumentó el TGF-β (+72 %).', 'animales')],
-      fuentes: [SRC.huesoCochrane, SRC.huesoMecanismos] },
-    membrana: { nivel: 'preclinica', resumen: 'Hay un mecanismo antiinflamatorio estudiado en células; en las fuentes consultadas no se comprobó la salida de sodio ni la reducción del edema que describe la clase.',
-      mecanismo: ['Propuesta: el campo pulsado activa receptores de adenosina (A2A y A3).', 'Se frena una vía que enciende la inflamación (NF-κB).', 'Se producen menos mediadores inflamatorios.'],
-      hallazgos: [H('En cultivos de células de cartílago, de membrana sinovial y de hueso se ha descrito el efecto sobre los receptores de adenosina.', 'células')],
-      fuentes: [SRC.inflamacion] },
-    conectivo: { nivel: 'baja', resumen: 'Los fibroblastos en cultivo responden; en personas los datos consultados son escasos y no son de tendón.',
-      mecanismo: ['Los fibroblastos en cultivo se desplazan y se multiplican más.', 'El mecanismo exacto no está establecido.'],
-      hallazgos: [H('Fibroblastos de tendón de 5 donantes: la herida del cultivo cerró en 3,35 días frente a 5,05 sin campo. El fabricante donó el aparato y dos autores dirigían esa empresa.', 'células'),
-        H('Un ensayo en úlceras venosas, citado en una revisión: el área de la úlcera bajó 47,7 % con campo pulsado y creció 42,3 % con placebo.', 'personas')],
-      fuentes: [SRC.tendon, SRC.inflamacion] },
-    musculo: { nivel: 'baja', resumen: 'Hay señales favorables en espasticidad, con pocos estudios y muy distintos entre sí; no es lo mismo que una contractura.',
-      mecanismo: ['La revisión consultada no establece un mecanismo.'],
-      hallazgos: [H('Espasticidad, 10 ensayos: 80 % con resultados positivos. Siete usaron estimulación magnética periférica repetitiva (otra modalidad) y tres campo pulsado.', 'personas')],
-      fuentes: [SRC.espasticidad] },
-    vasos: { nivel: 'baja', resumen: 'Un estudio piloto con un campo mucho más intenso vio más flujo; con imanes estáticos no se ha demostrado en personas.',
-      mecanismo: ['Las fuentes consultadas no comprueban un mecanismo en personas.'],
-      hallazgos: [H('Piloto en hombres jóvenes sanos (10 y 16 participantes): con 50 Hz aumentó el flujo en el antebrazo frente a la simulación. La intensidad llegaba a 180 mT (1800 G), muy por encima de la de la clase, y un autor presidía la empresa fabricante.', 'personas'),
-        H('Imanes estáticos (otra modalidad): ningún estudio en personas mostró más flujo sanguíneo.', 'personas')],
-      fuentes: [SRC.flujo50, SRC.flujoEstatico] },
-    nervio: { nivel: 'moderada', resumen: 'La evidencia moderada es para el dolor de la artrosis; la regeneración del nervio se apoya sobre todo en estudios experimentales.',
-      mecanismo: ['En el dolor articular se propone un efecto antiinflamatorio.', 'El mecanismo sobre el nervio no está establecido.'],
-      hallazgos: [H('Artrosis, 9 ensayos y 636 adultos: unos 15 puntos menos de dolor (escala de 0 a 100) que con simulación; sin mejora clara de la función. La página consultada no precisa el tipo de campo.', 'personas'),
-        H('Artrosis, 11 ensayos y 614 pacientes con campo pulsado: menos dolor, con resultados muy dispares entre estudios; hasta 300 Hz hubo efecto y por encima no.', 'personas'),
-        H('Regeneración nerviosa: una revisión narrativa reúne sobre todo estudios experimentales, algunos sin efecto.', 'animales')],
-      fuentes: [SRC.artrosisCochrane, SRC.artrosisMeta, SRC.nervio] }
-  };
-  var POLARITY_EVIDENCE = { nivel: 'no-encontrada', resumen: 'En la búsqueda hecha no apareció ningún estudio que compare el polo norte con el polo sur.',
-    hallazgos: [H('Imanes estáticos (otra modalidad), 9 ensayos: sin diferencia significativa en el dolor frente a placebo (2,1 mm en una escala de 100 mm). En artrosis no se pudo descartar un beneficio.', 'personas')],
-    fuentes: [SRC.imanesDolor] };
-
   /* Marco teórico: contenido de las láminas de la clase (sin correcciones externas). */
   var THEORY = {
     concepto: [
@@ -311,6 +259,6 @@ var MagnetoCore = (function () {
 
   return { GAUSS_PER_TESLA: GAUSS_PER_TESLA, DEVICE: DEVICE, gaussToTesla: gaussToTesla, teslaToGauss: teslaToGauss, fieldAtDepth: fieldAtDepth,
     POLES: POLES, poleEffect: poleEffect, profileFor: profileFor, PROFILES: PROFILES, PATHOLOGIES: PATHOLOGIES, evaluateProtocol: evaluateProtocol,
-    CONDITIONS: CONDITIONS, visualHz: visualHz, fieldStrength: fieldStrength, fieldPhase: fieldPhase, wavePoint: wavePoint, sweepPosition: sweepPosition, THEORY: THEORY, EVIDENCE_LEVELS: EVIDENCE_LEVELS, EVIDENCE: EVIDENCE, POLARITY_EVIDENCE: POLARITY_EVIDENCE, frequencyText: frequencyText, WHY_PROFILES: WHY_PROFILES, LAYERS: LAYERS, layerAt: layerAt, TISSUES: TISSUES, tissueDoses: tissueDoses, NOTES: NOTES, HIGH_INTENSITY_NOTE: HIGH_INTENSITY_NOTE, CASES: CASES };
+    CONDITIONS: CONDITIONS, visualHz: visualHz, fieldStrength: fieldStrength, fieldPhase: fieldPhase, wavePoint: wavePoint, sweepPosition: sweepPosition, THEORY: THEORY, frequencyText: frequencyText, WHY_PROFILES: WHY_PROFILES, LAYERS: LAYERS, layerAt: layerAt, TISSUES: TISSUES, tissueDoses: tissueDoses, NOTES: NOTES, HIGH_INTENSITY_NOTE: HIGH_INTENSITY_NOTE, CASES: CASES };
 })();
 if (typeof module !== 'undefined') module.exports = MagnetoCore;
