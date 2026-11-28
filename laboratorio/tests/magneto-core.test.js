@@ -223,3 +223,22 @@ test('WHY_PROFILES compara frecuencias e intensidades bajas y altas con datos de
   });
   assert.ok(W.regla.length > 0);
 });
+
+function revisaEvidencia(e) {
+  assert.ok(M.EVIDENCE_LEVELS[e.nivel], 'nivel ' + e.nivel);
+  assert.ok(e.resumen && e.resumen.trim());
+  if (e.nivel !== 'no-encontrada') { assert.ok(e.fuentes.length >= 1); assert.ok(e.hallazgos.length >= 1); }
+  e.fuentes.forEach((f) => { assert.ok(f.titulo && f.origen); assert.ok(f.url.indexOf('https://') === 0); });
+  e.hallazgos.forEach((h) => {
+    assert.ok(h.texto);
+    assert.ok(['células', 'animales', 'personas'].indexOf(h.enQuien) >= 0);
+    if (e.nivel === 'preclinica') assert.notEqual(h.enQuien, 'personas');
+  });
+}
+
+test('EVIDENCE: niveles exactos y una entrada válida por tejido', () => {
+  assert.deepEqual(M.EVIDENCE_LEVELS, { moderada: 'Moderada', baja: 'Baja o contradictoria', preclinica: 'Preclínica', 'no-encontrada': 'No se encontró' });
+  assert.deepEqual(Object.keys(M.EVIDENCE).sort(), M.TISSUES.map((t) => t.id).sort());
+  M.TISSUES.forEach((t) => { revisaEvidencia(M.EVIDENCE[t.id]); assert.ok(M.EVIDENCE[t.id].mecanismo.length >= 1); });
+  revisaEvidencia(M.POLARITY_EVIDENCE);
+});
